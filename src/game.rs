@@ -93,7 +93,7 @@ pub fn rust_red_game(mut game_state: GameState){
             Regions::PalletTown(PalletTownLocations::OaksLab) => match choice {
                 1 => current_local = Regions::PalletTown(PalletTownLocations::Outside),
                 2 => {
-                    if game_state.player.party.mon1 == None {
+                    if game_state.player.party.mon[0] == None {
                         current_local = starter_selection(&mut game_state)
                     } else {
                         type_text("OAK: Good Luck on your Adventure!")
@@ -175,7 +175,7 @@ enum ViridianCityLocations {
 
 
 fn adventure_start_check(game_state: &GameState)->bool{
-    return if game_state.player.party.mon1 == None {
+    return if game_state.player.party.mon[0] == None {
         type_text("OAK: Wait! It's dangerous to go out there without a Pokemon!\n");
         false
     } else {
@@ -218,7 +218,7 @@ fn starter_selection(game_state: &mut GameState)->Regions{
     let mut trainer_blue = Trainer::new();
 
     let battle_result =  battle(game_state, &mut trainer_blue);
-    game_state.player.party.mon1.as_mut().unwrap().current_hp = game_state.player.party.mon1.clone().unwrap().max_hp.value;
+    game_state.player.party.mon[0].as_mut().unwrap().current_hp = game_state.player.party.mon[0].clone().unwrap().max_hp.value;
 
     if battle_result == false{
         type_text("BLUE: Smell Ya Later!\n");

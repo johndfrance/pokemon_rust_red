@@ -18,12 +18,7 @@ fn enemy_trainers(){
             id: 1,
             name: "Lass",
             party: Party {
-                mon1: Some(Pokemon::new(Pidgey, 9)),
-                mon2: Some(Pokemon::new(Pidgey, 9)),
-                mon3: None,
-                mon4: None,
-                mon5: None,
-                mon6: None,
+                mon: [Some(Pokemon::new(Pidgey, 9)),Some(Pokemon::new(Pidgey, 9)),None, None, None,None,],
             },
             reward: 135,
         },
@@ -31,12 +26,7 @@ fn enemy_trainers(){
             id: 2,
             name: "Bug Catcher",
             party: Party {
-                mon1: None,
-                mon2: None,
-                mon3: None,
-                mon4: None,
-                mon5: None,
-                mon6: None,
+                mon:[None,None,None,None,None,None]
             },
             reward: 0,
         }

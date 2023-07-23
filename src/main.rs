@@ -101,12 +101,7 @@ impl GameState{
                 name: "".to_string(),
                 poke_team: vec![],
                 party: Party {
-                    mon1: None,
-                    mon2: None,
-                    mon3: None,
-                    mon4: None,
-                    mon5: None,
-                    mon6: None,
+                    mon: [None, None, None, None, None, None,],
                 },
                 cash: 100,
             },
@@ -130,28 +125,23 @@ impl Player{
 }
 struct PokeDex{}
 struct Party{
-    mon1: Option<Pokemon>,
-    mon2: Option<Pokemon>,
-    mon3: Option<Pokemon>,
-    mon4: Option<Pokemon>,
-    mon5: Option<Pokemon>,
-    mon6: Option<Pokemon>,
+    mon: [Option<Pokemon>;6],
 }
 
 impl Party {
     pub fn add_party_member(&mut self, new_mon: Pokemon){
-        if self.mon1 == None{
-            self.mon1 = Some(new_mon);
-        }else if self.mon2 == None {
-            self.mon2 = Some(new_mon);
-        }else if self.mon3 == None {
-            self.mon3 == Some(new_mon);
-        }else if self.mon4 == None {
-            self.mon4 == Some(new_mon);
-        }else if self.mon5 == None {
-            self.mon5 == Some(new_mon);
-        }else if self.mon6 == None{
-            self.mon6 == Some(new_mon);
+        if self.mon[0] == None{
+            self.mon[0] = Some(new_mon);
+        }else if self.mon[1] == None {
+            self.mon[1] = Some(new_mon);
+        }else if self.mon[2] == None {
+            self.mon[2] == Some(new_mon);
+        }else if self.mon[3] == None {
+            self.mon[3] == Some(new_mon);
+        }else if self.mon[4] == None {
+            self.mon[4] == Some(new_mon);
+        }else if self.mon[5] == None{
+            self.mon[5] == Some(new_mon);
         }else{
             println!("\nNo room for new pokemon!");
             //TODO - Send new_mon to "BILL's PC"
@@ -221,13 +211,13 @@ fn battle(game_state: &mut GameState, enemy: &mut Trainer) -> bool {
     loop{
 
         type_text(format!("{} sends out {}\n",enemy_name, enemy.poke_team[0].name ).as_str());
-        type_text(format!("{} sends out {:?}\n", player_name, game_state.player.party.mon1.clone().unwrap().name).as_str());
+        type_text(format!("{} sends out {:?}\n", player_name, game_state.player.party.mon[0].clone().unwrap().name).as_str());
         loop{
             println!("Player {}(LVL{}) has {}/{:?}HP.",
-                     game_state.player.party.mon1.clone().unwrap().name,
-                    game_state.player.party.mon1.clone().unwrap().level,
-                    game_state.player.party.mon1.clone().unwrap().current_hp,
-                     game_state.player.party.mon1.clone().unwrap().max_hp.value);
+                     game_state.player.party.mon[0].clone().unwrap().name,
+                    game_state.player.party.mon[0].clone().unwrap().level,
+                    game_state.player.party.mon[0].clone().unwrap().current_hp,
+                     game_state.player.party.mon[0].clone().unwrap().max_hp.value);
             println!("Enemy {}(LVL{}) has {}/{:?}HP.",
                 enemy.poke_team[0].name,
                 enemy.poke_team[0].level,
@@ -235,7 +225,7 @@ fn battle(game_state: &mut GameState, enemy: &mut Trainer) -> bool {
                 enemy.poke_team[0].max_hp.value);
 
             let mut move_count = 1;
-            for moves in game_state.player.party.mon1.clone().unwrap().moves{
+            for moves in game_state.player.party.mon[0].clone().unwrap().moves{
                 print!(" {}. {}", move_count, moves.move_stats().name);
                 move_count +=1;
             }
@@ -250,7 +240,7 @@ fn battle(game_state: &mut GameState, enemy: &mut Trainer) -> bool {
 
             let player1_input = player1_input.as_str();
             fn move_selection_validator(game_state: &GameState, selected_move: &String) ->bool{
-                let number_of_moves_known = game_state.player.party.mon1.clone().unwrap().moves.len();
+                let number_of_moves_known = game_state.player.party.mon[0].clone().unwrap().moves.len();
                 if selected_move.parse::<usize>().is_ok(){
                     if  selected_move.parse::<usize>().unwrap() > number_of_moves_known{
                         type_text("No known move in that slot!");
@@ -266,11 +256,11 @@ fn battle(game_state: &mut GameState, enemy: &mut Trainer) -> bool {
 
 
             let player_selected_move = match player1_input{
-                "1"=>{game_state.player.party.mon1.clone().unwrap().moves[0]}
-                "2"=>{game_state.player.party.mon1.clone().unwrap().moves[1]}
-                "3"=>{game_state.player.party.mon1.clone().unwrap().moves[2]}
-                "4"=>{game_state.player.party.mon1.clone().unwrap().moves[3]}
-                _ => {game_state.player.party.mon1.clone().unwrap().moves[0]} // This could be eliminated by using an enum of [1, 2, 3, 4]
+                "1"=>{game_state.player.party.mon[0].clone().unwrap().moves[0]}
+                "2"=>{game_state.player.party.mon[0].clone().unwrap().moves[1]}
+                "3"=>{game_state.player.party.mon[0].clone().unwrap().moves[2]}
+                "4"=>{game_state.player.party.mon[0].clone().unwrap().moves[3]}
+                _ => {game_state.player.party.mon[0].clone().unwrap().moves[0]} // This could be eliminated by using an enum of [1, 2, 3, 4]
             };
             let enemy_move_selection = enemy_move_select(&enemy.poke_team[0]).to_string();
             let enemy_move_selection = enemy_move_selection.as_str();
@@ -282,17 +272,17 @@ fn battle(game_state: &mut GameState, enemy: &mut Trainer) -> bool {
                 _=>{enemy.poke_team[0].moves[0]}
             };
 
-            let speed_order = game_state.player.party.mon1.clone().unwrap().spd.value.cmp(&enemy.poke_team[0].spd.value);
+            let speed_order = game_state.player.party.mon[0].clone().unwrap().spd.value.cmp(&enemy.poke_team[0].spd.value);
             match speed_order{
                 Ordering::Greater=>{
-                    enemy.poke_team[0].damage(&game_state.player.party.mon1.clone().unwrap(), &player_selected_move);
+                    enemy.poke_team[0].damage(&game_state.player.party.mon[0].clone().unwrap(), &player_selected_move);
                     if enemy.poke_team[0].current_hp == 0{
                         type_text("Enemy Fainted!");
                         winner = true;
                         break
                     }else {
-                        game_state.player.party.mon1.as_mut().unwrap().damage(&enemy.poke_team[0], &enemy_move_selection);
-                        if game_state.player.party.mon1.clone().unwrap().current_hp == 0{
+                        game_state.player.party.mon[0].as_mut().unwrap().damage(&enemy.poke_team[0], &enemy_move_selection);
+                        if game_state.player.party.mon[0].clone().unwrap().current_hp == 0{
                             type_text("You Fainted!");
                             winner = false;
                             break
@@ -300,13 +290,13 @@ fn battle(game_state: &mut GameState, enemy: &mut Trainer) -> bool {
                     }
                 }
                 Ordering::Less=>{
-                    game_state.player.party.mon1.as_mut().unwrap().damage(&enemy.poke_team[0], &enemy_move_selection);
-                    if game_state.player.party.mon1.clone().unwrap().current_hp == 0{
+                    game_state.player.party.mon[0].as_mut().unwrap().damage(&enemy.poke_team[0], &enemy_move_selection);
+                    if game_state.player.party.mon[0].clone().unwrap().current_hp == 0{
                         type_text("You Fainted!");
                         winner = false;
                         break
                     }else {
-                        enemy.poke_team[0].damage(&game_state.player.party.mon1.clone().unwrap(), &player_selected_move);
+                        enemy.poke_team[0].damage(&game_state.player.party.mon[0].clone().unwrap(), &player_selected_move);
                         if enemy.poke_team[0].current_hp == 0{
                             type_text("Enemy Fainted!");
                             winner = true;
@@ -314,14 +304,14 @@ fn battle(game_state: &mut GameState, enemy: &mut Trainer) -> bool {
                         }
                     }
                 }
-                Ordering::Equal=>{enemy.poke_team[0].damage(&game_state.player.party.mon1.clone().unwrap(), &player_selected_move);
+                Ordering::Equal=>{enemy.poke_team[0].damage(&game_state.player.party.mon[0].clone().unwrap(), &player_selected_move);
                     if enemy.poke_team[0].current_hp == 0{
                         type_text("Enemy Fainted!");
                         winner = true;
                         break
                     }else {
-                        game_state.player.party.mon1.as_mut().unwrap().damage(&enemy.poke_team[0], &enemy_move_selection);
-                        if game_state.player.party.mon1.clone().unwrap().current_hp == 0{
+                        game_state.player.party.mon[0].as_mut().unwrap().damage(&enemy.poke_team[0], &enemy_move_selection);
+                        if game_state.player.party.mon[0].clone().unwrap().current_hp == 0{
                             type_text("You Fainted!");
                             winner = false;
                             break
@@ -333,8 +323,8 @@ fn battle(game_state: &mut GameState, enemy: &mut Trainer) -> bool {
         break
     }
     if winner == true {
-        game_state.player.party.mon1.as_mut().unwrap().gain_exp(&enemy.poke_team[0]);
-        game_state.player.party.mon1.as_mut().unwrap().check_level_up();
+        game_state.player.party.mon[0].as_mut().unwrap().gain_exp(&enemy.poke_team[0]);
+        game_state.player.party.mon[0].as_mut().unwrap().check_level_up();
     }
     return winner;
 }
