@@ -1,5 +1,5 @@
 use std::string::ToString;
-use crate::mon_base_stats::PokemonSpecies::{Caterpie, Pidgey, Rattata, Weedle};
+use crate::mon_base_stats::PokemonSpecies::{Caterpie, Ekans, Jigglypuff, Kakuna, Metapod, NidoranF, Pidgey, Rattata, Spearow, Weedle};
 use crate::{Party, Pokemon, Trainer};
 use crate::mon_base_stats::PokemonSpecies;
 
@@ -81,7 +81,7 @@ pub const YOUNGSTER2: TrainerTemplate = TrainerTemplate{
 pub const LASS2: TrainerTemplate = TrainerTemplate{
     id: 6,
     name: "Lass Sally".to_string(),
-    party: [Some((Rattata, 10)), Some((Nidoran, 10)), None, None, None, None],
+    party: [Some((Rattata, 10)), Some((NidoranF, 10)), None, None, None, None],
     reward: 150,
 };
 pub const BUGCATCHER3: TrainerTemplate = TrainerTemplate{
