@@ -10,9 +10,9 @@ use crate::mon_base_stats::PokemonSpecies;
 // benefit of only calculating the stats of pokemon when needed. Had I been allowed to impliment this
 // the way I first wanted it would have calculated the stats of all pokemon for all trainers whenever
 // the game is booted up.
-struct TrainerTemplate{
+pub struct TrainerTemplate{
     id: u16,
-    name: String,
+    name: &'static str,
     party: [Option<(PokemonSpecies, u16)>; 6],
     reward: u16,
 }
@@ -35,7 +35,7 @@ impl EnemyTrainer2{
         }
 
         EnemyTrainer2{
-            name: found_trainer.name.clone(),
+            name: found_trainer.name.clone().parse().unwrap(),
             party: trainer_party,
             reward: found_trainer.reward.clone(),
         }
@@ -50,49 +50,49 @@ impl EnemyTrainer2{
 // ROUTE 3 TRAINERS
 pub const LASS1: TrainerTemplate = TrainerTemplate{
     id: 1,
-    name: "Lass Janice".to_string(),
+    name: "Lass Janice",
     party: [Some((Pidgey, 9)), Some((Pidgey, 9)), None, None, None, None],
     reward: 135,
 };
 pub const BUGCATCHER1: TrainerTemplate = TrainerTemplate{
   id: 2,
-    name: "Bug Catcher Colton".to_string(),
+    name: "Bug Catcher Colton",
     party: [Some((Caterpie, 10)), Some((Weedle, 10)), Some((Caterpie, 10)), None, None, None],
     reward: 100,
 };
 pub const YOUNGSTER1: TrainerTemplate = TrainerTemplate{
     id: 3,
-    name: "Youngster Ben".to_string(),
+    name: "Youngster Ben",
     party: [Some((Rattata, 11)), Some((Ekans, 11)), None, None, None, None,],
     reward: 165,
 };
 pub const BUGCATCHER2: TrainerTemplate = TrainerTemplate{
     id: 4,
-    name: "Bug Catcher Greg".to_string(),
+    name: "Bug Catcher Greg",
     party: [Some((Weedle, 9)), Some((Kakuna, 9)), Some((Caterpie, 9)), Some((Metapod, 9)), None,None],
     reward: 90,
 };
 pub const YOUNGSTER2: TrainerTemplate = TrainerTemplate{
     id: 5,
-    name: "Youngster Calvin".to_string(),
+    name: "Youngster Calvin",
     party: [Some((Spearow, 14)), None, None, None, None, None],
     reward: 210,
 };
 pub const LASS2: TrainerTemplate = TrainerTemplate{
     id: 6,
-    name: "Lass Sally".to_string(),
+    name: "Lass Sally",
     party: [Some((Rattata, 10)), Some((NidoranF, 10)), None, None, None, None],
     reward: 150,
 };
 pub const BUGCATCHER3: TrainerTemplate = TrainerTemplate{
     id: 7,
-    name: "Bug Catcher James".to_string(),
+    name: "Bug Catcher James",
     party: [Some((Caterpie, 10)), Some((Metapod, 10)), None, None, None, None],
     reward: 110,
 };
 pub const LASS3: TrainerTemplate = TrainerTemplate{
     id: 8,
-    name: "Lass Robin".to_string(),
+    name: "Lass Robin",
     party: [Some((Jigglypuff, 14)), None, None, None, None, None],
     reward: 150,
 };
