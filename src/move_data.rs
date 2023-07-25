@@ -24,11 +24,13 @@ pub enum Moves {
     Growth,
     Growl,
     Gust,
+    Harden,
     HydroPump,
     HyperFang,
     LeechSeed,
     Leer,
     MirrorMove,
+    Peck,
     PoisonPowder,
     PoisonSting,
     QuickAttack,
@@ -36,6 +38,7 @@ pub enum Moves {
     RazorLeaf,
     SandAttack,
     Scratch,
+    Sing,
     SkullBash,
     Slash,
     SleepPowder,
@@ -53,6 +56,7 @@ pub enum Moves {
     Whirlwind,
     WingAttack,
     Withdraw,
+    Wrap,
 }
 impl Moves {
     pub fn move_stats(&self) -> MoveData {
@@ -67,11 +71,13 @@ impl Moves {
             Moves::Growl => GROWL,
             Moves::Growth => GROWTH,
             Moves::Gust => GUST,
+            Moves::Harden=>HARDEN,
             Moves::HydroPump => HYDROPUMP,
             Moves::HyperFang => HYPERFANG,
             Moves::LeechSeed => LEECHSEED,
             Moves::Leer => LEER,
             Moves::MirrorMove => MIRRORMOVE,
+            Moves::Peck=>PECK,
             Moves::PoisonPowder => POISONPOWDER,
             Moves::PoisonSting => POISONSTING,
             Moves::QuickAttack => QUICKATTACK,
@@ -79,6 +85,7 @@ impl Moves {
             Moves::RazorLeaf => RAZORLEAF,
             Moves::SandAttack => SANDATTACK,
             Moves::Scratch => SCRATCH,
+            Moves::Sing => SING,
             Moves::SkullBash => SKULLBASH,
             Moves::Slash => SLASH,
             Moves::SleepPowder => SLEEPPOWDER,
@@ -96,6 +103,7 @@ impl Moves {
             Moves::Whirlwind => WHIRLWIND,
             Moves::Withdraw => WITHDRAW,
             Moves::WingAttack => WINGATTACK,
+            Moves::Wrap=>WRAP
         }
     }
 }
@@ -191,6 +199,15 @@ pub const GUST: MoveData = MoveData {
     effect_type: MoveEffectCat::None,
     pp: 35,
 };
+const HARDEN: MoveData = MoveData{
+    name: "Harden",
+    base_power: 0,
+    accuracy: 100,
+    move_type: PokeTypes::Normal,
+    move_cat: MoveCat::Status,
+    effect_type: MoveEffectCat::None, //TODO
+    pp: 30,
+};
 pub const HYDROPUMP: MoveData = MoveData {
     name: "Hydro Pump",
     base_power: 120,
@@ -235,6 +252,15 @@ pub const MIRRORMOVE: MoveData = MoveData {
     move_cat: MoveCat::Status,
     effect_type: MoveEffectCat::None, //TODO
     pp: 20,
+};
+const PECK: MoveData=MoveData{
+    name: "Peck",
+    base_power: 35,
+    accuracy: 100,
+    move_type: PokeTypes::Flying,
+    move_cat: MoveCat::Physical,
+    effect_type: MoveEffectCat::None,
+    pp: 35,
 };
 pub const POISONPOWDER: MoveData = MoveData {
     name: "Poison Powder",
@@ -298,6 +324,15 @@ pub const SCRATCH: MoveData = MoveData {
     move_cat: MoveCat::Physical,
     effect_type: MoveEffectCat::None,
     pp: 35,
+};
+const SING: MoveData=MoveData{
+    name: "Sing",
+    base_power: 0,
+    accuracy: 55,
+    move_type: PokeTypes::Normal,
+    move_cat: MoveCat::Status,
+    effect_type: MoveEffectCat::None, //TODO
+    pp: 15,
 };
 pub const SKULLBASH: MoveData = MoveData {
     name: "Skull Bash",
@@ -451,4 +486,13 @@ pub const WITHDRAW: MoveData = MoveData {
     move_cat: MoveCat::Special,
     effect_type: MoveEffectCat::None, //TODO
     pp: 40,
+};
+const WRAP:MoveData=MoveData{
+    name: "Wrap",
+    base_power: 15,
+    accuracy: 85,
+    move_type: PokeTypes::Normal,
+    move_cat: MoveCat::Physical,
+    effect_type: MoveEffectCat::None, //TODO
+    pp: 20,
 };
