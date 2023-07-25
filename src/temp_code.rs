@@ -1,8 +1,8 @@
+use crate::read_user_input;
 use std::io;
 use std::io::Write;
-use crate::read_user_input;
 
-fn old_battle_fn(){
+fn old_battle_fn() {
     /*
     loop {
         println!(
@@ -123,5 +123,105 @@ fn old_battle_fn(){
     }
 
      */
-
 }
+// OLD GAME START
+/*
+println!("POKEMON - RUST RED");
+let msg1 = "\nWhat is your name?";
+type_text(msg1);
+
+let player_name = read_user_input();
+let mut player = Player {
+    name: player_name.clone(),
+    poke_team: vec![],
+    cash: 0,
+};
+let msg2 = format!("Welcome to the world of Pokemon {}!\n", player_name);
+let msg2 = msg2.as_str();
+type_text(msg2);
+println!(
+    "Choose your starting Pokemon: \n\
+1. Bulbasaur\n\
+2. Charmander\n\
+3. Squirtle\n\
+4. Pikachu"
+);
+let mut choice = true;
+let bulbasaur = Pokemon::new(Bulbasaur, 6);
+let charmander = Pokemon::new(Charamander, 5);
+let squirtle = Pokemon::new(Squirtle, 5);
+let pikachu = Pokemon::new(Pikachu, 5);
+
+while choice {
+    let starter_choice = read_user_input();
+    let starter_choice = starter_choice.as_str();
+    match starter_choice {
+        "1" => {
+            player.poke_team.push(bulbasaur.clone());
+            choice = false;
+        }
+        "2" => {
+            player.poke_team.push(charmander.clone());
+            choice = false;
+        }
+        "3" => {
+            player.poke_team.push(squirtle.clone());
+            choice = false;
+        }
+        "4" => {
+            player.poke_team.push(pikachu.clone());
+            choice = false;
+        }
+        _ => println!("Sorry, that wasn't a valid choice."),
+    }
+}
+game(player);
+
+ */
+
+/*
+struct Events{
+    enemy_trainers: HashMap<u16, Bool>,
+    events: HashMap<u16, Bool>
+}
+*/
+/*
+fn game(mut player: Player) {
+    let mut player1 = player.poke_team[0].clone();
+
+    let mut opponent_count = 1;
+    loop {
+        let enemy = generate_enemy();
+        println!(
+            "\nEnemy {}: {} - Level: {}",
+            opponent_count, enemy.name, enemy.level
+        );
+        println!("*************************************");
+        let still_alive = battle(&mut player1, enemy);
+        if !still_alive {
+            break;
+        }
+        opponent_count += 1;
+    }
+    println!("GAME OVER")
+}
+
+fn generate_enemy() -> Pokemon {
+    let variants = [
+        Pikachu,
+        Bulbasaur,
+        Charamander,
+        Squirtle,
+        Pidgey,
+        // Add more Pokémon variants
+    ];
+    let mut rng = rand::thread_rng();
+    let index = rng.gen_range(0..variants.len());
+    let mut lvl_rng = rand::thread_rng();
+    let enemy_lvl = lvl_rng.gen_range(1..5);
+    let enemy_species = variants[index].clone();
+    let enemy = Pokemon::new(enemy_species, enemy_lvl);
+    return enemy;
+}
+
+ */

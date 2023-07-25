@@ -1,107 +1,53 @@
 use colored::Colorize;
+mod battle_logic;
+mod enemy_trainers;
+mod evolution;
 mod game;
 mod lib;
 mod mon_base_stats;
 mod mon_move_sets;
 mod move_data;
-mod type_matchups;
-mod enemy_trainers;
+mod npc_dialogue;
 mod temp_code;
+mod type_matchups;
 
-use std::cmp::Ordering;
 use crate::game::*;
+use crate::mon_base_stats::PokemonSpecies::{Charamander, Pidgey, Rattata, Squirtle};
 use crate::mon_base_stats::*;
 use crate::move_data::*;
 use crate::type_matchups::*;
-use crate::mon_base_stats::PokemonSpecies::{Charamander, Pidgey, Squirtle};
 use crate::PokemonSpecies::{Bulbasaur, Pikachu};
-use crate::Status::Burned;
-
+use crate::Status::{Burned, Fainted, Healthy};
+use crate::mon_move_sets::LEARNABLEMOVES;
+use crate::move_data::Moves::Tackle;
 use rand::Rng;
+use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::fmt::format;
 use std::io;
 use std::io::Write;
-
 use std::thread::sleep;
 use std::time::Duration;
-use crate::mon_move_sets::LEARNABLEMOVES;
 
-use crate::move_data::Moves::Tackle;
-
-
+// MAIN
 fn main() {
     let mut game_state = GameState::new();
     rust_red_game(game_state);
-
-    /*
-    println!("POKEMON - RUST RED");
-    let msg1 = "\nWhat is your name?";
-    type_text(msg1);
-
-    let player_name = read_user_input();
-    let mut player = Player {
-        name: player_name.clone(),
-        poke_team: vec![],
-        cash: 0,
-    };
-    let msg2 = format!("Welcome to the world of Pokemon {}!\n", player_name);
-    let msg2 = msg2.as_str();
-    type_text(msg2);
-    println!(
-        "Choose your starting Pokemon: \n\
-    1. Bulbasaur\n\
-    2. Charmander\n\
-    3. Squirtle\n\
-    4. Pikachu"
-    );
-    let mut choice = true;
-    let bulbasaur = Pokemon::new(Bulbasaur, 6);
-    let charmander = Pokemon::new(Charamander, 5);
-    let squirtle = Pokemon::new(Squirtle, 5);
-    let pikachu = Pokemon::new(Pikachu, 5);
-
-    while choice {
-        let starter_choice = read_user_input();
-        let starter_choice = starter_choice.as_str();
-        match starter_choice {
-            "1" => {
-                player.poke_team.push(bulbasaur.clone());
-                choice = false;
-            }
-            "2" => {
-                player.poke_team.push(charmander.clone());
-                choice = false;
-            }
-            "3" => {
-                player.poke_team.push(squirtle.clone());
-                choice = false;
-            }
-            "4" => {
-                player.poke_team.push(pikachu.clone());
-                choice = false;
-            }
-            _ => println!("Sorry, that wasn't a valid choice."),
-        }
-    }
-    game(player);
-
-     */
 }
-pub struct GameState{
+// GameState will track all the key data such as whether events have triggered, player party etc.
+pub struct GameState {
     player: Player,
     pokedex: PokeDex,
-
     //enemy_trainers: HashMap<u16, Bool>,
 }
-impl GameState{
-    fn new()->GameState{
-        GameState{
-            player: Player{
+impl GameState {
+    // At the start of a new game a blank GameState is created.
+    fn new() -> GameState {
+        GameState {
+            player: Player {
                 name: "".to_string(),
-                poke_team: vec![],
                 party: Party {
-                    mon: [None, None, None, None, None, None,],
+                    mon: [None, None, None, None, None, None],
                 },
                 cash: 100,
             },
@@ -110,97 +56,57 @@ impl GameState{
         }
     }
 }
-
-pub struct Player{
+// Player will be nested inside GameState and contain data specific to the player (party, items etc)
+pub struct Player {
     name: String,
-    poke_team: Vec<Pokemon>,
     party: Party,
     cash: u16,
 }
-impl Player{
-    pub fn enter_name(&mut self, name: String){
+impl Player {
+    pub fn enter_name(&mut self, name: String) {
         self.name = name;
     }
-
 }
-struct PokeDex{}
-struct Party{
-    mon: [Option<Pokemon>;6],
-}
+// TODO: This should get its own separate file.
+// I will need some sort of array that flags whether each pokemon type has been seen or caught before.
+// I will also need a list of all the pokemon + description, probably separate from base_stats.
+struct PokeDex {}
 
+// For now having an array of 6 Pokemon Options seems like the right balance. For now I have the player
+// using this and the enemy Trainers using a Vec<Pokemon> and I will see if one is clearly better.
+struct Party {
+    mon: [Option<Pokemon>; 6],
+}
 impl Party {
-    pub fn add_party_member(&mut self, new_mon: Pokemon){
-        if self.mon[0] == None{
+    // This needs to be re-written as a loop, as is its a hang-over from a previous design.
+    pub fn add_party_member(&mut self, new_mon: Pokemon) {
+        if self.mon[0] == None {
             self.mon[0] = Some(new_mon);
-        }else if self.mon[1] == None {
+        } else if self.mon[1] == None {
             self.mon[1] = Some(new_mon);
-        }else if self.mon[2] == None {
+        } else if self.mon[2] == None {
             self.mon[2] == Some(new_mon);
-        }else if self.mon[3] == None {
+        } else if self.mon[3] == None {
             self.mon[3] == Some(new_mon);
-        }else if self.mon[4] == None {
+        } else if self.mon[4] == None {
             self.mon[4] == Some(new_mon);
-        }else if self.mon[5] == None{
+        } else if self.mon[5] == None {
             self.mon[5] == Some(new_mon);
-        }else{
+        } else {
             println!("\nNo room for new pokemon!");
             //TODO - Send new_mon to "BILL's PC"
         }
     }
 }
-/*
-struct Events{
-    enemy_trainers: HashMap<u16, Bool>,
-    events: HashMap<u16, Bool>
-}
-*/
-/*
-fn game(mut player: Player) {
-    let mut player1 = player.poke_team[0].clone();
-
-    let mut opponent_count = 1;
-    loop {
-        let enemy = generate_enemy();
-        println!(
-            "\nEnemy {}: {} - Level: {}",
-            opponent_count, enemy.name, enemy.level
-        );
-        println!("*************************************");
-        let still_alive = battle(&mut player1, enemy);
-        if !still_alive {
-            break;
-        }
-        opponent_count += 1;
-    }
-    println!("GAME OVER")
-}
-
-fn generate_enemy() -> Pokemon {
-    let variants = [
-        Pikachu,
-        Bulbasaur,
-        Charamander,
-        Squirtle,
-        Pidgey,
-        // Add more Pokémon variants
-    ];
-    let mut rng = rand::thread_rng();
-    let index = rng.gen_range(0..variants.len());
-    let mut lvl_rng = rand::thread_rng();
-    let enemy_lvl = lvl_rng.gen_range(1..5);
-    let enemy_species = variants[index].clone();
-    let enemy = Pokemon::new(enemy_species, enemy_lvl);
-    return enemy;
-}
-
- */
-fn enemy_move_select(enemy: &Pokemon)->u8{
+// Should be moved to battle_logic.rs once that is finalized.
+fn enemy_move_select(enemy: &Pokemon) -> u8 {
     let known_moves = enemy.moves.len();
     let mut rng = rand::thread_rng();
-    let move_select = rng.gen_range(1..known_moves);
+    let move_select = rng.gen_range(1..=known_moves);
     return move_select as u8;
 }
 
+// Depreciated, see battle_logic.rs for current work.
 fn battle(game_state: &mut GameState, enemy: &mut Trainer) -> bool {
     let player_name = game_state.player.name.clone();
     let enemy_name = enemy.name.clone();
@@ -208,146 +114,273 @@ fn battle(game_state: &mut GameState, enemy: &mut Trainer) -> bool {
     //let msg = format!("{} has challenged you to a battle!", enemy_name);
     type_text(format!("{} has challenged you to a battle!\n", enemy_name).as_str());
 
-    loop{
-
-        type_text(format!("{} sends out {}\n",enemy_name, enemy.poke_team[0].name ).as_str());
-        type_text(format!("{} sends out {:?}\n", player_name, game_state.player.party.mon[0].clone().unwrap().name).as_str());
-        loop{
-            println!("Player {}(LVL{}) has {}/{:?}HP.",
-                     game_state.player.party.mon[0].clone().unwrap().name,
-                    game_state.player.party.mon[0].clone().unwrap().level,
-                    game_state.player.party.mon[0].clone().unwrap().current_hp,
-                     game_state.player.party.mon[0].clone().unwrap().max_hp.value);
-            println!("Enemy {}(LVL{}) has {}/{:?}HP.",
+    loop {
+        type_text(format!("{} sends out {}\n", enemy_name, enemy.poke_team[0].name).as_str());
+        type_text(
+            format!(
+                "{} sends out {:?}\n",
+                player_name,
+                game_state.player.party.mon[0].clone().unwrap().name
+            )
+            .as_str(),
+        );
+        loop {
+            println!(
+                "Player {}(LVL{}) has {}/{:?}HP.",
+                game_state.player.party.mon[0].clone().unwrap().name,
+                game_state.player.party.mon[0].clone().unwrap().level,
+                game_state.player.party.mon[0].clone().unwrap().current_hp,
+                game_state.player.party.mon[0].clone().unwrap().max_hp.value
+            );
+            println!(
+                "Enemy {}(LVL{}) has {}/{:?}HP.",
                 enemy.poke_team[0].name,
                 enemy.poke_team[0].level,
                 enemy.poke_team[0].current_hp,
-                enemy.poke_team[0].max_hp.value);
+                enemy.poke_team[0].max_hp.value
+            );
 
             let mut move_count = 1;
-            for moves in game_state.player.party.mon[0].clone().unwrap().moves{
+            for moves in game_state.player.party.mon[0].clone().unwrap().moves {
                 print!(" {}. {}", move_count, moves.move_stats().name);
-                move_count +=1;
+                move_count += 1;
             }
             io::stdout().flush().unwrap();
             let mut valid_move_picked = false;
             let mut player1_input;
 
             //while !valid_move_picked{
-                player1_input = read_user_input();
-                valid_move_picked = move_selection_validator(&game_state, &player1_input);
-                //let player1_input = player1_input.as_str(); }
+            player1_input = read_user_input();
+            valid_move_picked = move_selection_validator(&game_state, &player1_input);
+            //let player1_input = player1_input.as_str(); }
 
             let player1_input = player1_input.as_str();
-            fn move_selection_validator(game_state: &GameState, selected_move: &String) ->bool{
-                let number_of_moves_known = game_state.player.party.mon[0].clone().unwrap().moves.len();
-                if selected_move.parse::<usize>().is_ok(){
-                    if  selected_move.parse::<usize>().unwrap() > number_of_moves_known{
+            fn move_selection_validator(game_state: &GameState, selected_move: &String) -> bool {
+                let number_of_moves_known =
+                    game_state.player.party.mon[0].clone().unwrap().moves.len();
+                if selected_move.parse::<usize>().is_ok() {
+                    if selected_move.parse::<usize>().unwrap() > number_of_moves_known {
                         type_text("No known move in that slot!");
-                        return false
+                        return false;
+                    } else {
+                        return true;
                     }
-                    else { return true }
-
-                }else {
+                } else {
                     type_text("Please enter a valid move with a 1, 2, 3, or 4.");
-                    return false
+                    return false;
                 }
             }
 
-
-            let player_selected_move = match player1_input{
-                "1"=>{game_state.player.party.mon[0].clone().unwrap().moves[0]}
-                "2"=>{game_state.player.party.mon[0].clone().unwrap().moves[1]}
-                "3"=>{game_state.player.party.mon[0].clone().unwrap().moves[2]}
-                "4"=>{game_state.player.party.mon[0].clone().unwrap().moves[3]}
-                _ => {game_state.player.party.mon[0].clone().unwrap().moves[0]} // This could be eliminated by using an enum of [1, 2, 3, 4]
+            let player_selected_move = match player1_input {
+                "1" => game_state.player.party.mon[0].clone().unwrap().moves[0],
+                "2" => game_state.player.party.mon[0].clone().unwrap().moves[1],
+                "3" => game_state.player.party.mon[0].clone().unwrap().moves[2],
+                "4" => game_state.player.party.mon[0].clone().unwrap().moves[3],
+                _ => game_state.player.party.mon[0].clone().unwrap().moves[0], // This could be eliminated by using an enum of [1, 2, 3, 4]
             };
             let enemy_move_selection = enemy_move_select(&enemy.poke_team[0]).to_string();
             let enemy_move_selection = enemy_move_selection.as_str();
-            let enemy_move_selection= match enemy_move_selection {
-                "1"=>{enemy.poke_team[0].moves[0]}
-                "2"=>{enemy.poke_team[0].moves[1]}
-                "3"=>{enemy.poke_team[0].moves[2]}
-                "4"=>{enemy.poke_team[0].moves[3]}
-                _=>{enemy.poke_team[0].moves[0]}
+            let enemy_move_selection = match enemy_move_selection {
+                "1" => enemy.poke_team[0].moves[0],
+                "2" => enemy.poke_team[0].moves[1],
+                "3" => enemy.poke_team[0].moves[2],
+                "4" => enemy.poke_team[0].moves[3],
+                _ => enemy.poke_team[0].moves[0],
             };
 
-            let speed_order = game_state.player.party.mon[0].clone().unwrap().spd.value.cmp(&enemy.poke_team[0].spd.value);
-            match speed_order{
-                Ordering::Greater=>{
-                    enemy.poke_team[0].damage(&game_state.player.party.mon[0].clone().unwrap(), &player_selected_move);
-                    if enemy.poke_team[0].current_hp == 0{
+            let speed_order = game_state.player.party.mon[0]
+                .clone()
+                .unwrap()
+                .spd
+                .value
+                .cmp(&enemy.poke_team[0].spd.value);
+            match speed_order {
+                Ordering::Greater => {
+                    enemy.poke_team[0].damage(
+                        &game_state.player.party.mon[0].clone().unwrap(),
+                        &player_selected_move,
+                    );
+                    if enemy.poke_team[0].current_hp == 0 {
                         type_text("Enemy Fainted!");
                         winner = true;
-                        break
-                    }else {
-                        game_state.player.party.mon[0].as_mut().unwrap().damage(&enemy.poke_team[0], &enemy_move_selection);
-                        if game_state.player.party.mon[0].clone().unwrap().current_hp == 0{
+                        break;
+                    } else {
+                        game_state.player.party.mon[0]
+                            .as_mut()
+                            .unwrap()
+                            .damage(&enemy.poke_team[0], &enemy_move_selection);
+                        if game_state.player.party.mon[0].clone().unwrap().current_hp == 0 {
                             type_text("You Fainted!");
                             winner = false;
-                            break
+                            break;
                         }
                     }
                 }
-                Ordering::Less=>{
-                    game_state.player.party.mon[0].as_mut().unwrap().damage(&enemy.poke_team[0], &enemy_move_selection);
-                    if game_state.player.party.mon[0].clone().unwrap().current_hp == 0{
+                Ordering::Less => {
+                    game_state.player.party.mon[0]
+                        .as_mut()
+                        .unwrap()
+                        .damage(&enemy.poke_team[0], &enemy_move_selection);
+                    if game_state.player.party.mon[0].clone().unwrap().current_hp == 0 {
                         type_text("You Fainted!");
                         winner = false;
-                        break
-                    }else {
-                        enemy.poke_team[0].damage(&game_state.player.party.mon[0].clone().unwrap(), &player_selected_move);
-                        if enemy.poke_team[0].current_hp == 0{
+                        break;
+                    } else {
+                        enemy.poke_team[0].damage(
+                            &game_state.player.party.mon[0].clone().unwrap(),
+                            &player_selected_move,
+                        );
+                        if enemy.poke_team[0].current_hp == 0 {
                             type_text("Enemy Fainted!");
                             winner = true;
-                            break
+                            break;
                         }
                     }
                 }
-                Ordering::Equal=>{enemy.poke_team[0].damage(&game_state.player.party.mon[0].clone().unwrap(), &player_selected_move);
-                    if enemy.poke_team[0].current_hp == 0{
+                Ordering::Equal => {
+                    enemy.poke_team[0].damage(
+                        &game_state.player.party.mon[0].clone().unwrap(),
+                        &player_selected_move,
+                    );
+                    if enemy.poke_team[0].current_hp == 0 {
                         type_text("Enemy Fainted!");
                         winner = true;
-                        break
-                    }else {
-                        game_state.player.party.mon[0].as_mut().unwrap().damage(&enemy.poke_team[0], &enemy_move_selection);
-                        if game_state.player.party.mon[0].clone().unwrap().current_hp == 0{
+                        break;
+                    } else {
+                        game_state.player.party.mon[0]
+                            .as_mut()
+                            .unwrap()
+                            .damage(&enemy.poke_team[0], &enemy_move_selection);
+                        if game_state.player.party.mon[0].clone().unwrap().current_hp == 0 {
                             type_text("You Fainted!");
                             winner = false;
-                            break
+                            break;
                         }
                     }
                 }
             }
         }
-        break
+        break;
     }
     if winner == true {
-        game_state.player.party.mon[0].as_mut().unwrap().gain_exp(&enemy.poke_team[0]);
-        game_state.player.party.mon[0].as_mut().unwrap().check_level_up();
+        game_state.player.party.mon[0]
+            .as_mut()
+            .unwrap()
+            .gain_exp(&enemy.poke_team[0]);
+        game_state.player.party.mon[0]
+            .as_mut()
+            .unwrap()
+            .check_level_up();
     }
     return winner;
 }
 
+// To be moved to battle_logic.rs
+// Ideally the battle function will deal with both Trainer and Wild battles, I suspect using these Traits.
+trait BattleParticipant {
+    fn can_catch(&self) -> bool;
+    fn can_run(&self) -> bool;
+}
+impl BattleParticipant for Trainer {
+    fn can_catch(&self) -> bool {
+        false
+    }
+    fn can_run(&self) -> bool {
+        false
+    }
+}
+impl BattleParticipant for Pokemon {
+    fn can_catch(&self) -> bool {
+        true
+    }
+    fn can_run(&self) -> bool {
+        true
+    }
+}
 
-
-struct Trainer {
+// Trainer is the template for enemy trainers the player battles. This should be moved to
+// enemy_trainer.rs once that gets figure out.
+pub struct Trainer {
     name: &'static str,
     poke_team: Vec<Pokemon>,
     cash: u16,
 }
-
 impl Trainer {
-    pub fn new()->Trainer{
-        Trainer{
+    // Until a good method for storing enemy trainer data is sorted out rival temp data is in new().
+    pub fn new() -> Trainer {
+        Trainer {
             name: "Blue",
-            poke_team: vec![Pokemon::new(Squirtle, 5)],
+            poke_team: vec![
+                Pokemon::new(Squirtle, 5),
+                Pokemon::new(Pidgey, 5),
+                Pokemon::new(Rattata, 5),
+            ],
             cash: 100,
         }
     }
+}
+// Currently the main use of this trait is to handle bringing in healthy pokemon into battles
+// after another pokemon faints.
+trait PartyOperations {
+    fn check_all_fainted(&self) -> bool {
+        false
+    }
+    fn return_first_healthy(&self) -> Result<usize, &str> {
+        Err("Somethings Gone Wrong")
+    }
+}
+impl PartyOperations for Trainer {
+    fn check_all_fainted(&self) -> bool {
+        for mon in &self.poke_team {
+            if mon.status == Healthy {
+                return true;
+            }
+        }
+        false
+    }
+    fn return_first_healthy(&self) -> Result<usize, &str> {
+        let mut counter: usize = 0;
+        for mon in &self.poke_team {
+            if mon.status == Healthy {
+                return Ok(counter);
+                /*
+                let healthy_mon = mon.clone();
+                return Ok(healthy_mon);
 
+                 */
+            }
+            counter += 1;
+        }
+        Err("No Healthy Pokemon Found")
+    }
+}
+impl PartyOperations for Party {
+    fn check_all_fainted(&self) -> bool {
+        for mon in &self.mon {
+            if mon.as_ref().unwrap().status == Healthy {
+                return true;
+            }
+        }
+        false
+    }
+    fn return_first_healthy(&self) -> Result<usize, &str> {
+        let mut counter: usize = 0;
+        for mon in &self.mon {
+            if mon.as_ref().unwrap().status == Healthy {
+                return Ok(counter);
+                /*
+                let healthy_mon = mon.clone().unwrap();
+                return Ok(healthy_mon);
+                 */
+            }
+            counter += 1;
+        }
+        Err("No Healthy Pokemon Found")
+    }
 }
 
+// Currently not used
+// Will be used to deal with stat-modifying moves like Tail Whip
 fn apply_stat_modifier(base_stat: u16, stages: i32) -> u16 {
     let modifier = match stages {
         -6 => 0.25, // Stat reduced to 25% of the base value
@@ -365,10 +398,9 @@ fn apply_stat_modifier(base_stat: u16, stages: i32) -> u16 {
         6 => 4.0,   // Stat increased by 300% of the base value
         _ => 1.0,   // Handle any other stage values as no modification
     };
-
     (base_stat as f32 * modifier) as u16
 }
-
+// Maybe will be used to track stat-modifying moves
 struct BattleStats {
     attack: u8,
     defense: u8,
@@ -377,7 +409,7 @@ struct BattleStats {
     accuracy: u8,
     evasion: u8,
 }
-
+// Main Pokemon Struct
 #[derive(Clone, PartialEq, Debug)]
 struct Pokemon {
     name: String,
@@ -392,11 +424,9 @@ struct Pokemon {
     def: Stat,
     spd: Stat,
     spec: Stat,
-    first_move: Moves,
-    second_move: Moves,
-
+    first_move: Moves, // Dep
+    second_move: Moves, // Dep
     moves: Vec<Moves>,
-
     base_exp: u16,
 }
 impl Pokemon {
@@ -406,9 +436,23 @@ impl Pokemon {
             let value = &stat.value;
             let ev = &stat.ev;
 
+            // TODO: HP uses different formula.
+
             let levelled_stat =
                 ((((value + iv) * 2 + (integer_square_root(ev) / 4)) * level) / 100) + 5;
             return levelled_stat;
+        }
+        fn hp_leveller(level: &u16, stat: &Stat)->u16{
+            let iv = &stat.iv;
+            let value = &stat.value;
+            let ev = &stat.ev;
+
+
+            let levelled_hp = ((((value + iv) * 2 + (integer_square_root(ev) / 4)) * level) / 100)
+                + level
+                + 10;
+
+            return levelled_hp;
         }
 
         fn random_iv() -> u16 {
@@ -448,7 +492,7 @@ impl Pokemon {
         defense_stat.value = leveler(&level, &defense_stat);
         speed_stat.value = leveler(&level, &speed_stat);
         special_stat.value = leveler(&level, &special_stat);
-        hit_point_stat.value = leveler(&level, &hit_point_stat);
+        hit_point_stat.value = hp_leveller(&level, &hit_point_stat);
 
         let exp = get_leveling_data(&level);
 
@@ -481,10 +525,14 @@ impl Pokemon {
 
         let attacking_poke_type = &attcking_move.move_stats().move_type;
         let defending_poke_type = &self.primary_type;
-        let matchup_multiplier = attcking_move.move_stats().move_type
+        let matchup_multiplier = attcking_move
+            .move_stats()
+            .move_type
             .type_match_board(defending_poke_type)
             .effectivness_modifier();
-        attacking_poke_type.type_match_board(defending_poke_type).flavour_text();
+        attacking_poke_type
+            .type_match_board(defending_poke_type)
+            .flavour_text();
 
         let mut stab: f32 = 1.0;
         if move_type == *attacking_poke_type {
@@ -505,27 +553,29 @@ impl Pokemon {
             self.current_hp -= damage;
         } else {
             self.current_hp = 0;
+            self.status = Fainted;
         }
     }
-    fn move_names(&self)->Vec<&str>{
+    // I don't think this is used currently?
+    fn move_names(&self) -> Vec<&str> {
         let mut move_names = Vec::new();
-        for moves in &self.moves{
+        for moves in &self.moves {
             move_names.push(moves.move_stats().name)
         }
         return move_names;
     }
-
-    fn add_move(&mut self, moves: &Moves) -> Result<(), &'static str>{
-        if self.moves.len() >= 4{
+    // MOVE Related Functions
+    fn add_move(&mut self, moves: &Moves) -> Result<(), &'static str> {
+        if self.moves.len() >= 4 {
             return Err("Cannot add another move");
         }
         self.moves.push(*moves);
         Ok(())
     }
-    fn remove_move(&mut self, index: usize){
+    fn remove_move(&mut self, index: usize) {
         self.moves.remove(index);
     }
-    fn replace_move(&mut self, index: usize, moves: &Moves){
+    fn replace_move(&mut self, index: usize, moves: &Moves) {
         self.moves[index] = *moves;
     }
 
@@ -537,12 +587,15 @@ impl Pokemon {
         let move_stats = &self.second_move.move_stats();
         return move_stats.name;
     }
+
+    // EXP and LEVELLING Related Functions
     fn gain_exp(&mut self, foe: &Pokemon) {
         let enemy_level = foe.level.clone();
         let enemy_base_exp = foe.base_exp.clone();
         let exp_gain = (enemy_base_exp * enemy_level) / 7;
         println!("Gained {} experience points!", exp_gain);
         self.exp += exp_gain as u32;
+        self.check_level_up();
     }
     fn check_level_up(&mut self) {
         let next_level = &self.level + 1;
@@ -561,6 +614,7 @@ impl Pokemon {
             let ev = &stat.ev;
             let base_stats = species.return_base_stats();
             let mut relevant_stat = 0;
+            let is_hp: bool;
             relevant_stat = match stattype {
                 StatType::Attack => base_stats.base_attack,
                 StatType::Defense => base_stats.base_defense,
@@ -568,13 +622,26 @@ impl Pokemon {
                 StatType::Speed => base_stats.base_speed,
                 StatType::HPP => base_stats.base_hp,
             };
+            if stattype == StatType::HPP {
+                is_hp = true;
+            } else {
+                is_hp = false;
+            }
+            return if is_hp == false {
+                let levelled_stat =
+                    ((((relevant_stat + iv) * 2 + (integer_square_root(ev) / 4)) * level) / 100)
+                        + 5;
+                levelled_stat
+            } else {
+                let levelled_stat =
+                    ((((relevant_stat + iv) * 2 + (integer_square_root(ev) / 4)) * level) / 100)
+                        + level
+                        + 10;
 
-            //TODO Levelling HP uses a different formula.
-
-            let levelled_stat =
-                ((((relevant_stat + iv) * 2 + (integer_square_root(ev) / 4)) * level) / 100) + 5;
-            return levelled_stat;
+                levelled_stat
+            };
         }
+        #[derive(PartialEq)]
         enum StatType {
             Attack,
             Defense,
@@ -605,53 +672,79 @@ impl Pokemon {
         );
         self.check_lvl_up_new_move();
     }
-    fn check_lvl_up_new_move(&mut self){
+    fn check_lvl_up_new_move(&mut self) {
         let level = &self.level.clone();
         let species = &self.species;
-        if let Some(lvlup_moves) = LEARNABLEMOVES.iter().find(|data| data.species == *species){
-            for (num, move_name) in lvlup_moves.level_up_moves{
-                if num == level{
+        if let Some(lvlup_moves) = LEARNABLEMOVES.iter().find(|data| data.species == *species) {
+            for (num, move_name) in lvlup_moves.level_up_moves {
+                if num == level {
                     println!("{} can learn {:?}!", &self.name, move_name);
                     if &self.moves.len() >= &(4 as usize) {
-                        println!("You already have 4 moves, choose which one you would like to forget.");
+                        println!(
+                            "You already have 4 moves, choose which one you would like to forget."
+                        );
                         let mut counter = 1;
-                        for moves in &self.moves{
+                        for moves in &self.moves {
                             println!("{}. {}", counter, moves.move_stats().name);
-                            counter +=1;
+                            counter += 1;
                         }
-                        println!("Input 5 if you don't want to learn the new move {:?}", move_name);
+                        println!(
+                            "Input 5 if you don't want to learn the new move {:?}",
+                            move_name
+                        );
                         let mut choice = true;
-                        while choice{
+                        while choice {
                             let move_selection = read_user_input();
                             let move_selection = move_selection.as_str();
-                            match move_selection{
-                                "1"=>{self.replace_move(0, move_name)},
-                                "2"=>{self.replace_move(1, move_name)},
-                                "3"=>{self.replace_move(2, move_name)},
-                                "4"=>{self.replace_move(3, move_name)},
-                                "5"=>{println!("Did not learn {:?}!", move_name)},
-                                _=>{println!("Sorry, invalid choice!")},
+                            match move_selection {
+                                "1" => self.replace_move(0, move_name),
+                                "2" => self.replace_move(1, move_name),
+                                "3" => self.replace_move(2, move_name),
+                                "4" => self.replace_move(3, move_name),
+                                "5" => {
+                                    println!("Did not learn {:?}!", move_name)
+                                }
+                                _ => {
+                                    println!("Sorry, invalid choice!")
+                                }
                             }
-
                         }
-                    }else{
+                    } else {
                         &self.add_move(move_name);
                     }
                 }
             }
         }
     }
-    fn modify_stats() {}
 }
-#[derive(Clone, PartialEq, Debug)]
+
+#[derive(Clone, PartialEq, Debug, Copy)]
 struct Stat {
     value: u16,
     ev: u16,
     iv: u16,
 }
-
+// This should probably be an associated function of Pokemon struct.
 fn get_leveling_data(level: &u16) -> u32 {
     let mut levelling_data: HashMap<ExpCat, Vec<u32>> = Default::default();
+    levelling_data.insert(
+        ExpCat::Fast,
+        vec![
+            0, 0, 6, 21, 51, 100, 172, 274, 409, 583, 800, 1064, 1382, 1757, 2195, 2700, 3276,
+            3930, 4665, 5487, 6400, 7408, 8518, 9733, 11059, 12500, 14060, 15746, 17561, 19511,
+            21600, 23832, 26214, 28749, 31443, 34300, 37324, 40522, 43897, 47455, 51200, 55136,
+            59270, 63605, 68147, 72900, 77868, 83058, 88473, 94119, 100000,
+        ],
+    );
+    levelling_data.insert(
+        ExpCat::MediumFast,
+        vec![
+            0, 0, 6, 21, 51, 100, 172, 274, 409, 583, 800, 1064, 1382, 1757, 2195, 2700, 3276,
+            3930, 4665, 5487, 6400, 7408, 5818, 9733, 11059, 12500, 14060, 15746, 17561, 19511,
+            21600, 23832, 26214, 28749, 31443, 34300, 37324, 40522, 43897, 47455, 51200, 55136,
+            59270, 64000, 68921, 74088, 79507, 85184, 91125, 97336, 103823, 110592, 117649, 125000,
+        ],
+    );
     levelling_data.insert(
         ExpCat::MediumSlow,
         vec![
@@ -659,6 +752,15 @@ fn get_leveling_data(level: &u16) -> u32 {
             3798, 4575, 5460, 6458, 7577, 8825, 10208, 11735, 13411, 15244, 17242, 19411, 21760,
             24603, 27021, 29949, 33084, 36435, 40007, 43808, 47846, 52127, 56660, 61450, 66505,
             71833, 77440, 83335, 89523, 96012, 102810, 109923, 117360,
+        ],
+    );
+    levelling_data.insert(
+        ExpCat::Slow,
+        vec![
+            0, 10, 33, 80, 156, 270, 428, 640, 911, 1250, 1663, 2160, 2746, 3430, 4218, 5120, 6141,
+            7290, 8573, 10000, 11576, 13310, 15208, 17280, 19531, 21970, 24603, 27440, 30486,
+            33750, 37238, 40960, 44921, 49130, 53593, 58320, 63316, 68590, 74158, 800000, 86151,
+            92610, 99383, 106480, 113906, 121670, 129778, 138240, 147061, 156250,
         ],
     );
 
@@ -696,14 +798,14 @@ impl MoveEffectCat {
 // Every Move Effect will require an associated function. For the sake of organization these will be
 // kept in a separate impl block.
 
-#[derive(Eq, Hash, PartialEq)]
-enum ExpCat {
+#[derive(Eq, Hash, PartialEq, Copy, Clone)]
+pub enum ExpCat {
     Fast,
     MediumFast,
     MediumSlow,
     Slow,
 }
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, PartialEq, Debug, Copy)]
 enum Status {
     Healthy,
     Fainted,
@@ -730,6 +832,7 @@ impl Status {
 }
  */
 
+// Should be moved to a lib.rs file.
 fn read_user_input() -> String {
     let mut input = String::new();
     io::stdin()
@@ -744,7 +847,7 @@ fn integer_square_root(x: &u16) -> u16 {
     root_x
 }
 fn type_text(text: &str) {
-    let delay = 25;
+    let delay = 15;
     for c in text.chars() {
         print!("{}", c);
         io::stdout().flush().unwrap();
@@ -752,4 +855,4 @@ fn type_text(text: &str) {
     }
 }
 
-fn enemy_ai(){}
+fn enemy_ai() {}

@@ -1,4 +1,4 @@
-#[derive(PartialEq, Clone, Debug)]
+#[derive(PartialEq, Clone, Debug, Copy)]
 pub enum PokeTypes {
     Normal,
     Grass,
@@ -15,6 +15,7 @@ pub enum PokeTypes {
     Psychic,
     Ice,
     Dragon,
+    None,
 }
 
 pub enum Effectivness {
@@ -185,6 +186,7 @@ impl PokeTypes {
                 PokeTypes::Dragon => Effectivness::SuperEffective,
                 _ => Effectivness::NormalEffective,
             },
+            PokeTypes::None => Effectivness::NormalEffective,
         }
     }
 }

@@ -1,5 +1,5 @@
-use std::collections::binary_heap::PeekMut;
 use crate::{MoveCat, MoveEffectCat, PokeTypes};
+use std::collections::binary_heap::PeekMut;
 
 #[derive(Clone)]
 pub struct MoveData {
@@ -58,59 +58,59 @@ impl Moves {
     pub fn move_stats(&self) -> MoveData {
         match self {
             Moves::Agility => AGILITY,
-            Moves::Bite=>BITE,
+            Moves::Bite => BITE,
             Moves::Bubble => BUBBLE,
             Moves::Ember => EMBER,
-            Moves::FireSpin=>FIRESPIN,
-            Moves::Flamethrower=>FLAMETHROWER,
-            Moves::FocusEnergy=>FOCUSENERGY,
+            Moves::FireSpin => FIRESPIN,
+            Moves::Flamethrower => FLAMETHROWER,
+            Moves::FocusEnergy => FOCUSENERGY,
             Moves::Growl => GROWL,
             Moves::Growth => GROWTH,
             Moves::Gust => GUST,
-            Moves::HydroPump=>HYDROPUMP,
-            Moves::HyperFang=>HYPERFANG,
+            Moves::HydroPump => HYDROPUMP,
+            Moves::HyperFang => HYPERFANG,
             Moves::LeechSeed => LEECHSEED,
-            Moves::Leer=>LEER,
-            Moves::MirrorMove=>MIRRORMOVE,
+            Moves::Leer => LEER,
+            Moves::MirrorMove => MIRRORMOVE,
             Moves::PoisonPowder => POISONPOWDER,
-            Moves::PoisonSting=>POISONSTING,
-            Moves::QuickAttack=>QUICKATTACK,
-            Moves::Rage=>RAGE,
+            Moves::PoisonSting => POISONSTING,
+            Moves::QuickAttack => QUICKATTACK,
+            Moves::Rage => RAGE,
             Moves::RazorLeaf => RAZORLEAF,
-            Moves::SandAttack=>SANDATTACK,
+            Moves::SandAttack => SANDATTACK,
             Moves::Scratch => SCRATCH,
-            Moves::SkullBash=>SKULLBASH,
-            Moves::Slash=>SLASH,
+            Moves::SkullBash => SKULLBASH,
+            Moves::Slash => SLASH,
             Moves::SleepPowder => SLEEPPOWDER,
             Moves::SolarBeam => SOLARBEAM,
-            Moves::StringShot=>STRINGSHOT,
-            Moves::SuperFang=>SUPERFANG,
-            Moves::Swift=>SWIFT,
+            Moves::StringShot => STRINGSHOT,
+            Moves::SuperFang => SUPERFANG,
+            Moves::Swift => SWIFT,
             Moves::Tackle => TACKLE,
             Moves::TailWhip => TAILWHIP,
-            Moves::Thunder=> THUNDER,
+            Moves::Thunder => THUNDER,
             Moves::ThunderShock => THUNDERSHOCK,
-            Moves::ThunderWave=>THUNDERWAVE,
+            Moves::ThunderWave => THUNDERWAVE,
             Moves::VineWhip => VINEWHIP,
-            Moves::WaterGun=>WATERGUN,
-            Moves::Whirlwind=>WHIRLWIND,
-            Moves::Withdraw=>WITHDRAW,
-            Moves::WingAttack=>WINGATTACK,
+            Moves::WaterGun => WATERGUN,
+            Moves::Whirlwind => WHIRLWIND,
+            Moves::Withdraw => WITHDRAW,
+            Moves::WingAttack => WINGATTACK,
         }
     }
 }
 
 // Data for each move, as a constant instance of MoveData struct.
-pub const AGILITY: MoveData = MoveData{
+pub const AGILITY: MoveData = MoveData {
     name: "Agility",
     base_power: 0,
-    accuracy:100,
+    accuracy: 100,
     move_type: PokeTypes::Psychic,
     move_cat: MoveCat::Status,
     effect_type: MoveEffectCat::None, //TODO
-    pp: 30
+    pp: 30,
 };
-pub const BITE: MoveData = MoveData{
+pub const BITE: MoveData = MoveData {
     name: "Bite",
     base_power: 60,
     accuracy: 100,
@@ -137,7 +137,7 @@ pub const EMBER: MoveData = MoveData {
     effect_type: MoveEffectCat::BurnSideEffect1,
     pp: 25,
 };
-pub const FIRESPIN: MoveData = MoveData{
+pub const FIRESPIN: MoveData = MoveData {
     name: "Fire Spin",
     base_power: 15,
     accuracy: 70,
@@ -146,7 +146,7 @@ pub const FIRESPIN: MoveData = MoveData{
     effect_type: MoveEffectCat::None, //TODO
     pp: 15,
 };
-pub const FLAMETHROWER: MoveData = MoveData{
+pub const FLAMETHROWER: MoveData = MoveData {
     name: "Flamethrower",
     base_power: 95,
     accuracy: 100,
@@ -155,7 +155,7 @@ pub const FLAMETHROWER: MoveData = MoveData{
     effect_type: MoveEffectCat::None, //TODO
     pp: 100,
 };
-pub const FOCUSENERGY: MoveData = MoveData{
+pub const FOCUSENERGY: MoveData = MoveData {
     name: "Focus Energy",
     base_power: 0,
     accuracy: 100,
@@ -191,7 +191,7 @@ pub const GUST: MoveData = MoveData {
     effect_type: MoveEffectCat::None,
     pp: 35,
 };
-pub const HYDROPUMP: MoveData = MoveData{
+pub const HYDROPUMP: MoveData = MoveData {
     name: "Hydro Pump",
     base_power: 120,
     accuracy: 80,
@@ -200,7 +200,7 @@ pub const HYDROPUMP: MoveData = MoveData{
     effect_type: MoveEffectCat::None,
     pp: 5,
 };
-pub const HYPERFANG: MoveData = MoveData{
+pub const HYPERFANG: MoveData = MoveData {
     name: "Hyper Fang",
     base_power: 80,
     accuracy: 90,
@@ -218,7 +218,7 @@ pub const LEECHSEED: MoveData = MoveData {
     effect_type: MoveEffectCat::None, //TODO
     pp: 10,
 };
-pub const LEER: MoveData = MoveData{
+pub const LEER: MoveData = MoveData {
     name: "Leer",
     base_power: 0,
     accuracy: 100,
@@ -227,7 +227,7 @@ pub const LEER: MoveData = MoveData{
     effect_type: MoveEffectCat::None, //TODO
     pp: 30,
 };
-pub const MIRRORMOVE: MoveData = MoveData{
+pub const MIRRORMOVE: MoveData = MoveData {
     name: "Mirror Move",
     base_power: 0,
     accuracy: 100,
@@ -245,16 +245,16 @@ pub const POISONPOWDER: MoveData = MoveData {
     effect_type: MoveEffectCat::None, //TODO
     pp: 35,
 };
-pub const POISONSTING: MoveData = MoveData{
+pub const POISONSTING: MoveData = MoveData {
     name: "Poison Sting",
     base_power: 15,
     accuracy: 100,
     move_type: PokeTypes::Poison,
     move_cat: MoveCat::Physical,
     effect_type: MoveEffectCat::None, //TODO
-    pp:35,
+    pp: 35,
 };
-pub const QUICKATTACK: MoveData = MoveData{
+pub const QUICKATTACK: MoveData = MoveData {
     name: "Quick Attack",
     base_power: 40,
     accuracy: 100,
@@ -263,7 +263,7 @@ pub const QUICKATTACK: MoveData = MoveData{
     effect_type: MoveEffectCat::None, //TODO
     pp: 30,
 };
-pub const RAGE: MoveData = MoveData{
+pub const RAGE: MoveData = MoveData {
     name: "Rage",
     base_power: 20,
     accuracy: 100,
@@ -281,13 +281,13 @@ pub const RAZORLEAF: MoveData = MoveData {
     effect_type: MoveEffectCat::None,
     pp: 25,
 };
-pub const SANDATTACK: MoveData = MoveData{
+pub const SANDATTACK: MoveData = MoveData {
     name: "Sand-Attack",
     base_power: 0,
     accuracy: 100,
     move_type: PokeTypes::Normal,
     move_cat: MoveCat::Status,
-    effect_type: MoveEffectCat::None,//TODO
+    effect_type: MoveEffectCat::None, //TODO
     pp: 15,
 };
 pub const SCRATCH: MoveData = MoveData {
@@ -299,7 +299,7 @@ pub const SCRATCH: MoveData = MoveData {
     effect_type: MoveEffectCat::None,
     pp: 35,
 };
-pub const SKULLBASH: MoveData = MoveData{
+pub const SKULLBASH: MoveData = MoveData {
     name: "Skull Bash",
     base_power: 100,
     accuracy: 100,
@@ -308,7 +308,7 @@ pub const SKULLBASH: MoveData = MoveData{
     effect_type: MoveEffectCat::None, //TODO
     pp: 15,
 };
-pub const SLASH: MoveData = MoveData{
+pub const SLASH: MoveData = MoveData {
     name: "Slash",
     base_power: 70,
     accuracy: 100,
@@ -335,7 +335,7 @@ pub const SOLARBEAM: MoveData = MoveData {
     effect_type: MoveEffectCat::None, // TODO - Takes two turns: First turn charge, second turn fire.
     pp: 10,
 };
-pub const STRINGSHOT: MoveData = MoveData{
+pub const STRINGSHOT: MoveData = MoveData {
     name: "String Shot",
     base_power: 0,
     accuracy: 95,
@@ -344,7 +344,7 @@ pub const STRINGSHOT: MoveData = MoveData{
     effect_type: MoveEffectCat::None, //TODO
     pp: 40,
 };
-pub const SUPERFANG: MoveData = MoveData{
+pub const SUPERFANG: MoveData = MoveData {
     name: "Super Fang",
     base_power: 50, // This move always cuts the enemy's HP by half, this is a temp value.
     accuracy: 90,
@@ -353,7 +353,7 @@ pub const SUPERFANG: MoveData = MoveData{
     effect_type: MoveEffectCat::None, //TODO
     pp: 10,
 };
-pub const SWIFT: MoveData = MoveData{
+pub const SWIFT: MoveData = MoveData {
     name: "Swift",
     base_power: 60,
     accuracy: 100,
@@ -380,7 +380,7 @@ pub const TAILWHIP: MoveData = MoveData {
     effect_type: MoveEffectCat::DefenseDown1,
     pp: 30,
 };
-pub const THUNDER: MoveData = MoveData{
+pub const THUNDER: MoveData = MoveData {
     name: "Thunder",
     base_power: 120,
     accuracy: 70,
@@ -398,7 +398,7 @@ pub const THUNDERSHOCK: MoveData = MoveData {
     effect_type: MoveEffectCat::None, //TODO
     pp: 30,
 };
-pub const THUNDERWAVE: MoveData = MoveData{
+pub const THUNDERWAVE: MoveData = MoveData {
     name: "Thunder Wave",
     base_power: 0,
     accuracy: 100,
@@ -416,7 +416,7 @@ pub const VINEWHIP: MoveData = MoveData {
     effect_type: MoveEffectCat::None,
     pp: 10,
 };
-pub const WATERGUN: MoveData = MoveData{
+pub const WATERGUN: MoveData = MoveData {
     name: "Water Gun",
     base_power: 40,
     accuracy: 100,
@@ -425,7 +425,7 @@ pub const WATERGUN: MoveData = MoveData{
     effect_type: MoveEffectCat::None,
     pp: 25,
 };
-pub const WHIRLWIND: MoveData = MoveData{
+pub const WHIRLWIND: MoveData = MoveData {
     name: "Whirlwind",
     base_power: 0,
     accuracy: 85,
@@ -434,7 +434,7 @@ pub const WHIRLWIND: MoveData = MoveData{
     effect_type: MoveEffectCat::None, //TODO
     pp: 20,
 };
-pub const WINGATTACK: MoveData = MoveData{
+pub const WINGATTACK: MoveData = MoveData {
     name: "Wing Attack",
     base_power: 35,
     accuracy: 100,
@@ -443,7 +443,7 @@ pub const WINGATTACK: MoveData = MoveData{
     effect_type: MoveEffectCat::None,
     pp: 35,
 };
-pub const WITHDRAW: MoveData = MoveData{
+pub const WITHDRAW: MoveData = MoveData {
     name: "Withdraw",
     base_power: 0,
     accuracy: 100,

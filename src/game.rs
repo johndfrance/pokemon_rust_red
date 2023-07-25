@@ -1,10 +1,11 @@
+use crate::battle_logic::battle2;
+use crate::mon_base_stats::PokemonSpecies::{Bulbasaur, Charamander, Squirtle};
+use crate::{battle, read_user_input, type_text, GameState, Pokemon, Trainer};
+use colored::Colorize;
 use std::io;
 use std::io::Write;
-use crate::{battle, GameState, Pokemon, read_user_input, Trainer, type_text};
-use crate::mon_base_stats::PokemonSpecies::{Bulbasaur, Charamander, Squirtle};
-use colored::Colorize;
 
-pub fn rust_red_game(mut game_state: GameState){
+pub fn rust_red_game(mut game_state: GameState) {
     println!("POKEMON - RUST RED\n********************");
     let msg1 = "\nWhat is your name?\n";
     type_text(msg1);
@@ -62,13 +63,13 @@ pub fn rust_red_game(mut game_state: GameState){
                 println!("3. Go to Mart");
                 println!("4. Go to Route 2");
             }
-            Regions::ViridianCity(ViridianCityLocations::Route2)=>{
+            Regions::ViridianCity(ViridianCityLocations::Route2) => {
                 println!("\nYou are in Route 2.");
                 println!("1. Go into Viridian Forest");
                 println!("2. Go into Diglett's Cave");
                 println!("3. Go to Viridian City");
             }
-            Regions::ViridianCity(ViridianCityLocations::ViridianForest)=>{
+            Regions::ViridianCity(ViridianCityLocations::ViridianForest) => {
                 println!("\n You are in Viridian Forest");
                 println!("1. Go to route 2.");
             }
@@ -173,23 +174,24 @@ enum ViridianCityLocations {
     ViridianForest,
 }
 
-
-fn adventure_start_check(game_state: &GameState)->bool{
+fn adventure_start_check(game_state: &GameState) -> bool {
     return if game_state.player.party.mon[0] == None {
         type_text("OAK: Wait! It's dangerous to go out there without a Pokemon!\n");
         false
     } else {
         true
-    }
+    };
 }
 
-fn starter_selection(game_state: &mut GameState)->Regions{
-    type_text("OAK: Welcome to my lab!\n\
+fn starter_selection(game_state: &mut GameState) -> Regions {
+    type_text(
+        "OAK: Welcome to my lab!\n\
     Today is the start of a great adventure for you and my grandson Blue.\n\
     Please pick which Pokemon you want as your companion:\n\
     1. Bulbasaur\n\
     2. Charmander\n\
-    3. Squirtle\n");
+    3. Squirtle\n",
+    );
     let mut choice = true;
     let bulbasaur = Pokemon::new(Bulbasaur, 5);
     let charmander = Pokemon::new(Charamander, 5);
@@ -200,6 +202,7 @@ fn starter_selection(game_state: &mut GameState)->Regions{
         match starter_choice {
             "1" => {
                 &game_state.player.party.add_party_member(bulbasaur.clone());
+                &game_state.player.party.add_party_member(charmander.clone());
                 choice = false;
             }
             "2" => {
@@ -214,28 +217,27 @@ fn starter_selection(game_state: &mut GameState)->Regions{
         }
     }
     type_text("OAK: Great Choice!\n");
-    type_text("BLUE: Wait a minute, Lets Battle!\n");
+    type_text("\nBLUE: Wait a minute, Lets Battle!\n");
     let mut trainer_blue = Trainer::new();
 
-    let battle_result =  battle(game_state, &mut trainer_blue);
-    game_state.player.party.mon[0].as_mut().unwrap().current_hp = game_state.player.party.mon[0].clone().unwrap().max_hp.value;
+    let battle_result = battle2(game_state, &mut trainer_blue);
 
-    if battle_result == false{
-        type_text("BLUE: Smell Ya Later!\n");
+    game_state.player.party.mon[0].as_mut().unwrap().current_hp =
+        game_state.player.party.mon[0].clone().unwrap().max_hp.value;
+
+    return if battle_result == false {
+        type_text("\nBLUE: Smell Ya Later!\n");
         println!("EVERYTHING GOES BLACK.");
-        return Regions::PalletTown(PalletTownLocations::RedsHouse);
-    }else {
-        type_text("BLUE: Ugh, I'm going to keep training and show you how strong I am!");
-        return Regions::PalletTown(PalletTownLocations::OaksLab);
-    }
-
+        Regions::PalletTown(PalletTownLocations::RedsHouse)
+    } else {
+        type_text("\nBLUE: Ugh, I'm going to keep training and show you how strong I am!");
+        Regions::PalletTown(PalletTownLocations::OaksLab)
+    };
 }
 
 fn mom() {
     type_text("MOM: Goodluck today!\n");
 }
-
-
 
 /*
 enum PalletTownLocations{

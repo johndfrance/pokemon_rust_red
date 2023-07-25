@@ -1,7 +1,8 @@
+//use crate::evolution::Evolution;
 use crate::move_data::Moves;
 
 use crate::move_data::Moves::{Growl, Scratch, Tackle, TailWhip, ThunderShock};
-use crate::PokeTypes;
+use crate::{ExpCat, PokeTypes};
 
 pub struct PokemonBaseData {
     dex_num: u8,
@@ -12,14 +13,14 @@ pub struct PokemonBaseData {
     pub base_speed: u16,
     pub base_special: u16,
     pub primary_type: PokeTypes,
-    //pub secondary_type: PokeTypes,
+    pub secondary_type: PokeTypes,
     pub base_exp: u16,
     pub lvl1_moves: (Moves, Moves),
-    //ExpCat?
-
+    //pub evolution: Option<Evolution>,
+    pub exp_cat: ExpCat,
 }
 
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, PartialEq, Debug, Copy)]
 pub enum PokemonSpecies {
     Bulbasaur,
     Charamander,
@@ -37,10 +38,10 @@ impl PokemonSpecies {
             PokemonSpecies::Bulbasaur => BULBASAUR,
             PokemonSpecies::Charamander => CHARAMANDER,
             PokemonSpecies::Squirtle => SQUIRTLE,
-            PokemonSpecies::Caterpie=>CATERPIE,
-            PokemonSpecies::Weedle=>WEEDLE,
+            PokemonSpecies::Caterpie => CATERPIE,
+            PokemonSpecies::Weedle => WEEDLE,
             PokemonSpecies::Pidgey => PIDGEY,
-            PokemonSpecies::Rattata=>RATTATA,
+            PokemonSpecies::Rattata => RATTATA,
             PokemonSpecies::Pikachu => PIKACHU,
         }
     }
@@ -55,8 +56,11 @@ const BULBASAUR: PokemonBaseData = PokemonBaseData {
     base_speed: 46,
     base_special: 65,
     primary_type: PokeTypes::Grass,
+    secondary_type: PokeTypes::Poison,
     base_exp: 64,
     lvl1_moves: (Tackle, Growl),
+    //evolution: Option::from(Evolution { next_stage: PokemonSpecies::Bulbasaur, trigger: EvolutionTriggers::ByLevel = }),
+    exp_cat: ExpCat::MediumSlow,
 };
 const CHARAMANDER: PokemonBaseData = PokemonBaseData {
     dex_num: 4,
@@ -67,8 +71,10 @@ const CHARAMANDER: PokemonBaseData = PokemonBaseData {
     base_speed: 65,
     base_special: 50,
     primary_type: PokeTypes::Fire,
+    secondary_type: PokeTypes::None,
     base_exp: 65,
     lvl1_moves: (Scratch, Growl),
+    exp_cat: ExpCat::MediumSlow,
 };
 const SQUIRTLE: PokemonBaseData = PokemonBaseData {
     dex_num: 7,
@@ -79,10 +85,12 @@ const SQUIRTLE: PokemonBaseData = PokemonBaseData {
     base_speed: 43,
     base_special: 50,
     primary_type: PokeTypes::Water,
+    secondary_type: PokeTypes::None,
     base_exp: 66,
     lvl1_moves: (Tackle, TailWhip),
+    exp_cat: ExpCat::MediumSlow,
 };
-const CATERPIE: PokemonBaseData = PokemonBaseData{
+const CATERPIE: PokemonBaseData = PokemonBaseData {
     dex_num: 10,
     name: "Caterpie",
     base_hp: 45,
@@ -91,10 +99,12 @@ const CATERPIE: PokemonBaseData = PokemonBaseData{
     base_speed: 45,
     base_special: 20,
     primary_type: PokeTypes::Bug,
+    secondary_type: PokeTypes::None,
     base_exp: 0, //TODO
     lvl1_moves: (Tackle, Moves::StringShot),
+    exp_cat: ExpCat::Fast,
 };
-const WEEDLE: PokemonBaseData = PokemonBaseData{
+const WEEDLE: PokemonBaseData = PokemonBaseData {
     dex_num: 13,
     name: "Weedle",
     base_hp: 40,
@@ -103,8 +113,10 @@ const WEEDLE: PokemonBaseData = PokemonBaseData{
     base_speed: 50,
     base_special: 20,
     primary_type: PokeTypes::Bug,
+    secondary_type: PokeTypes::None,
     base_exp: 0, //TODO
     lvl1_moves: (Moves::PoisonSting, Moves::StringShot),
+    exp_cat: ExpCat::Fast,
 };
 const PIDGEY: PokemonBaseData = PokemonBaseData {
     dex_num: 16,
@@ -115,10 +127,12 @@ const PIDGEY: PokemonBaseData = PokemonBaseData {
     base_speed: 56,
     base_special: 35,
     primary_type: PokeTypes::Normal,
+    secondary_type: PokeTypes::None,
     base_exp: 55,
     lvl1_moves: (Moves::Gust, Moves::Gust),
+    exp_cat: ExpCat::MediumFast,
 };
-const RATTATA: PokemonBaseData = PokemonBaseData{
+const RATTATA: PokemonBaseData = PokemonBaseData {
     dex_num: 19,
     name: "Rattata",
     base_hp: 30,
@@ -127,8 +141,10 @@ const RATTATA: PokemonBaseData = PokemonBaseData{
     base_speed: 72,
     base_special: 25,
     primary_type: PokeTypes::Normal,
+    secondary_type: PokeTypes::None,
     base_exp: 0, //TODO
     lvl1_moves: (Tackle, TailWhip),
+    exp_cat: ExpCat::MediumFast,
 };
 const PIKACHU: PokemonBaseData = PokemonBaseData {
     dex_num: 25,
@@ -139,6 +155,8 @@ const PIKACHU: PokemonBaseData = PokemonBaseData {
     base_speed: 90,
     base_special: 50,
     primary_type: PokeTypes::Electric,
+    secondary_type: PokeTypes::None,
     base_exp: 82,
     lvl1_moves: (ThunderShock, Growl),
+    exp_cat: ExpCat::MediumFast,
 };
