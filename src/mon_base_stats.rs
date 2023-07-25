@@ -3,7 +3,8 @@ use crate::move_data::Moves;
 
 use crate::move_data::Moves::{Growl, Scratch, Tackle, TailWhip, ThunderShock};
 use crate::{ExpCat, PokeTypes};
-
+use crate::ExpCat::{MediumFast, MediumSlow};
+use crate::PokeTypes::*;
 pub struct PokemonBaseData {
     dex_num: u8,
     pub name: &'static str,
@@ -18,6 +19,7 @@ pub struct PokemonBaseData {
     pub lvl1_moves: (Moves, Moves),
     //pub evolution: Option<Evolution>,
     pub exp_cat: ExpCat,
+    pub capture_rate: u8,
 }
 
 #[derive(Clone, PartialEq, Debug, Copy)]
@@ -26,10 +28,16 @@ pub enum PokemonSpecies {
     Charamander,
     Squirtle,
     Caterpie,
+    Metapod,
     Weedle,
+    Kakuna,
     Pidgey,
     Rattata,
+    Spearow,
+    Ekans,
     Pikachu,
+    NidoranF,
+    Jigglypuff,
 }
 
 impl PokemonSpecies {
@@ -39,10 +47,16 @@ impl PokemonSpecies {
             PokemonSpecies::Charamander => CHARAMANDER,
             PokemonSpecies::Squirtle => SQUIRTLE,
             PokemonSpecies::Caterpie => CATERPIE,
+            PokemonSpecies::Metapod=>METAPOD,
             PokemonSpecies::Weedle => WEEDLE,
+            PokemonSpecies::Kakuna=>KAKUNA,
             PokemonSpecies::Pidgey => PIDGEY,
             PokemonSpecies::Rattata => RATTATA,
+            PokemonSpecies::Spearow=>SPEAROW,
+            PokemonSpecies::Ekans=>EKANS,
             PokemonSpecies::Pikachu => PIKACHU,
+            PokemonSpecies::NidoranF=>NIDORANF,
+            PokemonSpecies::Jigglypuff=>JIGGLYPUFF,
         }
     }
 }
@@ -61,6 +75,8 @@ const BULBASAUR: PokemonBaseData = PokemonBaseData {
     lvl1_moves: (Tackle, Growl),
     //evolution: Option::from(Evolution { next_stage: PokemonSpecies::Bulbasaur, trigger: EvolutionTriggers::ByLevel = }),
     exp_cat: ExpCat::MediumSlow,
+
+    capture_rate: 45,
 };
 const CHARAMANDER: PokemonBaseData = PokemonBaseData {
     dex_num: 4,
@@ -75,6 +91,7 @@ const CHARAMANDER: PokemonBaseData = PokemonBaseData {
     base_exp: 65,
     lvl1_moves: (Scratch, Growl),
     exp_cat: ExpCat::MediumSlow,
+    capture_rate: 45,
 };
 const SQUIRTLE: PokemonBaseData = PokemonBaseData {
     dex_num: 7,
@@ -89,6 +106,7 @@ const SQUIRTLE: PokemonBaseData = PokemonBaseData {
     base_exp: 66,
     lvl1_moves: (Tackle, TailWhip),
     exp_cat: ExpCat::MediumSlow,
+    capture_rate: 45,
 };
 const CATERPIE: PokemonBaseData = PokemonBaseData {
     dex_num: 10,
@@ -100,9 +118,25 @@ const CATERPIE: PokemonBaseData = PokemonBaseData {
     base_special: 20,
     primary_type: PokeTypes::Bug,
     secondary_type: PokeTypes::None,
-    base_exp: 0, //TODO
+    base_exp: 53,
     lvl1_moves: (Tackle, Moves::StringShot),
-    exp_cat: ExpCat::Fast,
+    exp_cat: ExpCat::MediumFast,
+    capture_rate: 255,
+};
+const METAPOD: PokemonBaseData = PokemonBaseData{
+    dex_num: 11,
+    name: "Metapod",
+    base_hp: 50,
+    base_attack: 20,
+    base_defense: 55,
+    base_speed: 30,
+    base_special: 25,
+    primary_type: PokeTypes::Bug,
+    secondary_type: PokeTypes::None,
+    base_exp: 72,
+    lvl1_moves: (Moves::Tackle, Moves::Harden),
+    exp_cat: ExpCat::MediumFast,
+    capture_rate: 120,
 };
 const WEEDLE: PokemonBaseData = PokemonBaseData {
     dex_num: 13,
@@ -113,10 +147,26 @@ const WEEDLE: PokemonBaseData = PokemonBaseData {
     base_speed: 50,
     base_special: 20,
     primary_type: PokeTypes::Bug,
-    secondary_type: PokeTypes::None,
-    base_exp: 0, //TODO
+    secondary_type: PokeTypes::Poison,
+    base_exp: 52,
     lvl1_moves: (Moves::PoisonSting, Moves::StringShot),
-    exp_cat: ExpCat::Fast,
+    exp_cat: ExpCat::MediumFast,
+    capture_rate: 255,
+};
+const KAKUNA: PokemonBaseData = PokemonBaseData{
+    dex_num: 14,
+    name: "Kakuna",
+    base_hp: 45,
+    base_attack: 25,
+    base_defense: 50,
+    base_speed: 35,
+    base_special: 25,
+    primary_type: PokeTypes::Bug,
+    secondary_type: PokeTypes::Poison,
+    base_exp: 71,
+    lvl1_moves: (Moves::Tackle, Moves::Harden),
+    exp_cat: MediumFast,
+    capture_rate: 120,
 };
 const PIDGEY: PokemonBaseData = PokemonBaseData {
     dex_num: 16,
@@ -127,10 +177,11 @@ const PIDGEY: PokemonBaseData = PokemonBaseData {
     base_speed: 56,
     base_special: 35,
     primary_type: PokeTypes::Normal,
-    secondary_type: PokeTypes::None,
+    secondary_type: PokeTypes::Flying,
     base_exp: 55,
     lvl1_moves: (Moves::Gust, Moves::Gust),
-    exp_cat: ExpCat::MediumFast,
+    exp_cat: ExpCat::MediumSlow,
+    capture_rate: 255,
 };
 const RATTATA: PokemonBaseData = PokemonBaseData {
     dex_num: 19,
@@ -142,9 +193,40 @@ const RATTATA: PokemonBaseData = PokemonBaseData {
     base_special: 25,
     primary_type: PokeTypes::Normal,
     secondary_type: PokeTypes::None,
-    base_exp: 0, //TODO
+    base_exp: 57,
     lvl1_moves: (Tackle, TailWhip),
     exp_cat: ExpCat::MediumFast,
+    capture_rate: 255,
+};
+const SPEAROW: PokemonBaseData = PokemonBaseData{
+    dex_num: 21,
+    name: "Spearow",
+    base_hp: 40,
+    base_attack: 60,
+    base_defense: 30,
+    base_speed: 70,
+    base_special: 31,
+    primary_type: PokeTypes::Normal,
+    secondary_type: PokeTypes::Flying,
+    base_exp: 58,
+    lvl1_moves: (Moves::Peck, Growl),
+    exp_cat: MediumFast,
+    capture_rate: 255,
+};
+const EKANS: PokemonBaseData = PokemonBaseData{
+    dex_num: 23,
+    name: "Ekans",
+    base_hp: 35,
+    base_attack: 60,
+    base_defense: 44,
+    base_speed: 55,
+    base_special: 40,
+    primary_type: Poison,
+    secondary_type: None,
+    base_exp: 0,
+    lvl1_moves: (Moves::Wrap, Moves::Leer),
+    exp_cat: MediumFast,
+    capture_rate: 255,
 };
 const PIKACHU: PokemonBaseData = PokemonBaseData {
     dex_num: 25,
@@ -158,5 +240,36 @@ const PIKACHU: PokemonBaseData = PokemonBaseData {
     secondary_type: PokeTypes::None,
     base_exp: 82,
     lvl1_moves: (ThunderShock, Growl),
-    exp_cat: ExpCat::MediumFast,
+    exp_cat: MediumFast,
+    capture_rate: 190,
+};
+const NIDORANF: PokemonBaseData = PokemonBaseData{
+    dex_num: 29,
+    name: "Nidoran♀",
+    base_hp: 55,
+    base_attack: 47,
+    base_defense: 52,
+    base_speed: 41,
+    base_special: 40,
+    primary_type: Poison,
+    secondary_type: None,
+    base_exp: 59,
+    lvl1_moves: (Tackle, Growl),
+    exp_cat: MediumSlow,
+    capture_rate: 0,
+};
+const JIGGLYPUFF: PokemonBaseData = PokemonBaseData{
+    dex_num: 39,
+    name: "Jigglypuff",
+    base_hp: 115,
+    base_attack: 45,
+    base_defense: 20,
+    base_speed: 20,
+    base_special: 25,
+    primary_type: Normal,
+    secondary_type: None,
+    base_exp: 76,
+    lvl1_moves: (Moves::Sing, Moves::Sing),
+    exp_cat: ExpCat::Fast,
+    capture_rate: 173,
 };
