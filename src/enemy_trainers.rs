@@ -1,7 +1,10 @@
 use std::string::ToString;
-use crate::mon_base_stats::PokemonSpecies::{Caterpie, Ekans, Jigglypuff, Kakuna, Metapod, NidoranF, Pidgey, Rattata, Spearow, Weedle};
-use crate::{Party, Pokemon, Trainer};
+use crate::mon_base_stats::PokemonSpecies::
+{Bulbasaur, Caterpie, Charamander, Ekans, Jigglypuff, Kakuna, Metapod, NidoranF, Pidgey, Rattata,
+ Spearow, Squirtle, Weedle};
+use crate::{Party, PartyOperations, Pokemon};
 use crate::mon_base_stats::PokemonSpecies;
+use crate::Status::Healthy;
 
 
 // The reason for doing this is that the size of the data in a const needs to be known at compile time,
@@ -16,16 +19,23 @@ pub struct TrainerTemplate{
     party: [Option<(PokemonSpecies, u16)>; 6],
     reward: u16,
 }
-struct EnemyTrainer2{
-    name: String,
-    party: Vec<Pokemon>,
+pub struct Trainer{
+    pub name: &'static str,
+    pub poke_team: Vec<Pokemon>,
     reward: u16,
+
 }
-impl EnemyTrainer2{
-    fn get(id: u16)-> EnemyTrainer2{
-        let trainers: Vec<TrainerTemplate> = vec![LASS1, BUGCATCHER1, YOUNGSTER1];
-        let found_trainer = trainers.iter().find(|trainer| trainer.id == id).unwrap();
+impl Trainer{
+    pub fn get(id: u16)-> Trainer{
+        let trainers: Vec<TrainerTemplate> = vec![RIVAL1_1, RIVAL2_1, RIVAL3_1, BUGCATCHER1, YOUNGSTER1, BUGCATCHER4, BUGCATCHER5, BUGCATCHER6];
+
+        let found_trainer = trainers
+            .iter()
+            .find(|trainer| trainer.id == id)
+            .unwrap();
+
         let mut trainer_party: Vec<Pokemon> = vec![];
+
         for mon in found_trainer.party{
            let (new_mon, level) = mon.unwrap_or((Pidgey, 1)); //TODO This is sloppy
             // There must be a method that lets us do one thing is unwrap is valid, and not if unwrap is None.
@@ -33,17 +43,80 @@ impl EnemyTrainer2{
                 trainer_party.push(Pokemon::new(new_mon, level))
             }
         }
-
-        EnemyTrainer2{
-            name: found_trainer.name.clone().parse().unwrap(),
-            party: trainer_party,
+        Trainer{
+            name: found_trainer.name.clone(),
+            poke_team: trainer_party,
             reward: found_trainer.reward.clone(),
         }
     }
+    fn new(team: Vec<Pokemon>)->Trainer{
+        todo!()
+    }
+    fn new_rand()->Trainer{
+        todo!()
+    }
 }
+impl PartyOperations for Trainer {
+    fn check_all_fainted(&self) -> bool {
+        for mon in &self.poke_team {
+            if mon.status == Healthy {
+                return true;
+            }
+        }
+        false
+    }
+    fn return_first_healthy(&self) -> Result<usize, &str> {
+        let mut counter: usize = 0;
+        for mon in &self.poke_team {
+            if mon.status == Healthy {
+                return Ok(counter);
+            }
+            counter += 1;
+        }
+        Err("No Healthy Pokemon Found")
+    }
+}
+//RIVAL VERSIONS
+const RIVAL1_1: TrainerTemplate=TrainerTemplate{
+    id: 1001,
+    name: "Blue",
+    party: [Some((Bulbasaur, 5)), None, None, None, None, None],
+    reward: 150,
+};
+const RIVAL2_1: TrainerTemplate=TrainerTemplate{
+    id: 2001,
+    name: "Blue",
+    party: [Some((Charamander, 5)), None, None, None, None, None],
+    reward: 150,
+};
+const RIVAL3_1: TrainerTemplate=TrainerTemplate{
+    id: 3001,
+    name: "Blue",
+    party: [Some((Squirtle, 5)), None, None, None, None, None],
+    reward: 150,
+};
 
 
 //VIRIDIAN FOREST TRAINERS
+pub const BUGCATCHER4: TrainerTemplate = TrainerTemplate{
+    id: 8,
+    name: "Bug Catcher Rick",
+    party: [Some((Caterpie, 5)), Some((Weedle, 5)), None, None, None, None], // Levels should be 6 and 6
+    reward: 60,
+};
+pub const BUGCATCHER5: TrainerTemplate = TrainerTemplate{
+    id: 9,
+    name: "Bug Catcher Doug",
+    party: [Some((Weedle, 7)), Some((Kakuna, 7)), Some((Weedle, 7)), None, None, None],
+    reward: 70,
+};
+pub const BUGCATCHER6: TrainerTemplate = TrainerTemplate{
+    id: 10,
+    name: "Bug Catcher Sammy",
+    party: [Some((Weedle, 9)), None, None, None, None, None],
+    reward: 90,
+};
+
 
 //PEWTER CITY GYM TRAINERS
 
@@ -96,16 +169,11 @@ pub const LASS3: TrainerTemplate = TrainerTemplate{
     party: [Some((Jigglypuff, 14)), None, None, None, None, None],
     reward: 150,
 };
-
-
-
-
-
-
-
+/*
 struct EnemyTrainer {
     id: u16,
     name: &'static str,
     party: Party,
     reward: u16,
 }
+ */
