@@ -1,7 +1,7 @@
 //use crate::evolution::Evolution;
 use crate::move_data::Moves;
 
-use crate::move_data::Moves::{Growl, Scratch, Tackle, TailWhip, ThunderShock};
+use crate::move_data::Moves::{Growl, LeechSeed, Scratch, Tackle, TailWhip, ThunderShock};
 use crate::{ExpCat, PokeTypes};
 use crate::ExpCat::{MediumFast, MediumSlow};
 use crate::PokeTypes::*;
@@ -72,7 +72,7 @@ const BULBASAUR: PokemonBaseData = PokemonBaseData {
     primary_type: PokeTypes::Grass,
     secondary_type: PokeTypes::Poison,
     base_exp: 64,
-    lvl1_moves: (Tackle, Growl),
+    lvl1_moves: (Tackle, Growl), //Should be Tackle/Growl
     //evolution: Option::from(Evolution { next_stage: PokemonSpecies::Bulbasaur, trigger: EvolutionTriggers::ByLevel = }),
     exp_cat: ExpCat::MediumSlow,
 

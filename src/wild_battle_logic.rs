@@ -15,7 +15,7 @@ pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
         .return_first_healthy()
         .expect("Somethings Gone Wrong");
 
-    type_text(format!("{} sends out {}\n",
+    type_text(format!("\n{} sends out {}\n",
             player_name,
             game_state.player.party.mon[player_starting_mon_index].clone().unwrap().name).as_str(),);
 

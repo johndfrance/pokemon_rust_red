@@ -288,6 +288,7 @@ pub enum ViridianCityLocations {
     Route2,
     ViridianForest,
 }
+
 pub enum PewterCityLocations{
     Gym,
     Outside,
@@ -365,24 +366,6 @@ fn starter_selection(game_state: &mut GameState) -> Regions {
 fn mom() {
     type_text("MOM: Goodluck today!\n");
 }
-
-/*
-enum PalletTownLocations{
-    RedsHouse,
-    NeighboursHouse,
-    OaksLab,
-    Route1,
-    Outside,
-}
-enum ViridianCityLocations{
-    ViridianGym,
-    PokeCentre,
-    Mart,
-    House,
-    PokemonAcademy,
-    Outside,
-}
- */
 /*
 enum Location {
     PalletTown,

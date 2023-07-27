@@ -8,10 +8,11 @@ mod mon_base_stats;
 mod mon_move_sets;
 mod move_data;
 mod npc_dialogue;
-mod temp_code;
+//mod temp_code;
 mod type_matchups;
 mod items;
 mod wild_battle_logic;
+mod pokemon_structure;
 
 use crate::game::*;
 
@@ -32,11 +33,16 @@ use std::io::Write;
 use std::thread::sleep;
 use std::time::Duration;
 use crate::enemy_trainers::Trainer;
+use crate::MoveCat::Physical;
+use crate::StatType::{Attack, Defense, Special, Speed};
 
 // MAIN
 fn main() {
     env::set_var("RUST_BACKTRACE", "1");
     // TODO: Impl 'Continue/New Game' menu
+    println!("Do you want to:\n1.New Game.\n2.Continue\n3.Debug");
+
+
 
     let mut game_state = GameState::new();
     rust_red_game(game_state);
@@ -67,8 +73,12 @@ impl GameState {
     pub fn move_loc(&mut self, loc: Regions){
         self.location = loc;
     }
-    fn load(){}
-    fn save(){}
+    fn load()->GameState{
+        todo!()
+    }
+    fn save()->Result<(),&'static str>{
+        todo!()
+    }
 }
 // Player will be nested inside GameState and contain data specific to the player (party, items etc)
 pub struct Player {
@@ -113,19 +123,24 @@ impl Party {
     }
     pub fn pokecentre_heal(&mut self){
         if self.mon[0] != None{
+            /*
             println!("DEBUG - {} CURRENTLY HAS {}/{} HP",
                      self.mon[0].as_ref().unwrap().name,
                      self.mon[0].as_ref().unwrap().current_hp,
                      self.mon[0].as_ref().unwrap().max_hp.value);
+             */
             if self.mon[0].as_ref().unwrap().status != Healthy{
                 self.mon[0].as_mut().unwrap().status = Healthy
             }
             self.mon[0].as_mut().unwrap().current_hp = self.mon[0].clone().unwrap().max_hp.value;
         }
+        /*
         println!("DEBUG - {} NOW HAS {}/{} HP",
                  self.mon[0].as_ref().unwrap().name,
                  self.mon[0].as_ref().unwrap().current_hp,
                  self.mon[0].as_ref().unwrap().max_hp.value);
+         */
+        type_text("\nYour Pokemon are all Healed!\n");
     }
 }
 // Should be moved to battle_logic.rs once that is finalized.
@@ -198,37 +213,89 @@ impl PartyOperations for Party {
         Err("No Healthy Pokemon Found")
     }
 }
-
-// Currently not used
-// Will be used to deal with stat-modifying moves like Tail Whip
-fn apply_stat_modifier(base_stat: u16, stages: i32) -> u16 {
-    let modifier = match stages {
-        -6 => 0.25, // Stat reduced to 25% of the base value
-        -5 => 0.29, // Stat reduced to 29% of the base value
-        -4 => 0.33, // Stat reduced to 33% of the base value
-        -3 => 0.4,  // Stat reduced to 40% of the base value
-        -2 => 0.5,  // Stat reduced to 50% of the base value
-        -1 => 0.67, // Stat reduced to 67% of the base value
-        0 => 1.0,   // No modification to the base stat
-        1 => 1.5,   // Stat increased by 50% of the base value
-        2 => 2.0,   // Stat doubled
-        3 => 2.5,   // Stat increased by 150% of the base value
-        4 => 3.0,   // Stat increased by 200% of the base value
-        5 => 3.5,   // Stat increased by 250% of the base value
-        6 => 4.0,   // Stat increased by 300% of the base value
-        _ => 1.0,   // Handle any other stage values as no modification
-    };
-    (base_stat as f32 * modifier) as u16
+#[derive(Debug)]
+enum StatType{
+    Attack,
+    Defense,
+    Speed,
+    Special,
+    Accuracy,
+    Evasion,
 }
-// Maybe will be used to track stat-modifying moves
+#[derive(Clone, PartialEq, Debug)]
 struct BattleStats {
-    attack: u8,
-    defense: u8,
-    speed: u8,
-    special: u8,
-    accuracy: u8,
-    evasion: u8,
+    attack: i8,
+    defense: i8,
+    speed: i8,
+    special: i8,
+    accuracy: i8,
+    evasion: i8,
 }
+impl BattleStats{
+    fn get_stat_mod(&self, stat_type: StatType)->f32{
+        let mut stat_in_question = match stat_type{
+            StatType::Attack=>&self.attack,
+            StatType::Defense=>&self.defense,
+            StatType::Speed=>&self.speed,
+            StatType::Special=>&self.special,
+            StatType::Accuracy=>&self.accuracy,
+            StatType::Evasion=>&self.evasion,
+        };
+        let modifier = match stat_in_question {
+            -6 => 0.25, // Stat reduced to 25%
+            -5 => 0.29, // Stat reduced to 29%
+            -4 => 0.33, // Stat reduced to 33%
+            -3 => 0.4,  // Stat reduced to 40%
+            -2 => 0.5,  // Stat reduced to 50%
+            -1 => 0.67, // Stat reduced to 67%
+            0 => 1.0,   // No modification to the base stat
+            1 => 1.5,   // Stat increased by 50%
+            2 => 2.0,   // Stat doubled
+            3 => 2.5,   // Stat increased by 150%
+            4 => 3.0,   // Stat increased by 200%
+            5 => 3.5,   // Stat increased by 250%
+            6 => 4.0,   // Stat increased by 300%
+            _ => 1.0,   // Handle any other stage values as no modification
+        };
+        return modifier;
+    }
+    // Future: Some moves raise/lower stats by more than 1, for now this will be ignored.
+    fn lower_stat(&mut self, stat_type: StatType){
+        let mut stat_in_question = match stat_type{
+            StatType::Attack=>self.attack,
+            StatType::Defense=>self.defense,
+            StatType::Speed=>self.speed,
+            StatType::Special=>self.special,
+            StatType::Accuracy=>self.accuracy,
+            StatType::Evasion=>self.evasion,
+        };
+        if stat_in_question > -6{
+            stat_in_question -= 1;
+        }else {
+            println!("{:?} can't lowered any more!",stat_type);
+        }
+    }
+    fn raise_stat(&mut self, stat_type: StatType){
+        let mut stat_in_question = match stat_type{
+            StatType::Attack=>self.attack,
+            StatType::Defense=>self.defense,
+            StatType::Speed=>self.speed,
+            StatType::Special=>self.special,
+            StatType::Accuracy=>self.accuracy,
+            StatType::Evasion=>self.evasion,
+        };
+        if stat_in_question < 6{
+            stat_in_question += 1;
+        }else {
+            println!("{:?} can't raised any more!",stat_type);
+        }
+    }
+}
+#[derive(Debug, PartialEq, Clone)]
+struct SpecialConditionFlags{
+    leech_seeded: bool,
+}
+
 // Main Pokemon Struct
 #[derive(Clone, PartialEq, Debug)]
 pub struct Pokemon {
@@ -239,6 +306,7 @@ pub struct Pokemon {
     level: u16,
     exp: u32,
     primary_type: PokeTypes,
+    secondary_type: PokeTypes,
     max_hp: Stat,
     attk: Stat,
     def: Stat,
@@ -248,6 +316,8 @@ pub struct Pokemon {
     second_move: Moves, // Dep
     moves: Vec<Moves>,
     base_exp: u16,
+    stat_mod_stages: BattleStats,
+    special_conditions: SpecialConditionFlags,
 }
 impl Pokemon {
     fn new(species: PokemonSpecies, level: u16) -> Self {
@@ -324,6 +394,7 @@ impl Pokemon {
             level,
             exp,
             primary_type: base_stats.primary_type,
+            secondary_type: base_stats.secondary_type,
             max_hp: hit_point_stat,
             attk: attack_stat,
             def: defense_stat,
@@ -332,48 +403,100 @@ impl Pokemon {
             moves: vec![first_move.clone(), second_move.clone()],
             first_move,
             second_move,
-
             base_exp: base_stats.base_exp,
+            stat_mod_stages: BattleStats{
+                attack: 0,
+                defense: 0,
+                speed: 0,
+                special: 0,
+                accuracy: 0,
+                evasion: 0,
+            },
+            special_conditions: SpecialConditionFlags { leech_seeded: false },
         }
     }
 
     fn damage(&mut self, attking_poke: &Pokemon, attcking_move: &Moves) {
         let move_data = attcking_move.move_stats();
-        let base_power = move_data.base_power as f32;
-        let move_type = move_data.move_type;
-        let attacker_level = attking_poke.level.clone() as f32;
 
-        let attacking_poke_type = &attcking_move.move_stats().move_type;
-        let defending_poke_type = &self.primary_type;
-        let matchup_multiplier = attcking_move
-            .move_stats()
-            .move_type
-            .type_match_board(defending_poke_type)
-            .effectivness_modifier();
-        attacking_poke_type
-            .type_match_board(defending_poke_type)
-            .flavour_text();
+        let move_cat = move_data.move_cat;
 
-        let mut stab: f32 = 1.0;
-        if move_type == *attacking_poke_type {
-            stab = 1.5;
-        }
-        let defense = self.def.value.clone() as f32;
-        let attack = attking_poke.attk.value.clone() as f32;
+        match move_cat{
+            MoveCat::Physical|MoveCat::Special=>{
 
-        let ad_ratio = attack / defense;
+                let base_power = move_data.base_power as f32;
+                let move_type = move_data.move_type;
+                let attacker_level = attking_poke.level.clone() as f32;
 
-        let dam = ((((2.0 * attacker_level + 2.0) * base_power * ad_ratio) / 50.0) + 2.0)
-            * stab
-            * matchup_multiplier;
-        let damage = dam as u16;
+                let attacking_poke_type = &attcking_move.move_stats().move_type;
+                let defending_poke_type1 = &self.primary_type;
+                let defending_poke_type2 = &self.secondary_type;
+                let matchup_multiplier = attcking_move
+                    .move_stats()
+                    .move_type
+                    .type_match_board(defending_poke_type1)
+                    .effectivness_modifier();
 
-        println!("{} was hit for {} points of damage!", &self.name, damage);
-        if self.current_hp > damage {
-            self.current_hp -= damage;
-        } else {
-            self.current_hp = 0;
-            self.status = Fainted;
+                let mut seconary_matchup_multi = 1;
+                /*
+                if defending_poke_type2 != None{} todo!
+                 */
+
+                attacking_poke_type
+                    .type_match_board(defending_poke_type1)
+                    .flavour_text();
+
+
+                let mut stab: f32 = 1.0;
+                if move_type == *attacking_poke_type {
+                    stab = 1.5;
+                }
+                let mut defense;
+                let mut def_mod;
+                let mut attack;
+                let mut atk_mod;
+                if move_cat == Physical{
+                    defense = self.def.value.clone() as f32;
+                    def_mod = self.stat_mod_stages.get_stat_mod(Defense);
+                    //if def_mod != 1.0 { println!("DEF MOD = {}", def_mod) }
+                    defense = defense*def_mod;
+
+                    attack = attking_poke.attk.value.clone() as f32;
+                    atk_mod = attking_poke.stat_mod_stages.get_stat_mod(Attack);
+                    //if atk_mod != 1.0 {println!("ATK MOD = {}", atk_mod)}
+                    attack = attack*atk_mod;
+
+                }else{
+                    defense = self.spec.value.clone() as f32;
+                    def_mod = self.stat_mod_stages.get_stat_mod(Special);
+                    //if def_mod != 1.0 { println!("DEF MOD = {}", def_mod) }
+                    defense = defense*def_mod;
+                    attack = attking_poke.spec.value.clone() as f32;
+                    atk_mod = attking_poke.stat_mod_stages.get_stat_mod(Special);
+                    //if atk_mod != 1.0 {println!("ATK MOD = {}", atk_mod)}
+                    attack = attack*atk_mod;
+                }
+
+                let ad_ratio = attack / defense;
+
+                let dam = ((((2.0 * attacker_level + 2.0) * base_power * ad_ratio) / 50.0) + 2.0)
+                    * stab
+                    * matchup_multiplier;
+                let damage = dam as u16;
+
+                type_text(format!("{} was hit for {} points of damage!\n", &self.name.cyan(), damage).as_str());
+                if self.current_hp > damage {
+                    self.current_hp -= damage;
+                } else {
+                    self.current_hp = 0;
+                    self.status = Fainted;
+                }
+
+            },
+            MoveCat::Status=>{
+                attcking_move.move_stats().effect_type.apply_effect(self)
+
+            },
         }
     }
     // I don't think this is used currently?
@@ -536,6 +659,25 @@ impl Pokemon {
             }
         }
     }
+
+    pub fn leech_seed_effect(&mut self, benefactor: &mut Pokemon){
+        let seeding_damage = (self.max_hp.value.clone())/8;
+        println!("{} leeched for {} HP", self.name, seeding_damage);
+        if seeding_damage <= self.current_hp {
+            self.current_hp -= seeding_damage;
+
+        }else {
+            println!("{} Fainted!", self.name);
+            self.current_hp = 0;
+            self.status = Fainted;
+        }
+        println!("{} healed!", benefactor.name);
+        if (&benefactor.current_hp + seeding_damage.clone()) >= benefactor.max_hp.value{
+            benefactor.current_hp = benefactor.max_hp.value.clone()
+        }else {
+            benefactor.current_hp += &seeding_damage;
+        }
+    }
 }
 
 #[derive(Clone, PartialEq, Debug, Copy)]
@@ -590,7 +732,7 @@ fn get_leveling_data(level: &u16) -> u32 {
     return exp_for_level.clone();
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq, )]
 pub enum MoveCat {
     Physical,
     Special,
@@ -599,18 +741,44 @@ pub enum MoveCat {
 #[derive(Clone)]
 pub enum MoveEffectCat {
     None,
-    BurnSideEffect1,
-    SpeedDownSideEffect,
-    DefenseDown1,
-}
 
+    AttackDown1,
+    DefenseDown1,
+    SpeedDown1,
+    SpecDown1,
+
+    AttackUp1,
+    DefenseUp1,
+    SpeedUp1,
+    SpecUp1,
+
+    Burned,
+    Sleeped,
+    Frozen,
+    Poisoned,
+    Paralyzed,
+
+    // Unique Moves
+    LeechSeed,
+
+
+    BurnSideEffect1,
+}
 impl MoveEffectCat {
     fn apply_effect(&self, target: &mut Pokemon) {
         match self {
-            MoveEffectCat::BurnSideEffect1 => {
+            MoveEffectCat::Burned => {
                 target.status = Burned;
             }
-            MoveEffectCat::SpeedDownSideEffect => {}
+
+            MoveEffectCat::DefenseDown1=>{target.stat_mod_stages.lower_stat(Defense); println!("{} defense was {}!", target.name.cyan(), "weakened".red())},
+            MoveEffectCat::AttackDown1=>{target.stat_mod_stages.lower_stat(Attack); println!("{} attack was {}!", target.name.cyan(), "weakened".red())},
+            MoveEffectCat::SpeedDown1=> target.stat_mod_stages.lower_stat(Speed),
+            MoveEffectCat::SpecDown1=>target.stat_mod_stages.lower_stat(Special),
+
+
+            MoveEffectCat::LeechSeed=>target.special_conditions.leech_seeded = true,
+
             _ => {}
         }
     }
@@ -667,7 +835,7 @@ fn integer_square_root(x: &u16) -> u16 {
     root_x
 }
 fn type_text(text: &str) {
-    let delay = 15;
+    let delay = 45;
     for c in text.chars() {
         print!("{}", c);
         io::stdout().flush().unwrap();

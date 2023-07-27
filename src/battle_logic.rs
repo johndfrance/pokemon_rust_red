@@ -10,8 +10,9 @@ use crate::{
 
 use colored::Colorize;
 use std::cmp::Ordering;
-use std::io;
+use std::{io, thread};
 use std::io::Write;
+use std::time::Duration;
 use crate::lib::get_user_input;
 use crate::move_data::Moves;
 
@@ -55,20 +56,21 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
 
         // At the start of each turn, check if the opponent fainted on the last turn.
         if enemy.poke_team[enemy_mon_index.clone()].status == Fainted {
-            println!("ENEMY POKEMON AT INDEX {} IS FAINTED", enemy_mon_index);
+            //println!("ENEMY POKEMON AT INDEX {} IS FAINTED", enemy_mon_index);
+            println!();
             game_state.player.party.mon[player_mon_index.clone()]
                 .as_mut()
                 .unwrap()
                 .gain_exp(&enemy.poke_team[enemy_mon_index.clone()]);
             // If the opponent fainted then check if they have any healthy pokemon remaining.
-            println!("NOW CHECKING IF ENEMY HAS REMAINING POKEMON");
+            //println!("NOW CHECKING IF ENEMY HAS REMAINING POKEMON");
             let enemy_not_all_fainted = enemy.check_all_fainted();
             if enemy_not_all_fainted {
-                println!("ENEMY DOES");
+                //println!("ENEMY DOES");
                 // If they do, get the index for the first healthy pokemon, and send it out.
                 let next_healthy_index =
                     enemy.return_first_healthy().expect("Somethings Gone Wrong");
-                println!("NEXT HEALTHY POKEMON AT {} INDEX", next_healthy_index);
+                //println!("NEXT HEALTHY POKEMON AT {} INDEX", next_healthy_index);
                 enemy_mon_index = next_healthy_index;
                 type_text(
                     format!(
@@ -80,7 +82,7 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
             }
             // If there are no more healthy pokemon remaining, then end the loop and move to 'post-battle' section.
             else {
-                println!("ENEMY DOES NOT");
+                //println!("ENEMY DOES NOT");
                 winner = true;
                 break;
             }
@@ -117,10 +119,12 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
             }
         }
         // Presents both fighting Pokemon with name, level, and HP info
+        println!("********************************");
+        print!("\n{}  ", "Player".blue());
         battle_display_names(&game_state.player.party.mon[player_mon_index.clone()].as_ref().unwrap(),);
+        print!("\n{}  ", "Enemy".red());
         battle_display_names(&enemy.poke_team[enemy_mon_index.clone()]);
 
-        let (menu_choice, sub_menu_choice) = battle_display_menu(&game_state, player_mon_index.clone());
 
         /*
         io::stdout().flush().unwrap();
@@ -131,24 +135,24 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
          */
 
         let mut player_selected_move: Moves;
-        match menu_choice{
-            MainMenuOptions::Fight =>{
-                player_selected_move = match sub_menu_choice.unwrap() {
-                    1 => { game_state.player.party.mon[player_mon_index.clone()].clone().unwrap().moves[0] }
-                    2 => { game_state.player.party.mon[player_mon_index.clone()].clone().unwrap().moves[1] }
-                    3 => { game_state.player.party.mon[player_mon_index.clone()].clone().unwrap().moves[3] }
-                    4 => { game_state.player.party.mon[player_mon_index.clone()].clone().unwrap().moves[4] }
-                    _ => unreachable!()
-                }
-            },
-            MainMenuOptions::Item=>{todo!()}
-            MainMenuOptions::Change=>{todo!()}
-            MainMenuOptions::Run=>{todo!()}
-        }
 
-        println!("YOUVE SELECTED MOVE: {}", player_selected_move.move_stats().name);
+        let (menu_choice, sub_menu_choice) = battle_display_menu(&game_state, player_mon_index.clone());
+            match menu_choice {
+                MainMenuOptions::Fight => {
+                     player_selected_move = match sub_menu_choice.unwrap() {
+                        1 => { game_state.player.party.mon[player_mon_index.clone()].clone().unwrap().moves[0] }
+                        2 => { game_state.player.party.mon[player_mon_index.clone()].clone().unwrap().moves[1] }
+                        3 => { game_state.player.party.mon[player_mon_index.clone()].clone().unwrap().moves[3] }
+                        4 => { game_state.player.party.mon[player_mon_index.clone()].clone().unwrap().moves[4] }
+                        _ => unreachable!()
+                    };
+                },
+                MainMenuOptions::Item => { todo!() }
+                MainMenuOptions::Change => { todo!() }
+                MainMenuOptions::Run => { todo!() }
+            }
 
-
+        //println!("YOUVE SELECTED MOVE: {}", player_selected_move.move_stats().name);
         let enemy_move_selection =
             enemy_move_select(&enemy.poke_team[enemy_mon_index.clone()]).to_string();
         let enemy_move_selection = enemy_move_selection.as_str();
@@ -159,8 +163,7 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
             "4" => enemy.poke_team[enemy_mon_index.clone()].moves[3],
             _ => enemy.poke_team[enemy_mon_index.clone()].moves[0],
         };
-        println!("ENEMY HAS SELECTED MOVE: {}", enemy_move_selection.move_stats().name);
-
+        //println!("ENEMY HAS SELECTED MOVE: {}", enemy_move_selection.move_stats().name);
         let speed_order = game_state.player.party.mon[player_mon_index.clone()]
             .clone()
             .unwrap()
@@ -168,13 +171,12 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
             .value
             .cmp(&enemy.poke_team[enemy_mon_index.clone()].spd.value);
 
-        println!("DEBUG SPEED: {:?}", speed_order);
-
+        //println!("DEBUG SPEED: {:?}", speed_order);
         match speed_order {
             Ordering::Greater => {
-                println!("{} used {}!",
+                type_text(format!("\n{} used {}!\n",
                          &game_state.player.party.mon[player_mon_index].as_ref().unwrap().name,
-                         player_selected_move.move_stats().name);
+                         player_selected_move.move_stats().name).as_str());
                 enemy.poke_team[enemy_mon_index.clone()].damage(
                     &game_state.player.party.mon[player_mon_index.clone()]
                         .clone()
@@ -183,10 +185,11 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
                 );
                 if enemy.poke_team[enemy_mon_index.clone()].current_hp == 0 {
                     type_text("Enemy Fainted!");
-                } else {
-                    println!("{} used {}",
+                } else { thread::sleep(Duration::from_millis(500));
+                    type_text(
+                    format!("\n{} used {}\n",
                              enemy.poke_team[enemy_mon_index].name,
-                             enemy_move_selection.move_stats().name);
+                             enemy_move_selection.move_stats().name).as_str());
 
                     game_state.player.party.mon[player_mon_index.clone()]
                         .as_mut()
@@ -206,9 +209,10 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
                 }
             }
             Ordering::Less => {
-                println!("{} used {}",
+                type_text(
+                format!("\n{} used {}!\n",
                          enemy.poke_team[enemy_mon_index].name,
-                         enemy_move_selection.move_stats().name);
+                         enemy_move_selection.move_stats().name).as_str());
                 game_state.player.party.mon[player_mon_index.clone()]
                     .as_mut()
                     .unwrap()
@@ -223,10 +227,11 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
                     == 0
                 {
                     type_text("You Fainted!");
-                } else {
-                    println!("{} used {}!",
+                } else {thread::sleep(Duration::from_millis(500));
+                    type_text(
+                    format!("\n{} used {}!\n",
                              game_state.player.party.mon[player_mon_index].as_ref().unwrap().name,
-                             player_selected_move.move_stats().name);
+                             player_selected_move.move_stats().name).as_str());
                     enemy.poke_team[enemy_mon_index.clone()].damage(
                         &game_state.player.party.mon[player_mon_index.clone()]
                             .clone()
@@ -239,9 +244,10 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
                 }
             }
             Ordering::Equal => { //TODO: This should be 50/50 but for now I have it favour the player.
-                println!("{} used {}!",
+                type_text(
+                format!("{} used {}!\n",
                          game_state.player.party.mon[player_mon_index].as_ref().unwrap().name,
-                         player_selected_move.move_stats().name);
+                         player_selected_move.move_stats().name).as_str());
 
                 enemy.poke_team[enemy_mon_index.clone()].damage(
                     &game_state.player.party.mon[player_mon_index.clone()]
@@ -251,10 +257,11 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
                 );
                 if enemy.poke_team[enemy_mon_index.clone()].current_hp == 0 {
                     type_text("Enemy Fainted!");
-                } else {
-                    println!("{} used {}",
+                } else {thread::sleep(Duration::from_millis(500));
+                    type_text(
+                    format!("\n{} used {}!\n",
                              enemy.poke_team[enemy_mon_index].name,
-                             enemy_move_selection.move_stats().name);
+                             enemy_move_selection.move_stats().name).as_str());
                     game_state.player.party.mon[player_mon_index.clone()]
                         .as_mut()
                         .unwrap()
@@ -273,6 +280,26 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
                 }
             }
         }
+        // Status Damage
+        if enemy.poke_team[enemy_mon_index.clone()].current_hp != 0 {
+            //Leech Seed
+            if enemy.poke_team[enemy_mon_index.clone()].special_conditions.leech_seeded == true{
+                enemy.poke_team[enemy_mon_index.clone()].leech_seed_effect(game_state.player.party.mon[player_mon_index.clone()].as_mut().unwrap());
+            }
+
+        }
+        if game_state.player.party.mon[player_mon_index.clone()].as_ref().unwrap().current_hp != 0{
+            //Leech Seed
+            if game_state.player.party.mon[player_mon_index.clone()].as_ref().unwrap().special_conditions.leech_seeded == true{
+                game_state.player.party.mon[player_mon_index.clone()].as_mut().unwrap().leech_seed_effect(&mut enemy.poke_team[enemy_mon_index.clone()]);
+            }
+
+        }
+    }
+    if winner{
+        println!("\n{}", "You won the Battle!".green())
+    }else{
+        println!("\n{}", "You lost the Battle!".red())
     }
     return winner
 }
@@ -291,7 +318,7 @@ pub fn battle_display_names(mon: &Pokemon) {
     println!(
         "{}",
         format!(
-            "\n{}(LVL {}) has {}/{}HP",
+            "{}(LVL {}) has {}/{}HP",
             mon.name.to_string().cyan(),
             mon.level.to_string().cyan(),
             current_hp_for_display,
@@ -312,7 +339,7 @@ pub fn battle_display_menu(game_state: &GameState, poke_index: usize)->(MainMenu
     match menu_selection{
         1=>{ //FIGHT
             let mut move_count = 1;
-            println!("Fight - Select your Move:");
+            println!("\nFight - Select your Move:");
             for moves in &game_state.player.party.mon[poke_index.clone()]
                 .clone()
                 .unwrap()

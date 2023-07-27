@@ -169,11 +169,4 @@ pub const LASS3: TrainerTemplate = TrainerTemplate{
     party: [Some((Jigglypuff, 14)), None, None, None, None, None],
     reward: 150,
 };
-/*
-struct EnemyTrainer {
-    id: u16,
-    name: &'static str,
-    party: Party,
-    reward: u16,
-}
- */
+

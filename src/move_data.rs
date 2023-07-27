@@ -133,7 +133,7 @@ pub const BUBBLE: MoveData = MoveData {
     accuracy: 100,
     move_type: PokeTypes::Water,
     move_cat: MoveCat::Physical,
-    effect_type: MoveEffectCat::SpeedDownSideEffect,
+    effect_type: MoveEffectCat::SpeedDown1,
     pp: 30,
 };
 pub const EMBER: MoveData = MoveData {
@@ -178,7 +178,7 @@ pub const GROWL: MoveData = MoveData {
     accuracy: 100,
     move_type: PokeTypes::Normal,
     move_cat: MoveCat::Status,
-    effect_type: MoveEffectCat::None,
+    effect_type: MoveEffectCat::AttackDown1,
     pp: 40,
 };
 pub const GROWTH: MoveData = MoveData {
@@ -232,7 +232,7 @@ pub const LEECHSEED: MoveData = MoveData {
     accuracy: 90,
     move_type: PokeTypes::Grass,
     move_cat: MoveCat::Status,
-    effect_type: MoveEffectCat::None, //TODO
+    effect_type: MoveEffectCat::LeechSeed,
     pp: 10,
 };
 pub const LEER: MoveData = MoveData {
@@ -266,7 +266,7 @@ pub const POISONPOWDER: MoveData = MoveData {
     name: "Poison Powder",
     base_power: 0,
     accuracy: 75,
-    move_type: PokeTypes::Poison, // FIX, Should be Poison
+    move_type: PokeTypes::Poison,
     move_cat: MoveCat::Status,
     effect_type: MoveEffectCat::None, //TODO
     pp: 35,

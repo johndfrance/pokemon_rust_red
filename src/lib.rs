@@ -26,7 +26,7 @@ pub const CINNABAR: Color = TrueColor {r:170, g:56, b:30};
 
 
 fn type_text(text: &str) {
-    let delay = 25;
+    let delay = 60;
     for c in text.chars() {
         print!("{}", c);
         io::stdout().flush().unwrap();
@@ -42,7 +42,6 @@ pub fn travelling(destination: &str){
         io::stdout().flush().unwrap();
         thread::sleep(Duration::from_millis(delay))
     }
-
     type_text(format!("Going to {}", destination).as_str());
     for c in ellipses.chars() {
         print!("{}", c);
