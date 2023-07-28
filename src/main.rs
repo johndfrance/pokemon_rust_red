@@ -746,11 +746,15 @@ pub enum MoveEffectCat {
     DefenseDown1,
     SpeedDown1,
     SpecDown1,
+    AccuracyDown1,
+    EvasionDown1,
 
     AttackUp1,
     DefenseUp1,
     SpeedUp1,
     SpecUp1,
+    AccuracyUp1,
+    EvasionUp1,
 
     Burned,
     Sleeped,
