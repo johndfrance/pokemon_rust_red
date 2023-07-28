@@ -21,7 +21,7 @@ use crate::mon_base_stats::*;
 use crate::move_data::*;
 use crate::type_matchups::*;
 use crate::PokemonSpecies::{Bulbasaur, Pikachu};
-use crate::Status::{Burned, Fainted, Healthy};
+use crate::Status::{Asleep, Burned, Fainted, Frozen, Healthy, Paralyzed, Poisoned};
 use crate::mon_move_sets::LEARNABLEMOVES;
 use crate::move_data::Moves::Tackle;
 use rand::Rng;
@@ -76,7 +76,7 @@ impl GameState {
     fn load()->GameState{
         todo!()
     }
-    fn save()->Result<(),&'static str>{
+    fn save(&self){
         todo!()
     }
 }
@@ -767,14 +767,21 @@ pub enum MoveEffectCat {
 impl MoveEffectCat {
     fn apply_effect(&self, target: &mut Pokemon) {
         match self {
-            MoveEffectCat::Burned => {
-                target.status = Burned;
-            }
+            MoveEffectCat::Burned => {target.status = Burned;}
+            MoveEffectCat::Poisoned=>{target.status = Poisoned;}
+            MoveEffectCat::Sleeped=>{target.status = Asleep;}
+            MoveEffectCat::Frozen=>{target.status = Frozen;}
+            MoveEffectCat::Paralyzed=>{target.status = Paralyzed;}
 
             MoveEffectCat::DefenseDown1=>{target.stat_mod_stages.lower_stat(Defense); println!("{} defense was {}!", target.name.cyan(), "weakened".red())},
             MoveEffectCat::AttackDown1=>{target.stat_mod_stages.lower_stat(Attack); println!("{} attack was {}!", target.name.cyan(), "weakened".red())},
             MoveEffectCat::SpeedDown1=> target.stat_mod_stages.lower_stat(Speed),
             MoveEffectCat::SpecDown1=>target.stat_mod_stages.lower_stat(Special),
+
+            MoveEffectCat::AttackUp1=>target.stat_mod_stages.raise_stat(Attack),
+            MoveEffectCat::DefenseUp1=>target.stat_mod_stages.raise_stat(Defense),
+            MoveEffectCat::SpeedDown1=>target.stat_mod_stages.raise_stat(Speed),
+            MoveEffectCat::SpecUp1=>target.stat_mod_stages.raise_stat(Special),
 
 
             MoveEffectCat::LeechSeed=>target.special_conditions.leech_seeded = true,
@@ -798,6 +805,10 @@ enum Status {
     Healthy,
     Fainted,
     Burned,
+    Asleep,
+    Frozen,
+    Paralyzed,
+    Poisoned,
 }
 /*
 impl Status {
@@ -835,7 +846,7 @@ fn integer_square_root(x: &u16) -> u16 {
     root_x
 }
 fn type_text(text: &str) {
-    let delay = 45;
+    let delay = 10;
     for c in text.chars() {
         print!("{}", c);
         io::stdout().flush().unwrap();

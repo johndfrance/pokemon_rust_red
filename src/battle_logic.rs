@@ -142,8 +142,8 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
                      player_selected_move = match sub_menu_choice.unwrap() {
                         1 => { game_state.player.party.mon[player_mon_index.clone()].clone().unwrap().moves[0] }
                         2 => { game_state.player.party.mon[player_mon_index.clone()].clone().unwrap().moves[1] }
-                        3 => { game_state.player.party.mon[player_mon_index.clone()].clone().unwrap().moves[3] }
-                        4 => { game_state.player.party.mon[player_mon_index.clone()].clone().unwrap().moves[4] }
+                        3 => { game_state.player.party.mon[player_mon_index.clone()].clone().unwrap().moves[2] }
+                        4 => { game_state.player.party.mon[player_mon_index.clone()].clone().unwrap().moves[3] }
                         _ => unreachable!()
                     };
                 },
