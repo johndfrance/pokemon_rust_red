@@ -366,6 +366,32 @@ fn starter_selection(game_state: &mut GameState) -> Regions {
 fn mom() {
     type_text("MOM: Goodluck today!\n");
 }
+
+fn master_menu(game_state: GameState){
+    println!("MENU");
+    println!("1. PokeDex");
+    println!("2. Party");
+    println!("3. Bag");
+    println!("4. Save");
+    println!("5. Exit Menu");
+
+    let menu_select = get_user_input(5);
+
+    match menu_select {
+        1=>pokedex_display(),
+        2=>party_display(),
+        3=>bag_display(),
+        4=>game_state.save(),
+        5=>{}
+        _ => unreachable!()
+    }
+
+}
+fn pokedex_display(){todo!()}
+fn party_display(){todo!()}
+fn bag_display(){todo!()}
+
+
 /*
 enum Location {
     PalletTown,
