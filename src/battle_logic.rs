@@ -147,7 +147,7 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
                         _ => unreachable!()
                     };
                 },
-                MainMenuOptions::Item => { todo!() }
+                MainMenuOptions::Item => {  todo!() }
                 MainMenuOptions::Change => { todo!() }
                 MainMenuOptions::Run => { todo!() }
             }
@@ -326,6 +326,7 @@ pub fn battle_display_names(mon: &Pokemon) {
         )
     );
 }
+#[derive(PartialEq)]
 pub enum MainMenuOptions{
     Fight,
     Item,
@@ -334,7 +335,8 @@ pub enum MainMenuOptions{
 }
 pub fn battle_display_menu(game_state: &GameState, poke_index: usize)->(MainMenuOptions, Option<u8>){
     println!("\nYour Turn! What will you do?");
-    println!("1.Fight 2.Items\n3.Poke 4.Run");
+    println!("1.Fight 2.Items\n3.Swap 4.Run");
+    println!("{}", "Items, Swap, and Run and not yet built for Trainer Battles\nSwap is not built for Wild Battles".red());
     let menu_selection = get_user_input(4);
     match menu_selection{
         1=>{ //FIGHT

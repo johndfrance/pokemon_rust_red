@@ -1,6 +1,7 @@
 use std::cmp::Ordering;
 use crate::{enemy_move_select, GameState, PartyOperations, Pokemon, type_text};
 use crate::battle_logic::{battle_display_menu, battle_display_names, MainMenuOptions};
+use crate::battle_logic::MainMenuOptions::Fight;
 use crate::move_data::Moves;
 use crate::Status::Fainted;
 
@@ -55,10 +56,10 @@ pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
         }
         battle_display_names(&game_state.player.party.mon[player_mon_index.clone()].as_ref().unwrap(),);
         battle_display_names(wild_mon);
-
+        let mut player_selected_move: Moves;
         let (menu_choice, sub_menu_choice) = battle_display_menu(&game_state, player_mon_index.clone());
 
-        let mut player_selected_move: Moves;
+
         match menu_choice{
             MainMenuOptions::Fight =>{
                 player_selected_move = match sub_menu_choice.unwrap() {
@@ -69,12 +70,25 @@ pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
                     _ => unreachable!()
                 }
             },
-            MainMenuOptions::Item=>{todo!()}
-            MainMenuOptions::Change=>{todo!()}
-            MainMenuOptions::Run=>{todo!()}
-        }
+            MainMenuOptions::Item=>{
+                println!("Threw a pokeball!");
+                game_state.player.party.add_party_member(wild_mon.clone());
+                winner = true;
+                println!("You caught wild {}", wild_mon.name);
+                break
 
-        println!("YOUVE SELECTED MOVE: {}", player_selected_move.move_stats().name);
+            }
+            MainMenuOptions::Change=>{
+                todo!()
+
+            }
+            MainMenuOptions::Run=>{
+                println!("You ran!");
+                winner=true;
+                break}
+        }
+        if menu_choice == Fight{
+        //println!("YOUVE SELECTED MOVE: {}", player_selected_move.move_stats().name);
 
         let wild_mon_move_select = enemy_move_select(wild_mon);
         let wild_mon_move_select = wild_mon_move_select.to_string();
@@ -86,7 +100,7 @@ pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
             "4"=>wild_mon.moves[3],
             _=>unreachable!(),
         };
-        println!("WILD HAS SELECTED: {}", wild_mon_move_select.move_stats().name);
+        //println!("WILD HAS SELECTED: {}", wild_mon_move_select.move_stats().name);
         let speed_order = game_state.player.party.mon[player_mon_index.clone()]
             .clone()
             .unwrap()
@@ -94,7 +108,7 @@ pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
             .value
             .cmp(&wild_mon.spd.value);
 
-        println!("DEBUG SPEED: {:?}", speed_order);
+        //println!("DEBUG SPEED: {:?}", speed_order);
 
         match speed_order{
             Ordering::Greater=>{
@@ -108,7 +122,7 @@ pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
                     .unwrap(),&player_selected_move,);
 
                 if wild_mon.current_hp == 0{
-                    type_text("Wild Pokemon Fainted!");
+                    type_text("Wild Pokemon Fainted!\n");
                     winner = true;
                     game_state.player.party.mon[player_mon_index.clone()]
                         .as_mut()
@@ -170,7 +184,7 @@ pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
                         .unwrap(),&player_selected_move,);
 
                     if wild_mon.current_hp == 0{
-                        type_text("Wild Pokemon Fainted!");
+                        type_text("Wild Pokemon Fainted!\n");
                         winner = true;
                         game_state.player.party.mon[player_mon_index.clone()]
                             .as_mut()
@@ -190,7 +204,7 @@ pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
                     .unwrap(),&player_selected_move,);
 
                 if wild_mon.current_hp == 0{
-                    type_text("Wild Pokemon Fainted!");
+                    type_text("Wild Pokemon Fainted!\n");
                     winner = true;
                     game_state.player.party.mon[player_mon_index.clone()]
                         .as_mut()
@@ -198,7 +212,7 @@ pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
                         .gain_exp(&wild_mon);
                     break
                 }
-                else{
+                else {
                     println!("{} used {}",
                              wild_mon.name,
                              wild_mon_move_select.move_stats().name);
@@ -219,6 +233,7 @@ pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
                     {
                         type_text("You Fainted!");
                     }
+                }
                 }
             }
         }

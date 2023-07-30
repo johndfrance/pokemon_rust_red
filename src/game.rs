@@ -6,7 +6,7 @@ battles, wild encounters, and so on.
  */
 use std::cmp::Ordering;
 use crate::battle_logic::battle2;
-use crate::mon_base_stats::PokemonSpecies::{Bulbasaur, Charamander, Pidgey, Squirtle};
+use crate::mon_base_stats::PokemonSpecies::{Bulbasaur, Caterpie, Charamander, Pidgey, Squirtle};
 use crate::{read_user_input, type_text, GameState, Pokemon, Trainer};
 use colored::Colorize;
 use std::{io, result};
@@ -358,7 +358,7 @@ fn starter_selection(game_state: &mut GameState) -> Regions {
         println!("EVERYTHING GOES BLACK.");
         Regions::PalletTown(PalletTownLocations::RedsHouse)
     } else {
-        type_text("\nBLUE: Ugh, I'm going to keep training and show you how strong I am!");
+        type_text("\nBLUE: Ugh, I'm going to keep training and show you how strong I am!\n");
         Regions::PalletTown(PalletTownLocations::OaksLab)
     };
 }

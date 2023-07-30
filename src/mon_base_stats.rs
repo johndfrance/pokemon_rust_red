@@ -2,9 +2,13 @@
 use crate::move_data::Moves;
 
 use crate::move_data::Moves::{Growl, LeechSeed, Scratch, Tackle, TailWhip, ThunderShock};
+use crate::PokemonSpecies::*;
 use crate::{ExpCat, PokeTypes};
+use crate::evolution::{EvolutionData};
 use crate::ExpCat::{MediumFast, MediumSlow};
 use crate::PokeTypes::*;
+
+
 pub struct PokemonBaseData {
     dex_num: u8,
     pub name: &'static str,
@@ -25,8 +29,14 @@ pub struct PokemonBaseData {
 #[derive(Clone, PartialEq, Debug, Copy)]
 pub enum PokemonSpecies {
     Bulbasaur,
+    Ivysaur,
+    Venusaur,
     Charamander,
+    Charmeleon,
+    Charizard,
     Squirtle,
+    Wartortle,
+    Blastoise,
     Caterpie,
     Metapod,
     Weedle,
@@ -43,20 +53,26 @@ pub enum PokemonSpecies {
 impl PokemonSpecies {
     pub fn return_base_stats(&self) -> PokemonBaseData {
         match self {
-            PokemonSpecies::Bulbasaur => BULBASAUR,
-            PokemonSpecies::Charamander => CHARAMANDER,
-            PokemonSpecies::Squirtle => SQUIRTLE,
-            PokemonSpecies::Caterpie => CATERPIE,
-            PokemonSpecies::Metapod=>METAPOD,
-            PokemonSpecies::Weedle => WEEDLE,
-            PokemonSpecies::Kakuna=>KAKUNA,
-            PokemonSpecies::Pidgey => PIDGEY,
-            PokemonSpecies::Rattata => RATTATA,
-            PokemonSpecies::Spearow=>SPEAROW,
-            PokemonSpecies::Ekans=>EKANS,
-            PokemonSpecies::Pikachu => PIKACHU,
-            PokemonSpecies::NidoranF=>NIDORANF,
-            PokemonSpecies::Jigglypuff=>JIGGLYPUFF,
+            Bulbasaur => BULBASAUR,
+            Ivysaur=>IVYSAUR,
+            Venusaur=>VENUSAUR,
+            Charamander => CHARAMANDER,
+            Charmeleon=>CHAMELEON,
+            Charizard=>CHARIZARD,
+            Squirtle => SQUIRTLE,
+            Wartortle=>WARTORTLE,
+            Blastoise=>BLASTOISE,
+            Caterpie => CATERPIE,
+            Metapod=>METAPOD,
+            Weedle => WEEDLE,
+            Kakuna=>KAKUNA,
+            Pidgey => PIDGEY,
+            Rattata => RATTATA,
+            Spearow=>SPEAROW,
+            Ekans=>EKANS,
+            Pikachu => PIKACHU,
+            NidoranF=>NIDORANF,
+            Jigglypuff=>JIGGLYPUFF,
         }
     }
 }
@@ -73,9 +89,37 @@ const BULBASAUR: PokemonBaseData = PokemonBaseData {
     secondary_type: PokeTypes::Poison,
     base_exp: 64,
     lvl1_moves: (Tackle, Growl), //Should be Tackle/Growl
-    //evolution: Option::from(Evolution { next_stage: PokemonSpecies::Bulbasaur, trigger: EvolutionTriggers::ByLevel = }),
     exp_cat: ExpCat::MediumSlow,
-
+    capture_rate: 45,
+};
+const IVYSAUR: PokemonBaseData = PokemonBaseData{
+    dex_num: 2,
+    name: "Ivysaur",
+    base_hp: 60,
+    base_attack: 62,
+    base_defense: 63,
+    base_speed: 60,
+    base_special: 80,
+    primary_type: Grass,
+    secondary_type: Poison,
+    base_exp: 141,
+    lvl1_moves: (Tackle, Growl),
+    exp_cat: ExpCat::MediumSlow,
+    capture_rate: 45,
+};
+const VENUSAUR: PokemonBaseData = PokemonBaseData{
+    dex_num: 3,
+    name: "Venusaur",
+    base_hp: 80,
+    base_attack: 82,
+    base_defense: 83,
+    base_speed: 80,
+    base_special: 100,
+    primary_type: Grass,
+    secondary_type: Poison,
+    base_exp: 208,
+    lvl1_moves: (Tackle, Growl),
+    exp_cat: MediumSlow,
     capture_rate: 45,
 };
 const CHARAMANDER: PokemonBaseData = PokemonBaseData {
@@ -93,6 +137,36 @@ const CHARAMANDER: PokemonBaseData = PokemonBaseData {
     exp_cat: ExpCat::MediumSlow,
     capture_rate: 45,
 };
+const CHAMELEON: PokemonBaseData = PokemonBaseData{
+    dex_num: 5,
+    name: "Charmeleon",
+    base_hp: 58,
+    base_attack: 64,
+    base_defense: 58,
+    base_speed: 80,
+    base_special: 65,
+    primary_type: Fire,
+    secondary_type: None,
+    base_exp: 142,
+    lvl1_moves: (Scratch,Growl),
+    exp_cat: MediumSlow,
+    capture_rate: 45,
+};
+const CHARIZARD: PokemonBaseData =PokemonBaseData{
+    dex_num: 6,
+    name: "Charizard",
+    base_hp: 78,
+    base_attack: 84,
+    base_defense: 78,
+    base_speed: 100,
+    base_special: 85,
+    primary_type: Fire,
+    secondary_type: Flying,
+    base_exp: 209,
+    lvl1_moves: (Scratch, Growl),
+    exp_cat: MediumSlow,
+    capture_rate: 45,
+};
 const SQUIRTLE: PokemonBaseData = PokemonBaseData {
     dex_num: 7,
     name: "Squirtle",
@@ -106,6 +180,36 @@ const SQUIRTLE: PokemonBaseData = PokemonBaseData {
     base_exp: 66,
     lvl1_moves: (Tackle, TailWhip),
     exp_cat: ExpCat::MediumSlow,
+    capture_rate: 45,
+};
+const WARTORTLE: PokemonBaseData = PokemonBaseData{
+    dex_num: 8,
+    name: "Wartortle",
+    base_hp: 59,
+    base_attack: 63,
+    base_defense: 80,
+    base_speed: 58,
+    base_special: 65,
+    primary_type: Water,
+    secondary_type: None,
+    base_exp: 143,
+    lvl1_moves: (Tackle,TailWhip),
+    exp_cat: MediumSlow,
+    capture_rate: 45,
+};
+const BLASTOISE: PokemonBaseData =PokemonBaseData{
+    dex_num: 9,
+    name: "Blastoise",
+    base_hp: 79,
+    base_attack: 83,
+    base_defense: 100,
+    base_speed: 78,
+    base_special: 85,
+    primary_type: Water,
+    secondary_type: None,
+    base_exp: 210,
+    lvl1_moves: (Tackle, TailWhip),
+    exp_cat: MediumSlow,
     capture_rate: 45,
 };
 const CATERPIE: PokemonBaseData = PokemonBaseData {

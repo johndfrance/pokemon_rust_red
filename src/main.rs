@@ -15,8 +15,7 @@ mod wild_battle_logic;
 mod pokemon_structure;
 
 use crate::game::*;
-
-use crate::mon_base_stats::PokemonSpecies::{Charamander, Pidgey, Rattata, Squirtle};
+use crate::mon_base_stats::PokemonSpecies::{Charamander, Metapod, Pidgey, Rattata, Squirtle};
 use crate::mon_base_stats::*;
 use crate::move_data::*;
 use crate::type_matchups::*;
@@ -33,6 +32,7 @@ use std::io::Write;
 use std::thread::sleep;
 use std::time::Duration;
 use crate::enemy_trainers::Trainer;
+use crate::evolution::{CATERPIE, EvolutionData, EvolutionTriggers};
 use crate::MoveCat::Physical;
 use crate::StatType::{Attack, Defense, Special, Speed};
 
@@ -40,9 +40,7 @@ use crate::StatType::{Attack, Defense, Special, Speed};
 fn main() {
     env::set_var("RUST_BACKTRACE", "1");
     // TODO: Impl 'Continue/New Game' menu
-    println!("Do you want to:\n1.New Game.\n2.Continue\n3.Debug");
-
-
+    //println!("Do you want to:\n1.New Game.\n2.Continue\n3.Debug");
 
     let mut game_state = GameState::new();
     rust_red_game(game_state);
@@ -63,7 +61,7 @@ impl GameState {
                 party: Party {
                     mon: [None, None, None, None, None, None],
                 },
-                cash: 100,
+                cash: 3000,
             },
             pokedex: PokeDex {},
             location: Regions::PalletTown(PalletTownLocations::RedsHouse),
@@ -546,6 +544,7 @@ impl Pokemon {
         let current_exp = &self.exp;
         if current_exp >= &next_lvl_exp {
             println!("{} leveled up to {}!", self.name, next_level);
+            self.evolve();
             self.level_up();
         }
     }
@@ -617,6 +616,7 @@ impl Pokemon {
     }
     fn check_lvl_up_new_move(&mut self) {
         let level = &self.level.clone();
+
         let species = &self.species;
         if let Some(lvlup_moves) = LEARNABLEMOVES.iter().find(|data| data.species == *species) {
             for (num, move_name) in lvlup_moves.level_up_moves {
@@ -658,6 +658,25 @@ impl Pokemon {
                 }
             }
         }
+    }
+    fn evolve(&mut self){
+        let level = self.level.clone();
+        let level = level + 1;
+        let current_species  = self.species.clone();
+
+        let evo_data = self.species.return_evolution();
+
+        if evo_data.next_stage != None{
+            if evo_data.trigger == EvolutionTriggers::ByLevel(level){
+                self.species = evo_data.next_stage.unwrap();
+                let new_name = self.species.return_base_stats().name;
+                self.name = new_name.to_string();
+                println!("You {:?} evolved into an {}!", current_species, self.name);
+            }
+
+        }
+
+
     }
 
     pub fn leech_seed_effect(&mut self, benefactor: &mut Pokemon){
@@ -850,7 +869,7 @@ fn integer_square_root(x: &u16) -> u16 {
     root_x
 }
 fn type_text(text: &str) {
-    let delay = 10;
+    let delay = 30;
     for c in text.chars() {
         print!("{}", c);
         io::stdout().flush().unwrap();
