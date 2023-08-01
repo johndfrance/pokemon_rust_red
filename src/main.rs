@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use colored::Colorize;
 mod battle_logic;
 mod enemy_trainers;
@@ -13,6 +14,7 @@ mod type_matchups;
 mod items;
 mod wild_battle_logic;
 mod pokemon_structure;
+mod region_groups;
 
 use crate::game::*;
 use crate::mon_base_stats::PokemonSpecies::{Charamander, Metapod, Pidgey, Rattata, Squirtle};
@@ -673,10 +675,7 @@ impl Pokemon {
                 self.name = new_name.to_string();
                 println!("You {:?} evolved into an {}!", current_species, self.name);
             }
-
         }
-
-
     }
 
     pub fn leech_seed_effect(&mut self, benefactor: &mut Pokemon){
@@ -869,7 +868,7 @@ fn integer_square_root(x: &u16) -> u16 {
     root_x
 }
 fn type_text(text: &str) {
-    let delay = 30;
+    let delay = 10;
     for c in text.chars() {
         print!("{}", c);
         io::stdout().flush().unwrap();

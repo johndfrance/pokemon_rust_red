@@ -16,6 +16,7 @@ use crate::game::PalletTownLocations::*;
 use crate::game::PewterCityLocations::PewterPokeCentre;
 use crate::game::ViridianCityLocations::*;
 use crate::lib::{get_user_input, PEWTER, travelling, VIRIDIAN};
+use crate::region_groups::get_wild_encounter;
 use crate::wild_battle_logic::wild_encounter;
 
 pub fn rust_red_game(mut game_state: GameState) {
@@ -152,17 +153,11 @@ pub fn rust_red_game(mut game_state: GameState) {
             },
             PalletTown(Route1) => match choice {
                 1 => {travelling("Pallet Town");
-                    game_state.move_loc(PalletTown(PalletTownLocations::Outside))},
-                2 => {travelling("Viridian City");
-                    let mut wild_mon = Pokemon::new(Pidgey, 3);
-                    let result  = wild_encounter(&mut game_state, &mut wild_mon);
-                    if result {
-                        game_state.move_loc(ViridianCity(ViridianCityLocations::Outside))
-                    }else{
-                        game_state.move_loc(PalletTown(RedsHouse));
-                        game_state.player.party.pokecentre_heal();
-                    }
-
+                    travelling_encounter(PalletTown(Route1), PalletTown(PalletTownLocations::Outside), &mut game_state);
+                    },
+                2 => {
+                    travelling("Viridian City");
+                    travelling_encounter(PalletTown(Route1), ViridianCity(ViridianCityLocations::Outside), &mut game_state);
                     },
                 _ => println!("Invalid choice."),
             },
@@ -212,11 +207,12 @@ pub fn rust_red_game(mut game_state: GameState) {
             }
             ViridianCity(Route2) => match choice {
                 1 => {travelling("Viridian Forest");
-                    game_state.move_loc(ViridianCity(ViridianForest))
+                    travelling_encounter(ViridianCity(Route2),ViridianCity(ViridianForest), &mut game_state);
                 },
                 2 => println!("Blocked by a strange looking tree..."),
                 3 => {travelling("Viridian City");
-                    game_state.move_loc(ViridianCity(ViridianCityLocations::Outside))
+                    travelling_encounter(ViridianCity(Route2),ViridianCity(ViridianCityLocations::Outside), &mut game_state);
+
                 },
                 _ => println!("Invalid choice"),
             }
@@ -266,12 +262,13 @@ pub fn rust_red_game(mut game_state: GameState) {
         }
     }
 }
+#[derive(PartialEq, Clone, Copy)]
 pub enum Regions {
     PalletTown(PalletTownLocations),
     ViridianCity(ViridianCityLocations),
     PewterCity(PewterCityLocations),
 }
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum PalletTownLocations {
     RedsHouse,
     BluesHouse,
@@ -279,7 +276,7 @@ pub enum PalletTownLocations {
     Route1,
     Outside,
 }
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum ViridianCityLocations {
     Gym,
     Mart,
@@ -288,7 +285,7 @@ pub enum ViridianCityLocations {
     Route2,
     ViridianForest,
 }
-
+#[derive(Clone, Copy, PartialEq)]
 pub enum PewterCityLocations{
     Gym,
     Outside,
@@ -296,6 +293,20 @@ pub enum PewterCityLocations{
 }
 fn wild_encounter_chance()->Option<Pokemon>{
     todo!()
+}
+fn travelling_encounter(wild_mon_list: Regions, destination: Regions, mut game_state: &mut GameState){
+
+    let wild_mon = get_wild_encounter(wild_mon_list);
+    if wild_mon != None{
+        let result = wild_encounter(&mut game_state, &mut wild_mon.unwrap());
+        if result{
+            game_state.move_loc(destination);
+        }else{
+            game_state.move_loc(PalletTown(RedsHouse));
+            game_state.player.party.pokecentre_heal();
+        }
+    }
+    game_state.move_loc(destination);
 }
 fn adventure_start_check(game_state: &GameState) -> bool {
     return if game_state.player.party.mon[0] == None {

@@ -37,10 +37,9 @@ impl Trainer{
         let mut trainer_party: Vec<Pokemon> = vec![];
 
         for mon in found_trainer.party{
-           let (new_mon, level) = mon.unwrap_or((Pidgey, 1)); //TODO This is sloppy
-            // There must be a method that lets us do one thing is unwrap is valid, and not if unwrap is None.
-            if !(new_mon == Pidgey && level == 1) {
-                trainer_party.push(Pokemon::new(new_mon, level))
+            if mon != None{
+                let (new_mon, level) = mon.unwrap();
+                trainer_party.push(Pokemon::new(new_mon, level));
             }
         }
         Trainer{
