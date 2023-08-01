@@ -17,6 +17,7 @@ pub enum Moves {
     Agility,
     Bite,
     Bubble,
+    DefenseCurl,
     Ember,
     FireSpin,
     Flamethrower,
@@ -38,6 +39,7 @@ pub enum Moves {
     RazorLeaf,
     SandAttack,
     Scratch,
+    Screech,
     Sing,
     SkullBash,
     Slash,
@@ -65,6 +67,7 @@ impl Moves {
             Moves::Bite => BITE,
             Moves::Bubble => BUBBLE,
             Moves::Ember => EMBER,
+            Moves::DefenseCurl=>DEFENSECURL,
             Moves::FireSpin => FIRESPIN,
             Moves::Flamethrower => FLAMETHROWER,
             Moves::FocusEnergy => FOCUSENERGY,
@@ -85,6 +88,7 @@ impl Moves {
             Moves::RazorLeaf => RAZORLEAF,
             Moves::SandAttack => SANDATTACK,
             Moves::Scratch => SCRATCH,
+            Moves::Screech=>SCREECH,
             Moves::Sing => SING,
             Moves::SkullBash => SKULLBASH,
             Moves::Slash => SLASH,
@@ -135,6 +139,15 @@ pub const BUBBLE: MoveData = MoveData {
     move_cat: MoveCat::Physical,
     effect_type: MoveEffectCat::SpeedDown1,
     pp: 30,
+};
+const DEFENSECURL: MoveData=MoveData{
+    name: "Defense Curl",
+    base_power: 0,
+    accuracy: 100,
+    move_type: PokeTypes::Normal,
+    move_cat: MoveCat::Status,
+    effect_type: MoveEffectCat::DefenseUp1,
+    pp: 40,
 };
 pub const EMBER: MoveData = MoveData {
     name: "Ember",
@@ -324,6 +337,15 @@ pub const SCRATCH: MoveData = MoveData {
     move_cat: MoveCat::Physical,
     effect_type: MoveEffectCat::None,
     pp: 35,
+};
+const SCREECH: MoveData=MoveData{
+    name: "Screech",
+    base_power: 0,
+    accuracy: 85,
+    move_type: PokeTypes::Normal,
+    move_cat: MoveCat::Status,
+    effect_type: MoveEffectCat::DefenseDown1, //Todo Should be Defnese down 2
+    pp: 40,
 };
 const SING: MoveData=MoveData{
     name: "Sing",

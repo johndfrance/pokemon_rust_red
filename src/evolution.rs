@@ -1,5 +1,6 @@
 use crate::mon_base_stats::PokemonSpecies;
 use crate::PokemonSpecies::*;
+use crate::EvolutionTriggers::*;
 
 impl PokemonSpecies {
     pub fn return_evolution(&self)->EvolutionData{
@@ -78,4 +79,35 @@ pub const CATERPIE: EvolutionData = EvolutionData{
     pokemon: Caterpie,
     next_stage: Some(Metapod),
     trigger: EvolutionTriggers::ByLevel(7),
+};
+
+
+const WEEDLE: EvolutionData=EvolutionData{
+    pokemon: Weedle,
+    next_stage: Some(Kakuna),
+    trigger: ByLevel(7),
+};
+
+
+const PIDGEY: EvolutionData =EvolutionData{
+    pokemon: Pidgey,
+    next_stage: Some(Pidgeotto),
+    trigger: ByLevel(18),
+};
+const PIDGEOTTO: EvolutionData =EvolutionData{
+    pokemon: Pidgeotto,
+    next_stage: Some(Pidgeot),
+    trigger: ByLevel(36),
+};
+const PIDGEOT:EvolutionData=EvolutionData{
+    pokemon: Pidgeot,
+    next_stage: None,
+    trigger: ByLevel(100),
+};
+
+
+const ONIX: EvolutionData=EvolutionData{
+    pokemon: Onix,
+    next_stage: None,
+    trigger: ByLevel(100),
 };

@@ -27,6 +27,30 @@ pub const LEARNABLEMOVES: &[LearnableMoves] = &[
             (48, SolarBeam),
         ],
     },
+    LearnableMoves{
+        species: PokemonSpecies::Ivysaur,
+        level_up_moves: &[
+            (7, LeechSeed),
+            (13, VineWhip),
+            (22, PoisonPowder),
+            (30, RazorLeaf),
+            (38, Growth),
+            (46, SleepPowder),
+            (54, SolarBeam),
+        ],
+    },
+    LearnableMoves{
+        species: PokemonSpecies::Venusaur,
+        level_up_moves: &[
+            (7, LeechSeed),
+            (13, VineWhip),
+            (22, PoisonPowder),
+            (30, RazorLeaf),
+            (43, Growth),
+            (55, SleepPowder),
+            (65, SolarBeam),
+        ],
+    },
     LearnableMoves {
         species: PokemonSpecies::Charamander,
         level_up_moves: &[
@@ -39,6 +63,28 @@ pub const LEARNABLEMOVES: &[LearnableMoves] = &[
         ],
     },
     LearnableMoves {
+        species: PokemonSpecies::Charmeleon,
+        level_up_moves: &[
+            (9, Ember),
+            (15, Leer),
+            (24, Rage),
+            (33, Slash),
+            (42, Flamethrower),
+            (56, FireSpin),
+        ],
+    },
+    LearnableMoves {
+        species: PokemonSpecies::Charizard,
+        level_up_moves: &[
+            (9, Ember),
+            (15, Leer),
+            (24, Rage),
+            (36, Slash),
+            (46, Flamethrower),
+            (55, FireSpin),
+        ],
+    },
+    LearnableMoves {
         species: PokemonSpecies::Squirtle,
         level_up_moves: &[
             (8, Bubble),
@@ -47,6 +93,28 @@ pub const LEARNABLEMOVES: &[LearnableMoves] = &[
             (28, Withdraw),
             (35, SkullBash),
             (42, HydroPump),
+        ],
+    },
+    LearnableMoves {
+        species: PokemonSpecies::Wartortle,
+        level_up_moves: &[
+            (8, Bubble),
+            (15, WaterGun),
+            (24, Bite),
+            (31, Withdraw),
+            (39, SkullBash),
+            (47, HydroPump),
+        ],
+    },
+    LearnableMoves {
+        species: PokemonSpecies::Blastoise,
+        level_up_moves: &[
+            (8, Bubble),
+            (15, WaterGun),
+            (24, Bite),
+            (31, Withdraw),
+            (42, SkullBash),
+            (52, HydroPump),
         ],
     },
     LearnableMoves {
