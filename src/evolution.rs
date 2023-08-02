@@ -15,6 +15,11 @@ impl PokemonSpecies {
             Wartortle=>WARTORTLE,
             Blastoise=>BLASTOISE,
             Caterpie=>CATERPIE,
+            Weedle=>WEEDLE,
+            Pidgey=>PIDGEY,
+            Pidgeotto=>PIDGEOTTO,
+            Pidgeot=>PIDGEOT,
+            Onix=>ONIX,
             _=>todo!()
         }
     }
@@ -31,54 +36,54 @@ pub struct EvolutionData{
 }
 
 const BULBASAUR: EvolutionData = EvolutionData{
-    pokemon: PokemonSpecies::Bulbasaur,
+    pokemon: Bulbasaur,
     next_stage: Some(Venusaur),
-    trigger: EvolutionTriggers::ByLevel(16),
+    trigger: ByLevel(16),
 };
 const IVYSAUR: EvolutionData = EvolutionData{
     pokemon: Ivysaur,
     next_stage: Some(Venusaur),
-    trigger: EvolutionTriggers::ByLevel(32),
+    trigger: ByLevel(32),
 };
 const VENUSAUR: EvolutionData=EvolutionData{
     pokemon: Venusaur,
     next_stage: None,
-    trigger: EvolutionTriggers::ByLevel(100),
+    trigger: ByLevel(100),
 };
 const CHARMANDER: EvolutionData=EvolutionData{
     pokemon: Charamander,
     next_stage: Some(Charmeleon),
-    trigger: EvolutionTriggers::ByLevel(16),
+    trigger: ByLevel(16),
 };
 const CHARMELEON: EvolutionData=EvolutionData{
     pokemon: Charmeleon,
     next_stage: Some(Charizard),
-    trigger: EvolutionTriggers::ByLevel(36),
+    trigger: ByLevel(36),
 };
 const CHARIZARD: EvolutionData=EvolutionData{
     pokemon: Charizard,
     next_stage: None,
-    trigger: EvolutionTriggers::ByLevel(100),
+    trigger: ByLevel(100),
 };
 const SQUIRTLE: EvolutionData=EvolutionData{
     pokemon: Squirtle,
     next_stage: Some(Wartortle),
-    trigger: EvolutionTriggers::ByLevel(16),
+    trigger: ByLevel(16),
 };
 const WARTORTLE: EvolutionData =EvolutionData{
     pokemon: Wartortle,
     next_stage: Some(Blastoise),
-    trigger: EvolutionTriggers::ByLevel(36),
+    trigger: ByLevel(36),
 };
 const BLASTOISE: EvolutionData=EvolutionData{
     pokemon: Blastoise,
     next_stage: None,
-    trigger: EvolutionTriggers::ByLevel(100),
+    trigger: ByLevel(100),
 };
 pub const CATERPIE: EvolutionData = EvolutionData{
     pokemon: Caterpie,
     next_stage: Some(Metapod),
-    trigger: EvolutionTriggers::ByLevel(7),
+    trigger: ByLevel(7),
 };
 
 

@@ -20,7 +20,7 @@ pub struct WildPokemon{
    pub level: u16,
 }
 pub fn get_wild_encounter(location: Regions)->Option<Pokemon>{
-    let random_number = rand::thread_rng().gen_range(0..=2);
+    let random_number = rand::thread_rng().gen_range(0..=0);
     if random_number == 0 {
         let encounter_data = WILD_ENCOUNTER_MAP
             .iter()
@@ -30,7 +30,7 @@ pub fn get_wild_encounter(location: Regions)->Option<Pokemon>{
         let len_encounter = encounter_data.unwrap().len();
 
         let mut rng = rand::thread_rng();
-        let pick = rng.gen_range(0..(len_encounter + 1));
+        let pick = rng.gen_range(0..(len_encounter));
         let unwraped_data = encounter_data.unwrap();
 
         let chosen_mon = &unwraped_data[pick];

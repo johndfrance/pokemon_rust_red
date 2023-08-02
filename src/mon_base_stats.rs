@@ -1,4 +1,3 @@
-//use crate::evolution::Evolution;
 use crate::move_data::Moves;
 use crate::move_data::Moves::{DefenseCurl, Growl, Gust, LeechSeed, SandAttack, Scratch, Screech, Tackle, TailWhip, ThunderShock};
 use crate::PokemonSpecies::*;

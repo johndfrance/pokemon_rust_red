@@ -1,7 +1,5 @@
 use std::string::ToString;
-use crate::mon_base_stats::PokemonSpecies::
-{Bulbasaur, Caterpie, Charamander, Ekans, Jigglypuff, Kakuna, Metapod, NidoranF, Pidgey, Rattata,
- Spearow, Squirtle, Weedle};
+use crate::mon_base_stats::PokemonSpecies::{Bulbasaur, Caterpie, Charamander, Ekans, Geodude, Jigglypuff, Kakuna, Metapod, NidoranF, Onix, Pidgey, Rattata, Spearow, Squirtle, Weedle};
 use crate::{Party, PartyOperations, Pokemon};
 use crate::mon_base_stats::PokemonSpecies;
 use crate::Status::Healthy;
@@ -48,6 +46,7 @@ impl Trainer{
             reward: found_trainer.reward.clone(),
         }
     }
+
     fn new(team: Vec<Pokemon>)->Trainer{
         todo!()
     }
@@ -100,7 +99,7 @@ const RIVAL3_1: TrainerTemplate=TrainerTemplate{
 pub const BUGCATCHER4: TrainerTemplate = TrainerTemplate{
     id: 8,
     name: "Bug Catcher Rick",
-    party: [Some((Caterpie, 5)), Some((Weedle, 5)), None, None, None, None], // Levels should be 6 and 6
+    party: [Some((Caterpie, 6)), Some((Weedle, 6)), None, None, None, None], // Levels should be 6 and 6
     reward: 60,
 };
 pub const BUGCATCHER5: TrainerTemplate = TrainerTemplate{
@@ -118,7 +117,18 @@ pub const BUGCATCHER6: TrainerTemplate = TrainerTemplate{
 
 
 //PEWTER CITY GYM TRAINERS
-
+pub const JRTRAINER1: TrainerTemplate =TrainerTemplate{
+    id: 11,
+    name: "Jr. Trainer Jerry",
+party: [None, None,None,None,None,None],
+    reward: 220,
+};
+pub const BROCK: TrainerTemplate = TrainerTemplate{
+    id: 501,
+    name: "Gym Leader Brock",
+    party: [Some((Geodude, 12)),Some((Onix, 14)), None, None, None, None ],
+    reward: 1386,
+};
 // ROUTE 3 TRAINERS
 pub const LASS1: TrainerTemplate = TrainerTemplate{
     id: 1,

@@ -127,7 +127,10 @@ pub fn rust_red_game(mut game_state: GameState) {
         let mut choice = get_user_input(9);
         if choice == 9{
             println!("OPENING MENU");
-            choice = get_user_input(9);
+            master_menu(&mut game_state);
+            //choice = get_user_input(9);
+
+            continue;
         }
 
         match game_state.location {
@@ -378,28 +381,42 @@ fn mom() {
     type_text("MOM: Goodluck today!\n");
 }
 
-fn master_menu(game_state: GameState){
-    println!("MENU");
-    println!("1. PokeDex");
-    println!("2. Party");
-    println!("3. Bag");
-    println!("4. Save");
-    println!("5. Exit Menu");
+fn master_menu(game_state: &mut GameState){
+    loop {
+        println!("MENU");
+        println!("1. PokeDex {}", "TODO".red());
+        println!("2. Party");
+        println!("3. Bag {}", "TODO".red());
+        println!("4. Save {}", "TODO".red());
+        println!("5. Exit Menu");
 
-    let menu_select = get_user_input(5);
+        let menu_select = get_user_input(5);
 
-    match menu_select {
-        1=>pokedex_display(),
-        2=>party_display(),
-        3=>bag_display(),
-        4=>game_state.save(),
-        5=>{}
-        _ => unreachable!()
+        match menu_select {
+            1 => pokedex_display(),
+            2 => {
+                //party_display(game_state)
+                game_state.player.party.party_menu();
+            },
+            3 => bag_display(),
+            4 => game_state.save(),
+            5 => break,
+            _ => unreachable!()
+        }
     }
-
 }
 fn pokedex_display(){todo!()}
-fn party_display(){todo!()}
+fn party_display(game_state:  &GameState){
+    let mut counter = 1;
+    println!("\n Your Party:");
+    for pokemon in &game_state.player.party.mon{
+        if *pokemon != None {
+            println!("{} - {:?} {}\n", counter, pokemon.as_ref().unwrap().name, pokemon.as_ref().unwrap().level,);
+            counter +=1;
+        }
+    }
+}
+
 fn bag_display(){todo!()}
 
 

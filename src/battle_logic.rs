@@ -13,6 +13,7 @@ use std::cmp::Ordering;
 use std::{io, thread};
 use std::io::Write;
 use std::time::Duration;
+use crate::battle_logic::MainMenuOptions::Fight;
 use crate::lib::get_user_input;
 use crate::move_data::Moves;
 
@@ -134,25 +135,6 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
         let player1_input = player1_input.as_str();
          */
 
-        let mut player_selected_move: Moves;
-
-        let (menu_choice, sub_menu_choice) = battle_display_menu(&game_state, player_mon_index.clone());
-            match menu_choice {
-                MainMenuOptions::Fight => {
-                     player_selected_move = match sub_menu_choice.unwrap() {
-                        1 => { game_state.player.party.mon[player_mon_index.clone()].clone().unwrap().moves[0] }
-                        2 => { game_state.player.party.mon[player_mon_index.clone()].clone().unwrap().moves[1] }
-                        3 => { game_state.player.party.mon[player_mon_index.clone()].clone().unwrap().moves[2] }
-                        4 => { game_state.player.party.mon[player_mon_index.clone()].clone().unwrap().moves[3] }
-                        _ => unreachable!()
-                    };
-                },
-                MainMenuOptions::Item => {  todo!() }
-                MainMenuOptions::Change => { todo!() }
-                MainMenuOptions::Run => { todo!() }
-            }
-
-        //println!("YOUVE SELECTED MOVE: {}", player_selected_move.move_stats().name);
         let enemy_move_selection =
             enemy_move_select(&enemy.poke_team[enemy_mon_index.clone()]).to_string();
         let enemy_move_selection = enemy_move_selection.as_str();
@@ -163,6 +145,37 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
             "4" => enemy.poke_team[enemy_mon_index.clone()].moves[3],
             _ => enemy.poke_team[enemy_mon_index.clone()].moves[0],
         };
+
+
+        let mut player_selected_move: Moves = Moves::Agility;
+        let (menu_choice, sub_menu_choice) = (MainMenuOptions::Fight, Some(0));
+
+        loop {
+            let (menu_choice, sub_menu_choice) = battle_display_menu(&game_state, player_mon_index.clone());
+            match menu_choice {
+                MainMenuOptions::Fight => {
+                    player_selected_move = match sub_menu_choice.unwrap() {
+                        1 => { game_state.player.party.mon[player_mon_index.clone()].clone().unwrap().moves[0] }
+                        2 => { game_state.player.party.mon[player_mon_index.clone()].clone().unwrap().moves[1] }
+                        3 => { game_state.player.party.mon[player_mon_index.clone()].clone().unwrap().moves[2] }
+                        4 => { game_state.player.party.mon[player_mon_index.clone()].clone().unwrap().moves[3] }
+                        _ => unreachable!()
+                    };
+                    break;
+                },
+                MainMenuOptions::Item => { println!("Can't capture a pokemon that already has a Trainer!") }
+                MainMenuOptions::Change => {
+                    player_mon_index = sub_menu_choice.unwrap() as usize;
+                    println!("\nPlayer sends out {}\n", game_state.player.party.mon[player_mon_index.clone()].as_ref().unwrap().name);
+                    enemy_attacks(game_state.player.party.mon[player_mon_index.clone()].as_mut().unwrap(), &mut enemy.poke_team[enemy_mon_index.clone()], enemy_move_selection);
+                }
+                MainMenuOptions::Run => { println!("Can't run from a battle with another Trainer!") }
+            }
+        }
+
+
+        //println!("YOUVE SELECTED MOVE: {}", player_selected_move.move_stats().name);
+
         //println!("ENEMY HAS SELECTED MOVE: {}", enemy_move_selection.move_stats().name);
         let speed_order = game_state.player.party.mon[player_mon_index.clone()]
             .clone()
@@ -170,10 +183,17 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
             .spd
             .value
             .cmp(&enemy.poke_team[enemy_mon_index.clone()].spd.value);
+        if menu_choice == Fight {
 
-        //println!("DEBUG SPEED: {:?}", speed_order);
-        match speed_order {
-            Ordering::Greater => {
+
+            //println!("DEBUG SPEED: {:?}", speed_order);
+            match speed_order {
+                Ordering::Greater => {
+
+                        player_attacks(game_state.player.party.mon[player_mon_index.clone()].as_mut().unwrap(), &mut enemy.poke_team[enemy_mon_index.clone()], player_selected_move);
+
+                    println!("WORKED");
+                    /*
                 type_text(format!("\n{} used {}!\n",
                          &game_state.player.party.mon[player_mon_index].as_ref().unwrap().name,
                          player_selected_move.move_stats().name).as_str());
@@ -183,14 +203,45 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
                         .unwrap(),
                     &player_selected_move,
                 );
-                if enemy.poke_team[enemy_mon_index.clone()].current_hp == 0 {
-                    type_text("Enemy Fainted!");
-                } else { thread::sleep(Duration::from_millis(500));
-                    type_text(
-                    format!("\n{} used {}\n",
-                             enemy.poke_team[enemy_mon_index].name,
-                             enemy_move_selection.move_stats().name).as_str());
 
+                 */
+                    if enemy.poke_team[enemy_mon_index.clone()].current_hp == 0 {
+                        type_text("Enemy Fainted!");
+                    } else {
+                        thread::sleep(Duration::from_millis(500));
+                        enemy_attacks(game_state.player.party.mon[player_mon_index.clone()].as_mut().unwrap(), &mut enemy.poke_team[enemy_mon_index.clone()], enemy_move_selection);
+                        /*
+                        type_text(
+                            format!("\n{} used {}\n",
+                                    enemy.poke_team[enemy_mon_index].name,
+                                    enemy_move_selection.move_stats().name).as_str());
+
+                        game_state.player.party.mon[player_mon_index.clone()]
+                            .as_mut()
+                            .unwrap()
+                            .damage(
+                                &enemy.poke_team[enemy_mon_index.clone()],
+                                &enemy_move_selection,
+                            );
+
+                         */
+                        if game_state.player.party.mon[player_mon_index.clone()]
+                            .clone()
+                            .unwrap()
+                            .current_hp
+                            == 0
+                        {
+                            type_text("You Fainted!");
+                        }
+                    }
+                }
+                Ordering::Less => {
+                    enemy_attacks(game_state.player.party.mon[player_mon_index.clone()].as_mut().unwrap(), &mut enemy.poke_team[enemy_mon_index.clone()], enemy_move_selection);
+                    /*
+                    type_text(
+                        format!("\n{} used {}!\n",
+                                enemy.poke_team[enemy_mon_index].name,
+                                enemy_move_selection.move_stats().name).as_str());
                     game_state.player.party.mon[player_mon_index.clone()]
                         .as_mut()
                         .unwrap()
@@ -198,6 +249,8 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
                             &enemy.poke_team[enemy_mon_index.clone()],
                             &enemy_move_selection,
                         );
+
+                     */
                     if game_state.player.party.mon[player_mon_index.clone()]
                         .clone()
                         .unwrap()
@@ -205,95 +258,85 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
                         == 0
                     {
                         type_text("You Fainted!");
+                    } else {
+                        thread::sleep(Duration::from_millis(500));
+                        player_attacks(game_state.player.party.mon[player_mon_index.clone()].as_mut().unwrap(), &mut enemy.poke_team[enemy_mon_index.clone()], player_selected_move);
+                        /*
+                        type_text(
+                            format!("\n{} used {}!\n",
+                                    game_state.player.party.mon[player_mon_index].as_ref().unwrap().name,
+                                    player_selected_move.move_stats().name).as_str());
+                        enemy.poke_team[enemy_mon_index.clone()].damage(
+                            &game_state.player.party.mon[player_mon_index.clone()]
+                                .clone()
+                                .unwrap(),
+                            &player_selected_move,
+                        );
+
+                         */
+                        if enemy.poke_team[enemy_mon_index.clone()].current_hp == 0 {
+                            type_text("Enemy Fainted!");
+                        }
                     }
                 }
-            }
-            Ordering::Less => {
-                type_text(
-                format!("\n{} used {}!\n",
-                         enemy.poke_team[enemy_mon_index].name,
-                         enemy_move_selection.move_stats().name).as_str());
-                game_state.player.party.mon[player_mon_index.clone()]
-                    .as_mut()
-                    .unwrap()
-                    .damage(
-                        &enemy.poke_team[enemy_mon_index.clone()],
-                        &enemy_move_selection,
-                    );
-                if game_state.player.party.mon[player_mon_index.clone()]
-                    .clone()
-                    .unwrap()
-                    .current_hp
-                    == 0
-                {
-                    type_text("You Fainted!");
-                } else {thread::sleep(Duration::from_millis(500));
+                Ordering::Equal => { //TODO: This should be 50/50 but for now I have it favour the player.
+                    player_attacks(game_state.player.party.mon[player_mon_index.clone()].as_mut().unwrap(), &mut enemy.poke_team[enemy_mon_index.clone()], player_selected_move);
+                    /*
                     type_text(
-                    format!("\n{} used {}!\n",
-                             game_state.player.party.mon[player_mon_index].as_ref().unwrap().name,
-                             player_selected_move.move_stats().name).as_str());
+                        format!("{} used {}!\n",
+                                game_state.player.party.mon[player_mon_index].as_ref().unwrap().name,
+                                player_selected_move.move_stats().name).as_str());
+
                     enemy.poke_team[enemy_mon_index.clone()].damage(
                         &game_state.player.party.mon[player_mon_index.clone()]
                             .clone()
                             .unwrap(),
                         &player_selected_move,
                     );
+
+                     */
                     if enemy.poke_team[enemy_mon_index.clone()].current_hp == 0 {
                         type_text("Enemy Fainted!");
+                    } else {
+                        thread::sleep(Duration::from_millis(500));
+                        enemy_attacks(game_state.player.party.mon[player_mon_index.clone()].as_mut().unwrap(), &mut enemy.poke_team[enemy_mon_index.clone()], enemy_move_selection);
+                        /*
+                        type_text(
+                            format!("\n{} used {}!\n",
+                                    enemy.poke_team[enemy_mon_index].name,
+                                    enemy_move_selection.move_stats().name).as_str());
+                        game_state.player.party.mon[player_mon_index.clone()]
+                            .as_mut()
+                            .unwrap()
+                            .damage(
+                                &enemy.poke_team[enemy_mon_index.clone()],
+                                &enemy_move_selection,
+                            );
+                         */
+                        if game_state.player.party.mon[player_mon_index.clone()]
+                            .clone()
+                            .unwrap()
+                            .current_hp
+                            == 0
+                        {
+                            type_text("You Fainted!");
+                        }
                     }
                 }
             }
-            Ordering::Equal => { //TODO: This should be 50/50 but for now I have it favour the player.
-                type_text(
-                format!("{} used {}!\n",
-                         game_state.player.party.mon[player_mon_index].as_ref().unwrap().name,
-                         player_selected_move.move_stats().name).as_str());
-
-                enemy.poke_team[enemy_mon_index.clone()].damage(
-                    &game_state.player.party.mon[player_mon_index.clone()]
-                        .clone()
-                        .unwrap(),
-                    &player_selected_move,
-                );
-                if enemy.poke_team[enemy_mon_index.clone()].current_hp == 0 {
-                    type_text("Enemy Fainted!");
-                } else {thread::sleep(Duration::from_millis(500));
-                    type_text(
-                    format!("\n{} used {}!\n",
-                             enemy.poke_team[enemy_mon_index].name,
-                             enemy_move_selection.move_stats().name).as_str());
-                    game_state.player.party.mon[player_mon_index.clone()]
-                        .as_mut()
-                        .unwrap()
-                        .damage(
-                            &enemy.poke_team[enemy_mon_index.clone()],
-                            &enemy_move_selection,
-                        );
-                    if game_state.player.party.mon[player_mon_index.clone()]
-                        .clone()
-                        .unwrap()
-                        .current_hp
-                        == 0
-                    {
-                        type_text("You Fainted!");
-                    }
+            // Status Damage
+            if enemy.poke_team[enemy_mon_index.clone()].current_hp != 0 {
+                //Leech Seed
+                if enemy.poke_team[enemy_mon_index.clone()].special_conditions.leech_seeded == true {
+                    enemy.poke_team[enemy_mon_index.clone()].leech_seed_effect(game_state.player.party.mon[player_mon_index.clone()].as_mut().unwrap());
                 }
             }
-        }
-        // Status Damage
-        if enemy.poke_team[enemy_mon_index.clone()].current_hp != 0 {
-            //Leech Seed
-            if enemy.poke_team[enemy_mon_index.clone()].special_conditions.leech_seeded == true{
-                enemy.poke_team[enemy_mon_index.clone()].leech_seed_effect(game_state.player.party.mon[player_mon_index.clone()].as_mut().unwrap());
+            if game_state.player.party.mon[player_mon_index.clone()].as_ref().unwrap().current_hp != 0 {
+                //Leech Seed
+                if game_state.player.party.mon[player_mon_index.clone()].as_ref().unwrap().special_conditions.leech_seeded == true {
+                    game_state.player.party.mon[player_mon_index.clone()].as_mut().unwrap().leech_seed_effect(&mut enemy.poke_team[enemy_mon_index.clone()]);
+                }
             }
-
-        }
-        if game_state.player.party.mon[player_mon_index.clone()].as_ref().unwrap().current_hp != 0{
-            //Leech Seed
-            if game_state.player.party.mon[player_mon_index.clone()].as_ref().unwrap().special_conditions.leech_seeded == true{
-                game_state.player.party.mon[player_mon_index.clone()].as_mut().unwrap().leech_seed_effect(&mut enemy.poke_team[enemy_mon_index.clone()]);
-            }
-
         }
     }
     if winner{
@@ -304,6 +347,20 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
     return winner
 }
 
+fn enemy_attacks(player: &mut Pokemon, enemy: &mut Pokemon, selected_move: Moves){
+    type_text(
+        format!("{} used {}!\n",
+            enemy.name,
+            selected_move.move_stats().name).as_str());
+    player.damage(&enemy, &selected_move);
+}
+fn player_attacks(player: &mut Pokemon, enemy: &mut Pokemon, selected_move: Moves){
+    type_text(
+        format!("{} used {}!\n",
+                player.name,
+                selected_move.move_stats().name).as_str());
+    enemy.damage(&player, &selected_move,);
+}
 pub fn battle_display_names(mon: &Pokemon) {
     let mut current_hp = mon.current_hp.clone().to_string();
     let mut current_hp_for_display;
@@ -335,8 +392,8 @@ pub enum MainMenuOptions{
 }
 pub fn battle_display_menu(game_state: &GameState, poke_index: usize)->(MainMenuOptions, Option<u8>){
     println!("\nYour Turn! What will you do?");
-    println!("1.Fight 2.Items\n3.Swap 4.Run");
-    println!("{}", "Items, Swap, and Run and not yet built for Trainer Battles\nSwap is not built for Wild Battles".red());
+    println!("1.Fight 2.Items\n3.Swap{} 4.Run", "TODO".red(),);
+    //println!("{}", "Items, Swap, and Run and not yet built for Trainer Battles\nSwap is not built for Wild Battles".red());
     let menu_selection = get_user_input(4);
     match menu_selection{
         1=>{ //FIGHT
@@ -359,10 +416,29 @@ pub fn battle_display_menu(game_state: &GameState, poke_index: usize)->(MainMenu
         },
         3=>{
             println!("SWAPPING NOT YET IMPLIMENTED");
-            return (MainMenuOptions::Change, None);
+
+            println!("Which pokemon would you like to swap for:");
+            let mut counter = 1;
+            for pokemon in &game_state.player.party.mon{
+                if *pokemon != None {
+                    println!("{}. {} ({:?})", counter, pokemon.as_ref().unwrap().name, pokemon.as_ref().unwrap().status);
+                    counter += 1;
+                }
+            }
+            let mut selection:u8;
+            loop {
+                selection = get_user_input(counter.clone())-1;
+
+                if game_state.player.party.mon[selection as usize].as_ref().unwrap().status != Fainted{
+                    break
+                }else{
+                    println!("That Pokemon cannot fight, select another!");
+                }
+            }
+            return (MainMenuOptions::Change, Some(selection.clone()));
         },
         4=>{
-            println!("RUNNING NOT YET IMPLIMENTED");
+            //println!("RUNNING NOT YET IMPLIMENTED");
             return(MainMenuOptions::Run, None);
         },
         _=>unreachable!(),

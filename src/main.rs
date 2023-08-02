@@ -33,8 +33,10 @@ use std::{env, io};
 use std::io::Write;
 use std::thread::sleep;
 use std::time::Duration;
+use rand::seq::SliceRandom;
 use crate::enemy_trainers::Trainer;
 use crate::evolution::{CATERPIE, EvolutionData, EvolutionTriggers};
+use crate::lib::get_user_input;
 use crate::MoveCat::Physical;
 use crate::StatType::{Attack, Defense, Special, Speed};
 
@@ -80,6 +82,24 @@ impl GameState {
         todo!()
     }
 }
+struct EventRec{
+    starter_received: bool,
+    oaks_parcel_delivered: bool,
+    lavender_tower_ghost: bool,
+    snorlax_route12: bool,
+    snorlax_route16: bool,
+    lee_or_chan: bool,
+    omanyte_or_kabuto: bool,
+    articuno_encountered: bool,
+    zapdoz_encountered: bool,
+    moltres_encountered: bool,
+    mewtwo_encountered: bool,
+}
+struct BillPC{
+    boxes: Vec<Pokemon>,
+}
+
+struct BadgeBox{}
 // Player will be nested inside GameState and contain data specific to the player (party, items etc)
 pub struct Player {
     name: String,
@@ -109,18 +129,64 @@ impl Party {
         } else if self.mon[1] == None {
             self.mon[1] = Some(new_mon);
         } else if self.mon[2] == None {
-            self.mon[2] == Some(new_mon);
+            self.mon[2] = Some(new_mon);
         } else if self.mon[3] == None {
-            self.mon[3] == Some(new_mon);
+            self.mon[3] = Some(new_mon);
         } else if self.mon[4] == None {
-            self.mon[4] == Some(new_mon);
+            self.mon[4] = Some(new_mon);
         } else if self.mon[5] == None {
-            self.mon[5] == Some(new_mon);
+            self.mon[5] = Some(new_mon);
         } else {
             println!("\nNo room for new pokemon!");
             //TODO - Send new_mon to "BILL's PC"
         }
     }
+    pub fn party_menu(&mut self){
+        loop {
+            println!("\n Your Party:");
+            self.display_party();
+            println!("\nWhat would you like to do?");
+            println!("1. Swap Pokemon");
+            println!("9. Exit Menu");
+            let selection = get_user_input(9);
+            match selection {
+                1 => self.swap_party_members(),
+                _ => {break}
+            }
+        }
+    }
+    // For Swapping the order of party members from the Overworld menu.
+    fn swap_party_members(&mut self){
+        println!("What Pokemon do you want to move?");
+        self.display_party();
+        let valid_pokemon = self.num_in_party();
+        let selected_poke = get_user_input(valid_pokemon as u8);
+        let selected_poke = selected_poke - 1;
+        println!("What spot do you want to put {}", self.mon[selected_poke as usize].as_ref().unwrap().name);
+        let selected_spot = get_user_input(valid_pokemon.clone() as u8);
+        let selected_spot = selected_spot - 1;
+        self.mon.swap(selected_poke.clone() as usize,selected_spot as usize);
+    }
+
+    fn num_in_party(&self)->usize{
+        let mut counter = 0;
+        for mon in &self.mon{
+            if *mon !=None{
+                counter+=1;
+            }
+        }
+        return counter;
+    }
+    fn display_party(&self){
+        let mut counter = 1;
+        for poke in &self.mon{
+            if *poke != None{
+                println!("{}. {} {}", counter, poke.as_ref().unwrap().name, poke.as_ref().unwrap().level);
+                counter+=1;
+            }
+        }
+    }
+
     pub fn pokecentre_heal(&mut self){
         if self.mon[0] != None{
             /*
@@ -150,7 +216,6 @@ fn enemy_move_select(enemy: &Pokemon) -> u8 {
     let move_select = rng.gen_range(1..=known_moves);
     return move_select as u8;
 }
-
 
 // To be moved to battle_logic.rs
 // Ideally the battle function will deal with both Trainer and Wild battles, I suspect using these Traits.
@@ -203,10 +268,6 @@ impl PartyOperations for Party {
         for mon in &self.mon {
             if mon.as_ref().unwrap().status == Healthy {
                 return Ok(counter);
-                /*
-                let healthy_mon = mon.clone().unwrap();
-                return Ok(healthy_mon);
-                 */
             }
             counter += 1;
         }
@@ -222,6 +283,7 @@ enum StatType{
     Accuracy,
     Evasion,
 }
+// Each stat can be raised or lowered by up to 6 'stages' in a battle. This struct tracks that.
 #[derive(Clone, PartialEq, Debug)]
 struct BattleStats {
     attack: i8,
@@ -326,8 +388,6 @@ impl Pokemon {
             let value = &stat.value;
             let ev = &stat.ev;
 
-            // TODO: HP uses different formula.
-
             let levelled_stat =
                 ((((value + iv) * 2 + (integer_square_root(ev) / 4)) * level) / 100) + 5;
             return levelled_stat;
@@ -378,6 +438,19 @@ impl Pokemon {
             iv: random_iv(),
         };
         let (first_move, second_move) = base_stats.lvl1_moves.clone();
+
+        let total_move_pool = LEARNABLEMOVES.iter().find(|data| data.species == species);
+        let mut valid_move_pool: Vec<Moves> = vec![first_move, second_move];
+        for (num, move_name) in total_move_pool.unwrap().level_up_moves{
+            if num <= &level{
+                valid_move_pool.push(*move_name);
+            }
+        }
+        if valid_move_pool.len() > 4{
+            valid_move_pool.shuffle(&mut rand::thread_rng());
+            valid_move_pool.truncate(4);
+        }
+
         attack_stat.value = leveler(&level, &attack_stat);
         defense_stat.value = leveler(&level, &defense_stat);
         speed_stat.value = leveler(&level, &speed_stat);
@@ -400,7 +473,7 @@ impl Pokemon {
             def: defense_stat,
             spd: speed_stat,
             spec: special_stat,
-            moves: vec![first_move.clone(), second_move.clone()],
+            moves: valid_move_pool,
             first_move,
             second_move,
             base_exp: base_stats.base_exp,
