@@ -376,6 +376,8 @@ fn starter_selection(game_state: &mut GameState) -> Regions {
         Regions::PalletTown(PalletTownLocations::OaksLab)
     };
 }
+fn pewter_gym(){}
+
 
 fn mom() {
     type_text("MOM: Goodluck today!\n");

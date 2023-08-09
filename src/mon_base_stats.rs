@@ -94,11 +94,11 @@ const BULBASAUR: PokemonBaseData = PokemonBaseData {
     base_defense: 49,
     base_speed: 46,
     base_special: 65,
-    primary_type: PokeTypes::Grass,
-    secondary_type: PokeTypes::Poison,
+    primary_type: Grass,
+    secondary_type: Poison,
     base_exp: 64,
     lvl1_moves: (Tackle, Growl), //Should be Tackle/Growl
-    exp_cat: ExpCat::MediumSlow,
+    exp_cat: MediumSlow,
     capture_rate: 45,
 };
 const IVYSAUR: PokemonBaseData = PokemonBaseData{
@@ -113,7 +113,7 @@ const IVYSAUR: PokemonBaseData = PokemonBaseData{
     secondary_type: Poison,
     base_exp: 141,
     lvl1_moves: (Tackle, Growl),
-    exp_cat: ExpCat::MediumSlow,
+    exp_cat: MediumSlow,
     capture_rate: 45,
 };
 const VENUSAUR: PokemonBaseData = PokemonBaseData{
@@ -139,11 +139,11 @@ const CHARAMANDER: PokemonBaseData = PokemonBaseData {
     base_defense: 43,
     base_speed: 65,
     base_special: 50,
-    primary_type: PokeTypes::Fire,
-    secondary_type: PokeTypes::None,
+    primary_type: Fire,
+    secondary_type: None,
     base_exp: 65,
     lvl1_moves: (Scratch, Growl),
-    exp_cat: ExpCat::MediumSlow,
+    exp_cat: MediumSlow,
     capture_rate: 45,
 };
 const CHAMELEON: PokemonBaseData = PokemonBaseData{
@@ -184,11 +184,11 @@ const SQUIRTLE: PokemonBaseData = PokemonBaseData {
     base_defense: 65,
     base_speed: 43,
     base_special: 50,
-    primary_type: PokeTypes::Water,
-    secondary_type: PokeTypes::None,
+    primary_type: Water,
+    secondary_type: None,
     base_exp: 66,
     lvl1_moves: (Tackle, TailWhip),
-    exp_cat: ExpCat::MediumSlow,
+    exp_cat: MediumSlow,
     capture_rate: 45,
 };
 const WARTORTLE: PokemonBaseData = PokemonBaseData{
@@ -229,11 +229,11 @@ const CATERPIE: PokemonBaseData = PokemonBaseData {
     base_defense: 35,
     base_speed: 45,
     base_special: 20,
-    primary_type: PokeTypes::Bug,
-    secondary_type: PokeTypes::None,
+    primary_type: Bug,
+    secondary_type: None,
     base_exp: 53,
     lvl1_moves: (Tackle, Moves::StringShot),
-    exp_cat: ExpCat::MediumFast,
+    exp_cat: MediumFast,
     capture_rate: 255,
 };
 const METAPOD: PokemonBaseData = PokemonBaseData{
@@ -244,11 +244,11 @@ const METAPOD: PokemonBaseData = PokemonBaseData{
     base_defense: 55,
     base_speed: 30,
     base_special: 25,
-    primary_type: PokeTypes::Bug,
-    secondary_type: PokeTypes::None,
+    primary_type: Bug,
+    secondary_type: None,
     base_exp: 72,
-    lvl1_moves: (Moves::Tackle, Moves::Harden),
-    exp_cat: ExpCat::MediumFast,
+    lvl1_moves: (Tackle, Moves::Harden),
+    exp_cat: MediumFast,
     capture_rate: 120,
 };
 const WEEDLE: PokemonBaseData = PokemonBaseData {
@@ -259,11 +259,11 @@ const WEEDLE: PokemonBaseData = PokemonBaseData {
     base_defense: 30,
     base_speed: 50,
     base_special: 20,
-    primary_type: PokeTypes::Bug,
-    secondary_type: PokeTypes::Poison,
+    primary_type: Bug,
+    secondary_type: Poison,
     base_exp: 52,
     lvl1_moves: (Moves::PoisonSting, Moves::StringShot),
-    exp_cat: ExpCat::MediumFast,
+    exp_cat: MediumFast,
     capture_rate: 255,
 };
 const KAKUNA: PokemonBaseData = PokemonBaseData{
@@ -274,8 +274,8 @@ const KAKUNA: PokemonBaseData = PokemonBaseData{
     base_defense: 50,
     base_speed: 35,
     base_special: 25,
-    primary_type: PokeTypes::Bug,
-    secondary_type: PokeTypes::Poison,
+    primary_type: Bug,
+    secondary_type: Poison,
     base_exp: 71,
     lvl1_moves: (Moves::Tackle, Moves::Harden),
     exp_cat: MediumFast,
@@ -289,11 +289,11 @@ const PIDGEY: PokemonBaseData = PokemonBaseData {
     base_defense: 40,
     base_speed: 56,
     base_special: 35,
-    primary_type: PokeTypes::Normal,
-    secondary_type: PokeTypes::Flying,
+    primary_type: Normal,
+    secondary_type: Flying,
     base_exp: 55,
-    lvl1_moves: (Moves::Gust, Moves::Gust),
-    exp_cat: ExpCat::MediumSlow,
+    lvl1_moves: (Gust, Moves::Gust),
+    exp_cat: MediumSlow,
     capture_rate: 255,
 };
 const PIDGEOTTO: PokemonBaseData =PokemonBaseData{

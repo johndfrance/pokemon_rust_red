@@ -15,6 +15,7 @@ mod items;
 mod wild_battle_logic;
 mod pokemon_structure;
 mod region_groups;
+mod pokedex;
 
 use crate::game::*;
 use crate::mon_base_stats::PokemonSpecies::{Charamander, Metapod, Pidgey, Rattata, Squirtle};
@@ -82,6 +83,7 @@ impl GameState {
         todo!()
     }
 }
+
 struct EventRec{
     starter_received: bool,
     oaks_parcel_delivered: bool,
@@ -296,10 +298,10 @@ struct BattleStats {
 impl BattleStats{
     fn get_stat_mod(&self, stat_type: StatType)->f32{
         let mut stat_in_question = match stat_type{
-            StatType::Attack=>&self.attack,
-            StatType::Defense=>&self.defense,
-            StatType::Speed=>&self.speed,
-            StatType::Special=>&self.special,
+            Attack=>&self.attack,
+            Defense=>&self.defense,
+            Speed=>&self.speed,
+            Special=>&self.special,
             StatType::Accuracy=>&self.accuracy,
             StatType::Evasion=>&self.evasion,
         };
@@ -324,10 +326,10 @@ impl BattleStats{
     // Future: Some moves raise/lower stats by more than 1, for now this will be ignored.
     fn lower_stat(&mut self, stat_type: StatType){
         let mut stat_in_question = match stat_type{
-            StatType::Attack=>self.attack,
-            StatType::Defense=>self.defense,
-            StatType::Speed=>self.speed,
-            StatType::Special=>self.special,
+            Attack=>self.attack,
+            Defense=>self.defense,
+            Speed=>self.speed,
+            Special=>self.special,
             StatType::Accuracy=>self.accuracy,
             StatType::Evasion=>self.evasion,
         };
@@ -339,10 +341,10 @@ impl BattleStats{
     }
     fn raise_stat(&mut self, stat_type: StatType){
         let mut stat_in_question = match stat_type{
-            StatType::Attack=>self.attack,
-            StatType::Defense=>self.defense,
-            StatType::Speed=>self.speed,
-            StatType::Special=>self.special,
+            Attack=>self.attack,
+            Defense=>self.defense,
+            Speed=>self.speed,
+            Special=>self.special,
             StatType::Accuracy=>self.accuracy,
             StatType::Evasion=>self.evasion,
         };
