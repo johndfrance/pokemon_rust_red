@@ -12,7 +12,7 @@ use crate::game::Regions::*;
 use crate::game::PalletTownLocations::*;
 use crate::game::ViridianCityLocations::*;
 use crate::Pokemon;
-
+use serde::{Serialize, Deserialize};
 
 
 pub struct WildPokemon{

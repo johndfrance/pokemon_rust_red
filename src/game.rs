@@ -7,7 +7,7 @@ battles, wild encounters, and so on.
 use std::cmp::Ordering;
 use crate::battle_logic::battle2;
 use crate::mon_base_stats::PokemonSpecies::{Bulbasaur, Caterpie, Charamander, Pidgey, Squirtle};
-use crate::{read_user_input, type_text, GameState, Pokemon, Trainer};
+use crate::{read_user_input, type_text, GameState, Pokemon, Trainer, save_temp};
 use colored::Colorize;
 use std::{io, result};
 use std::io::Write;
@@ -18,6 +18,8 @@ use crate::game::ViridianCityLocations::*;
 use crate::lib::{get_user_input, PEWTER, travelling, VIRIDIAN};
 use crate::region_groups::get_wild_encounter;
 use crate::wild_battle_logic::wild_encounter;
+
+use serde::{Serialize, Deserialize};
 
 pub fn rust_red_game(mut game_state: GameState) {
     println!("{}\n********************", "POKEMON - RUST RED".red());
@@ -265,13 +267,13 @@ pub fn rust_red_game(mut game_state: GameState) {
         }
     }
 }
-#[derive(PartialEq, Clone, Copy)]
+#[derive(PartialEq, Clone, Copy, Debug, Serialize, Deserialize)]
 pub enum Regions {
     PalletTown(PalletTownLocations),
     ViridianCity(ViridianCityLocations),
     PewterCity(PewterCityLocations),
 }
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, Debug, Serialize, Deserialize)]
 pub enum PalletTownLocations {
     RedsHouse,
     BluesHouse,
@@ -279,7 +281,7 @@ pub enum PalletTownLocations {
     Route1,
     Outside,
 }
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, Debug, Serialize, Deserialize)]
 pub enum ViridianCityLocations {
     Gym,
     Mart,
@@ -288,7 +290,7 @@ pub enum ViridianCityLocations {
     Route2,
     ViridianForest,
 }
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, Debug, Serialize, Deserialize)]
 pub enum PewterCityLocations{
     Gym,
     Outside,
@@ -401,7 +403,7 @@ fn master_menu(game_state: &mut GameState){
                 game_state.player.party.party_menu();
             },
             3 => bag_display(),
-            4 => game_state.save(),
+            4 => save_temp(game_state),
             5 => break,
             _ => unreachable!()
         }

@@ -1,4 +1,6 @@
-#[derive(PartialEq, Clone, Debug, Copy)]
+use serde::{Serialize, Deserialize};
+
+#[derive(PartialEq, Clone, Debug, Copy, Serialize, Deserialize)]
 pub enum PokeTypes {
     Normal,
     Grass,

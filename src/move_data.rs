@@ -1,7 +1,8 @@
 use crate::{MoveCat, MoveEffectCat, PokeTypes};
 use std::collections::binary_heap::PeekMut;
+use serde::{Serialize, Deserialize};
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct MoveData {
     pub name: &'static str,
     pub base_power: u16,
@@ -12,7 +13,7 @@ pub struct MoveData {
     pub pp: u16,
 }
 // List of Moves currently implemented
-#[derive(Clone, Debug, Copy, PartialEq)]
+#[derive(Clone, Debug, Copy, PartialEq, Serialize, Deserialize)]
 pub enum Moves {
     Agility,
     Bite,

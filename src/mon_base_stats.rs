@@ -6,6 +6,9 @@ use crate::evolution::{EvolutionData};
 use crate::ExpCat::{MediumFast, MediumSlow};
 use crate::PokeTypes::*;
 
+use serde::{Serialize, Deserialize};
+
+#[derive(Clone, Serialize, Deserialize)]
 pub struct PokemonBaseData {
     dex_num: u8,
     pub name: &'static str,
@@ -23,7 +26,7 @@ pub struct PokemonBaseData {
     pub capture_rate: u8,
 }
 
-#[derive(Clone, PartialEq, Debug, Copy)]
+#[derive(Clone, PartialEq, Debug, Copy, Serialize, Deserialize)]
 pub enum PokemonSpecies {
     Bulbasaur,
     Ivysaur,

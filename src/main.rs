@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use colored::Colorize;
+
 mod battle_logic;
 mod enemy_trainers;
 mod evolution;
@@ -26,31 +26,56 @@ use crate::PokemonSpecies::{Bulbasaur, Pikachu};
 use crate::Status::{Asleep, Burned, Fainted, Frozen, Healthy, Paralyzed, Poisoned};
 use crate::mon_move_sets::LEARNABLEMOVES;
 use crate::move_data::Moves::Tackle;
-use rand::Rng;
-use std::cmp::Ordering;
-use std::collections::HashMap;
-use std::fmt::format;
-use std::{env, io};
-use std::io::Write;
-use std::thread::sleep;
-use std::time::Duration;
-use rand::seq::SliceRandom;
 use crate::enemy_trainers::Trainer;
 use crate::evolution::{CATERPIE, EvolutionData, EvolutionTriggers};
 use crate::lib::get_user_input;
 use crate::MoveCat::Physical;
 use crate::StatType::{Attack, Defense, Special, Speed};
 
+use colored::Colorize;
+use rand::Rng;
+use rand::seq::SliceRandom;
+use serde::{Serialize, Deserialize};
+use std::cmp::Ordering;
+use std::collections::HashMap;
+use std::fmt::format;
+use std::{env, io};
+use std::io::{Read, Write};
+use std::thread::sleep;
+use std::time::Duration;
+use std::fs::{File, OpenOptions};
+
+
 // MAIN
 fn main() {
     env::set_var("RUST_BACKTRACE", "1");
     // TODO: Impl 'Continue/New Game' menu
     //println!("Do you want to:\n1.New Game.\n2.Continue\n3.Debug");
-
     let mut game_state = GameState::new();
+    let mut loaded_game = load_game().unwrap();
+    rust_red_game(loaded_game);
     rust_red_game(game_state);
 }
+
+pub fn save_temp(game_state: &GameState){
+    let json_data = serde_json::to_string(game_state);
+    let mut file = OpenOptions::new()
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .open("pokemon.json");
+    file.expect("Error").write_all(json_data.expect("Error").as_bytes());
+    //Ok(())
+}
+fn load_game()->Result<GameState, Box<dyn std::error::Error>>{
+    let mut file = File::open("pokemon.json")?;
+    let mut json_str = String::new();
+    file.read_to_string(&mut json_str)?;
+    let loaded_pokemon: GameState = serde_json::from_str(&json_str)?;
+    return Ok(loaded_pokemon);
+}
 // GameState will track all the key data such as whether events have triggered, player party etc.
+#[derive(Debug, Serialize, Deserialize)]
 pub struct GameState {
     player: Player,
     pokedex: PokeDex,
@@ -103,6 +128,7 @@ struct BillPC{
 
 struct BadgeBox{}
 // Player will be nested inside GameState and contain data specific to the player (party, items etc)
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Player {
     name: String,
     party: Party,
@@ -116,10 +142,12 @@ impl Player {
 // TODO: This should get its own separate file.
 // I will need some sort of array that flags whether each pokemon type has been seen or caught before.
 // I will also need a list of all the pokemon + description, probably separate from base_stats.
+#[derive(Debug, Serialize, Deserialize)]
 struct PokeDex {}
 
 // For now having an array of 6 Pokemon Options seems like the right balance. For now I have the player
 // using this and the enemy Trainers using a Vec<Pokemon> and I will see if one is clearly better.
+#[derive(Debug, Serialize, Deserialize)]
 struct Party {
     mon: [Option<Pokemon>; 6],
 }
@@ -286,7 +314,7 @@ enum StatType{
     Evasion,
 }
 // Each stat can be raised or lowered by up to 6 'stages' in a battle. This struct tracks that.
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, PartialEq, Debug, Serialize, Deserialize)]
 struct BattleStats {
     attack: i8,
     defense: i8,
@@ -355,13 +383,13 @@ impl BattleStats{
         }
     }
 }
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 struct SpecialConditionFlags{
     leech_seeded: bool,
 }
 
 // Main Pokemon Struct
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, PartialEq, Debug, Serialize, Deserialize)]
 pub struct Pokemon {
     name: String,
     species: PokemonSpecies,
@@ -464,7 +492,7 @@ impl Pokemon {
         Pokemon {
             name: base_stats.name.to_string(),
             species,
-            status: Status::Healthy,
+            status: Healthy,
             current_hp: hit_point_stat.value.clone(),
             level,
             exp,
@@ -773,7 +801,7 @@ impl Pokemon {
     }
 }
 
-#[derive(Clone, PartialEq, Debug, Copy)]
+#[derive(Clone, PartialEq, Debug, Copy, Serialize, Deserialize)]
 struct Stat {
     value: u16,
     ev: u16,
@@ -825,13 +853,13 @@ fn get_leveling_data(level: &u16) -> u32 {
     return exp_for_level.clone();
 }
 
-#[derive(Clone, PartialEq, )]
+#[derive(Clone, PartialEq,Serialize, Deserialize )]
 pub enum MoveCat {
     Physical,
     Special,
     Status,
 }
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub enum MoveEffectCat {
     None,
 
@@ -890,14 +918,14 @@ impl MoveEffectCat {
 // Every Move Effect will require an associated function. For the sake of organization these will be
 // kept in a separate impl block.
 
-#[derive(Eq, Hash, PartialEq, Copy, Clone)]
+#[derive(Eq, Hash, PartialEq, Copy, Clone, Serialize, Deserialize)]
 pub enum ExpCat {
     Fast,
     MediumFast,
     MediumSlow,
     Slow,
 }
-#[derive(Clone, PartialEq, Debug, Copy)]
+#[derive(Clone, PartialEq, Debug, Copy, Serialize, Deserialize)]
 enum Status {
     Healthy,
     Fainted,
