@@ -147,6 +147,10 @@ pub const LEARNABLEMOVES: &[LearnableMoves] = &[
             (43, Thunder),
         ],
     },
+
+
+
+
     /*
     LearnableMoves{
         species: PokemonSpecies::Charamander,

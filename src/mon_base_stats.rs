@@ -39,6 +39,7 @@ pub enum PokemonSpecies {
     Blastoise,
     Caterpie,
     Metapod,
+    Butterfly,
     Weedle,
     Kakuna,
     Pidgey,
@@ -70,6 +71,7 @@ impl PokemonSpecies {
             Blastoise=>BLASTOISE,
             Caterpie => CATERPIE,
             Metapod=>METAPOD,
+            Butterfly=>BUTTERFREE,
             Weedle => WEEDLE,
             Kakuna=>KAKUNA,
             Pidgey => PIDGEY,
@@ -253,6 +255,21 @@ const METAPOD: PokemonBaseData = PokemonBaseData{
     lvl1_moves: (Tackle, Moves::Harden),
     exp_cat: MediumFast,
     capture_rate: 120,
+};
+const BUTTERFREE: PokemonBaseData = PokemonBaseData{
+    dex_num: 12,
+    name: "Butterfree",
+    base_hp: 60,
+    base_attack: 45,
+    base_defense: 50,
+    base_speed: 70,
+    base_special: 80,
+    primary_type: Bug,
+    secondary_type: Flying,
+    base_exp: 160,
+    lvl1_moves: (Moves::Confusion, Moves::Confusion),
+    exp_cat: MediumFast,
+    capture_rate: 45,
 };
 const WEEDLE: PokemonBaseData = PokemonBaseData {
     dex_num: 13,
