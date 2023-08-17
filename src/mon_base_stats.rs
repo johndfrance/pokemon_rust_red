@@ -1,5 +1,5 @@
 use crate::move_data::Moves;
-use crate::move_data::Moves::{DefenseCurl, Growl, Gust, LeechSeed, SandAttack, Scratch, Screech, Tackle, TailWhip, ThunderShock};
+use crate::move_data::Moves::{DefenseCurl, Growl, Gust, Harden, LeechSeed, PoisonSting, SandAttack, Scratch, Screech, Tackle, TailWhip, ThunderShock};
 use crate::PokemonSpecies::*;
 use crate::{ExpCat, PokeTypes};
 use crate::evolution::{EvolutionData};
@@ -42,15 +42,19 @@ pub enum PokemonSpecies {
     Butterfly,
     Weedle,
     Kakuna,
+    Beedrill,
     Pidgey,
     Pidgeotto,
     Pidgeot,
     Rattata,
+    Raticate,
     Spearow,
     Ekans,
     Pikachu,
+    Sandshrew,
     NidoranF,
     Jigglypuff,
+    Diglett,
     Geodude,
     Graveler,
     Golem,
@@ -74,15 +78,19 @@ impl PokemonSpecies {
             Butterfly=>BUTTERFREE,
             Weedle => WEEDLE,
             Kakuna=>KAKUNA,
+            Beedrill=>BEEDRILL,
             Pidgey => PIDGEY,
             Pidgeotto=>PIDGEOTTO,
             Pidgeot=>PIDGEOT,
             Rattata => RATTATA,
+            Raticate=>RATICATE,
             Spearow=>SPEAROW,
             Ekans=>EKANS,
             Pikachu => PIKACHU,
+            Sandshrew=>SANDSHREW,
             NidoranF=>NIDORANF,
             Jigglypuff=>JIGGLYPUFF,
+            Diglett=>DIGLETT,
             Geodude=>GEODUDE,
             Graveler=>GRAVELER,
             Golem=>GOLEM,
@@ -301,6 +309,21 @@ const KAKUNA: PokemonBaseData = PokemonBaseData{
     exp_cat: MediumFast,
     capture_rate: 120,
 };
+const BEEDRILL: PokemonBaseData = PokemonBaseData{
+    dex_num: 15,
+    name: "Beedrill",
+    base_hp: 65,
+    base_attack: 80,
+    base_defense: 40,
+    base_speed: 75,
+    base_special: 45,
+    primary_type: Bug,
+    secondary_type: Poison,
+    base_exp: 159,
+    lvl1_moves: (PoisonSting, Harden),
+    exp_cat: MediumFast,
+    capture_rate: 45,
+};
 const PIDGEY: PokemonBaseData = PokemonBaseData {
     dex_num: 16,
     name: "Pidgey",
@@ -361,6 +384,21 @@ const RATTATA: PokemonBaseData = PokemonBaseData {
     exp_cat: ExpCat::MediumFast,
     capture_rate: 255,
 };
+const RATICATE: PokemonBaseData = PokemonBaseData{
+    dex_num: 20,
+    name: "Raticate",
+    base_hp: 55,
+    base_attack: 81,
+    base_defense: 60,
+    base_speed: 97,
+    base_special: 50,
+    primary_type: PokeTypes::Normal,
+    secondary_type: PokeTypes::Normal,
+    base_exp: 0,
+    lvl1_moves: (Tackle, TailWhip),
+    exp_cat: MediumFast,
+    capture_rate: 116,
+};
 const SPEAROW: PokemonBaseData = PokemonBaseData{
     dex_num: 21,
     name: "Spearow",
@@ -406,6 +444,21 @@ const PIKACHU: PokemonBaseData = PokemonBaseData {
     exp_cat: MediumFast,
     capture_rate: 190,
 };
+const SANDSHREW: PokemonBaseData =PokemonBaseData{
+    dex_num: 27,
+    name: "Sandshrew",
+    base_hp: 50,
+    base_attack: 75,
+    base_defense: 85,
+    base_speed: 40,
+    base_special: 30,
+    primary_type: Ground,
+    secondary_type: None,
+    base_exp: 93,
+    lvl1_moves: (Moves::Scratch, Moves::Scratch),
+    exp_cat: MediumFast,
+    capture_rate: 255,
+};
 const NIDORANF: PokemonBaseData = PokemonBaseData{
     dex_num: 29,
     name: "Nidoran♀",
@@ -435,6 +488,21 @@ const JIGGLYPUFF: PokemonBaseData = PokemonBaseData{
     lvl1_moves: (Moves::Sing, Moves::Sing),
     exp_cat: ExpCat::Fast,
     capture_rate: 173,
+};
+const DIGLETT: PokemonBaseData =PokemonBaseData{
+    dex_num: 50,
+    name: "Diglett",
+    base_hp: 10,
+    base_attack: 55,
+    base_defense: 25,
+    base_speed: 95,
+    base_special: 45,
+    primary_type: Ground,
+    secondary_type: None,
+    base_exp: 81,
+    lvl1_moves: (Scratch, Scratch),
+    exp_cat: MediumFast,
+    capture_rate: 255,
 };
 const GEODUDE: PokemonBaseData=PokemonBaseData{
     dex_num: 74,
