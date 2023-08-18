@@ -16,6 +16,7 @@ mod wild_battle_logic;
 mod pokemon_structure;
 mod region_groups;
 mod pokedex;
+mod gym_challenges;
 
 use crate::game::*;
 use crate::mon_base_stats::PokemonSpecies::{Charamander, Metapod, Pidgey, Rattata, Squirtle};

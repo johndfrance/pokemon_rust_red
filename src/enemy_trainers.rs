@@ -1,5 +1,5 @@
 use std::string::ToString;
-use crate::mon_base_stats::PokemonSpecies::{Bulbasaur, Caterpie, Charamander, Ekans, Geodude, Jigglypuff, Kakuna, Metapod, NidoranF, Onix, Pidgey, Rattata, Spearow, Squirtle, Weedle};
+use crate::mon_base_stats::PokemonSpecies::{Bulbasaur, Caterpie, Charamander, Diglett, Ekans, Geodude, Jigglypuff, Kakuna, Metapod, NidoranF, Onix, Pidgey, Rattata, Sandshrew, Spearow, Squirtle, Weedle};
 use crate::{Party, PartyOperations, Pokemon};
 use crate::mon_base_stats::PokemonSpecies;
 use crate::Status::Healthy;
@@ -120,7 +120,7 @@ pub const BUGCATCHER6: TrainerTemplate = TrainerTemplate{
 pub const JRTRAINER1: TrainerTemplate =TrainerTemplate{
     id: 11,
     name: "Jr. Trainer Jerry",
-party: [None, None,None,None,None,None],
+party: [Some((Diglett, 11)), Some((Sandshrew, 11)),None,None,None,None],
     reward: 220,
 };
 pub const BROCK: TrainerTemplate = TrainerTemplate{

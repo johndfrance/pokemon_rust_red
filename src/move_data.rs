@@ -1,6 +1,7 @@
 use crate::{MoveCat, MoveEffectCat, PokeTypes};
 use std::collections::binary_heap::PeekMut;
 use serde::{Serialize, Deserialize};
+use crate::type_matchups::PokeTypes::Psychic;
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct MoveData {
@@ -18,6 +19,7 @@ pub enum Moves {
     Agility,
     Bite,
     Bubble,
+    Confusion,
     DefenseCurl,
     Ember,
     FireSpin,
@@ -67,6 +69,7 @@ impl Moves {
             Moves::Agility => AGILITY,
             Moves::Bite => BITE,
             Moves::Bubble => BUBBLE,
+            Moves::Confusion=>CONFUSION,
             Moves::Ember => EMBER,
             Moves::DefenseCurl=>DEFENSECURL,
             Moves::FireSpin => FIRESPIN,
@@ -140,6 +143,15 @@ pub const BUBBLE: MoveData = MoveData {
     move_cat: MoveCat::Physical,
     effect_type: MoveEffectCat::SpeedDown1,
     pp: 30,
+};
+const CONFUSION: MoveData =MoveData{
+    name: "Confusion",
+    base_power: 50,
+    accuracy: 100,
+    move_type: Psychic,
+    move_cat: MoveCat::Special,
+    effect_type: MoveEffectCat::None, //TODO
+    pp: 25,
 };
 const DEFENSECURL: MoveData=MoveData{
     name: "Defense Curl",

@@ -20,6 +20,7 @@ use crate::region_groups::get_wild_encounter;
 use crate::wild_battle_logic::wild_encounter;
 
 use serde::{Serialize, Deserialize};
+use crate::gym_challenges::viridian_gym;
 
 pub fn rust_red_game(mut game_state: GameState) {
     println!("{}\n********************", "POKEMON - RUST RED".red());
@@ -259,7 +260,7 @@ pub fn rust_red_game(mut game_state: GameState) {
                 _=>println!("Invalid choice"),
             }
             PewterCity(PewterCityLocations::Gym)=> match choice{
-                1=>{todo!()},
+                1=>{viridian_gym(&mut game_state)},
                 2=>game_state.move_loc(PewterCity(PewterCityLocations::Outside)),
                 _=>println!("Invalid choice"),
             }
