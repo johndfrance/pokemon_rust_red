@@ -1,5 +1,4 @@
 #![allow(dead_code)]
-
 mod battle_logic;
 mod enemy_trainers;
 mod evolution;
@@ -41,6 +40,7 @@ use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::fmt::format;
 use std::{env, io};
+use std::f32::consts::E;
 use std::io::{Read, Write};
 use std::thread::sleep;
 use std::time::Duration;
@@ -81,6 +81,9 @@ pub struct GameState {
     player: Player,
     pokedex: PokeDex,
     location: Regions,
+    event: EventRec,
+    pc: BillPC,
+    last_used_pcentre: Regions,
     //enemy_trainers: HashMap<u16, Bool>,
 }
 impl GameState {
@@ -94,8 +97,26 @@ impl GameState {
                 },
                 cash: 3000,
             },
+            event: EventRec{
+                starter_received: false,
+                oaks_parcel_delivered: false,
+                lavender_tower_ghost: false,
+                snorlax_route12: false,
+                snorlax_route16: false,
+                lee_or_chan: false,
+                omanyte_or_kabuto: false,
+                articuno_encountered: false,
+                zapdoz_encountered: false,
+                moltres_encountered: false,
+                mewtwo_encountered: false,
+            },
+
             pokedex: PokeDex {},
             location: Regions::PalletTown(PalletTownLocations::RedsHouse),
+            pc: BillPC{
+                boxes: vec![],
+            },
+            last_used_pcentre: Regions::PalletTown(PalletTownLocations::RedsHouse),
             //enemy_trainers: Default::default(),
         }
     }
@@ -109,7 +130,7 @@ impl GameState {
         todo!()
     }
 }
-
+#[derive(Debug, Serialize, Deserialize)]
 struct EventRec{
     starter_received: bool,
     oaks_parcel_delivered: bool,
@@ -123,6 +144,7 @@ struct EventRec{
     moltres_encountered: bool,
     mewtwo_encountered: bool,
 }
+#[derive(Debug, Serialize, Deserialize)]
 struct BillPC{
     boxes: Vec<Pokemon>,
 }
