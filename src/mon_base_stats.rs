@@ -110,7 +110,7 @@ const BULBASAUR: PokemonBaseData = PokemonBaseData {
     primary_type: Grass,
     secondary_type: Poison,
     base_exp: 64,
-    lvl1_moves: (Tackle, Growl), //Should be Tackle/Growl
+    lvl1_moves: (Tackle, Growl),
     exp_cat: MediumSlow,
     capture_rate: 45,
 };
