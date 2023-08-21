@@ -25,7 +25,7 @@ pub struct Trainer{
 }
 impl Trainer{
     pub fn get(id: u16)-> Trainer{
-        let trainers: Vec<TrainerTemplate> = vec![RIVAL1_1, RIVAL2_1, RIVAL3_1, BUGCATCHER1, YOUNGSTER1, BUGCATCHER4, BUGCATCHER5, BUGCATCHER6];
+        let trainers: Vec<TrainerTemplate> = vec![RIVAL1_1, RIVAL2_1, RIVAL3_1, BUGCATCHER1, YOUNGSTER1, BUGCATCHER4, BUGCATCHER5, BUGCATCHER6, JRTRAINER1, BROCK];
 
         let found_trainer = trainers
             .iter()

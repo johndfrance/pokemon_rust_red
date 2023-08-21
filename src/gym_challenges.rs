@@ -11,6 +11,5 @@ pub fn viridian_gym(game_state: &mut GameState){
     let result = battle2(game_state, &mut gym_leader);
     if result {
         type_text("You've beat Gym Leader Brock!\n He gives you the BOULDER BADGE!");
-
     }
 }

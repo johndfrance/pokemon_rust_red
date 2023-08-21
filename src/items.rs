@@ -1,11 +1,27 @@
+use serde::{Serialize, Deserialize};
+
 struct Backpack{
 
 }
-struct StdItem{
-    item_type: Item,
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
+pub struct StdItem {
+    /*
+    item_type: &'a str,
     price: u16,
-    description: String,
+    description: &'a str,
+    quantity: u8,
+
+     */
 }
+pub const OAKPARCEL: StdItem = StdItem{
+    /*
+    item_type: "Oak's Parcel",
+    price: 0,
+    description: "A parcel to deliver to PROFESSOR OAK",
+    quantity: 1,
+
+     */
+};
 
 trait ItemFeatures{
     fn use_item(){}

@@ -4,13 +4,10 @@ Title: game.rs
 Desc: Contains the core structure of the 'game', the moving around from location to location, calling
 battles, wild encounters, and so on.
  */
-use std::cmp::Ordering;
+
 use crate::battle_logic::battle2;
 use crate::mon_base_stats::PokemonSpecies::{Bulbasaur, Caterpie, Charamander, Pidgey, Squirtle};
 use crate::{read_user_input, type_text, GameState, Pokemon, Trainer, save_temp};
-use colored::Colorize;
-use std::{io, result};
-use std::io::Write;
 use crate::game::Regions::{PewterCity, ViridianCity, PalletTown};
 use crate::game::PalletTownLocations::*;
 use crate::game::PewterCityLocations::PewterPokeCentre;
@@ -18,21 +15,17 @@ use crate::game::ViridianCityLocations::*;
 use crate::lib::{get_user_input, PEWTER, travelling, VIRIDIAN};
 use crate::region_groups::get_wild_encounter;
 use crate::wild_battle_logic::wild_encounter;
-
-use serde::{Serialize, Deserialize};
 use crate::gym_challenges::viridian_gym;
+use crate::items::OAKPARCEL;
+
+use std::{io, result};
+use std::io::Write;
+use std::cmp::Ordering;
+use colored::Colorize;
+use serde::{Serialize, Deserialize};
+use crate::special_locations::viridian_forest;
 
 pub fn rust_red_game(mut game_state: GameState) {
-    println!("{}\n********************", "POKEMON - RUST RED".red());
-    let msg1 = "\nWhat is your name?\n";
-    type_text(msg1);
-    let player_name = read_user_input();
-    game_state.player.enter_name(player_name.clone());
-    let msg2 = format!("Welcome to the world of Pokemon {}!\n", player_name.cyan());
-    let msg2 = msg2.as_str();
-    type_text(msg2);
-
-    //let mut current_local = Regions::PalletTown(PalletTownLocations::RedsHouse);
 
     loop {
         match &game_state.location{
@@ -151,7 +144,12 @@ pub fn rust_red_game(mut game_state: GameState) {
                     if game_state.player.party.mon[0] == None {
                         let current_local = starter_selection(&mut game_state);
                         game_state.move_loc(current_local);
-                    } else {
+                    }else if game_state.event.starter_received == true && game_state.event.oaks_parcel_delivered == false && game_state.bag.contains(&OAKPARCEL){
+                        type_text("\nOAK: Oh! It looks you have my parcel! Thank you very much!");
+                        game_state.event.oaks_parcel_delivered = true;
+                    }
+
+                    else {
                         type_text("OAK: Good Luck on your Adventure!")
                     }
                 }
@@ -196,23 +194,41 @@ pub fn rust_red_game(mut game_state: GameState) {
                 3 => game_state.move_loc(ViridianCity(Mart)),
                 4 => game_state.move_loc(ViridianCity(PokeCentre)),
                 5 => {
-                    travelling("Route 2");
-                    game_state.move_loc(ViridianCity(Route2))
+                    if game_state.event.oaks_parcel_delivered == false{
+                        type_text("\n You see an old man laying across the road. \n \
+                        OLD MAN: I'm not moving until I'm done my nap, why don't you check out the \
+                        MART.")
+                    }
+                    else {
+                        travelling("Route 2");
+                        game_state.move_loc(ViridianCity(Route2))
+                    }
                 },
                 _ => println!("Invalid choice."),
             },
             ViridianCity(PokeCentre)=>match choice{
-                1=>{game_state.player.party.pokecentre_heal()},
+                1=>{
+                    game_state.player.party.pokecentre_heal();
+                    game_state.last_used_pcentre = ViridianCity(PokeCentre);
+                },
                 2=>game_state.move_loc(ViridianCity(ViridianCityLocations::Outside)),
                 _=>println!("Invalid choice."),
             }
             ViridianCity(Mart) => match choice {
-                1 => println!("NOT YET IMPLIMENTED"),
+                1 => {
+                    if game_state.event.oaks_parcel_delivered == false{
+                        type_text("\nSHOP KEEPER: Hi there! You are from Pallet Town right? \
+                        Would you might delivering this parcel to PROFESSOR OAK?");
+                        game_state.bag.push(OAKPARCEL);
+                        type_text("\nYou Received OAK's Parcel");
+                    }
+                },
                 2 => game_state.move_loc(ViridianCity(ViridianCityLocations::Outside)),
                 _ => println!("Invalid choice"),
             }
             ViridianCity(Route2) => match choice {
                 1 => {travelling("Viridian Forest");
+                    viridian_forest(&mut game_state);
                     travelling_encounter(ViridianCity(Route2),ViridianCity(ViridianForest), &mut game_state);
                 },
                 2 => println!("Blocked by a strange looking tree..."),
@@ -250,12 +266,16 @@ pub fn rust_red_game(mut game_state: GameState) {
                 1=> game_state.move_loc(PewterCity(PewterCityLocations::Gym)),
                 2=>game_state.move_loc(PewterCity(PewterPokeCentre)),
                 5=>{travelling("Viridian Forest");
-                    game_state.move_loc(ViridianCity(ViridianForest))
+                    viridian_forest(&mut game_state);
+                    //game_state.move_loc(ViridianCity(ViridianForest))
                 },
                 _=>println!("Invalid choice"),
             }
             PewterCity(PewterPokeCentre)=>match choice{
-                1=>game_state.player.party.pokecentre_heal(),
+                1=>{
+                    game_state.player.party.pokecentre_heal();
+                    game_state.last_used_pcentre = PewterCity(PewterPokeCentre);
+                },
                 2=>game_state.move_loc(PewterCity(PewterCityLocations::Outside)),
                 _=>println!("Invalid choice"),
             }
@@ -296,6 +316,7 @@ pub enum PewterCityLocations{
     Gym,
     Outside,
     PewterPokeCentre,
+
 }
 fn wild_encounter_chance()->Option<Pokemon>{
     todo!()
@@ -314,6 +335,7 @@ fn travelling_encounter(wild_mon_list: Regions, destination: Regions, mut game_s
     }
     game_state.move_loc(destination);
 }
+
 fn adventure_start_check(game_state: &GameState) -> bool {
     return if game_state.player.party.mon[0] == None {
         type_text("OAK: Wait! It's dangerous to go out there without a Pokemon!\n");
@@ -360,6 +382,7 @@ fn starter_selection(game_state: &mut GameState) -> Regions {
             _ => println!("Sorry, that wasn't a valid choice."),
         }
     }
+    game_state.event.starter_received = true;
     type_text("OAK: Great Choice!\n");
     type_text("\nBLUE: Wait a minute, Lets Battle!\n");
     let mut trainer_blue = Trainer::get(rival_id);
@@ -386,7 +409,7 @@ fn mom() {
     type_text("MOM: Goodluck today!\n");
 }
 
-fn master_menu(game_state: &mut GameState){
+pub fn master_menu(game_state: &mut GameState){
     loop {
         println!("MENU");
         println!("1. PokeDex {}", "TODO".red());
@@ -416,7 +439,7 @@ fn party_display(game_state:  &GameState){
     println!("\n Your Party:");
     for pokemon in &game_state.player.party.mon{
         if *pokemon != None {
-            println!("{} - {:?} {}\n", counter, pokemon.as_ref().unwrap().name, pokemon.as_ref().unwrap().level,);
+            println!("{} - {:?} {} ({}/{})\n", counter, pokemon.as_ref().unwrap().name, pokemon.as_ref().unwrap().level, pokemon.as_ref().unwrap().current_hp, pokemon.as_ref().unwrap().max_hp.value);
             counter +=1;
         }
     }
