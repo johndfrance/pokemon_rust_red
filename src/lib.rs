@@ -5,6 +5,8 @@ Project: Pokemon Rust Red
 Desc: Holds a variety of useful functions that don't relate to any sort of game logic. Things like
 user input validation, some math operations, text presentation etc.
  */
+//mod color_hub;
+
 use std::{io, thread};
 use std::fmt::format;
 use std::io::Write;

@@ -16,6 +16,8 @@ mod pokemon_structure;
 mod region_groups;
 mod pokedex;
 mod gym_challenges;
+mod color_hub;
+mod special_locations;
 
 use crate::game::*;
 use crate::mon_base_stats::PokemonSpecies::{Charamander, Metapod, Pidgey, Rattata, Squirtle};
@@ -28,9 +30,10 @@ use crate::mon_move_sets::LEARNABLEMOVES;
 use crate::move_data::Moves::Tackle;
 use crate::enemy_trainers::Trainer;
 use crate::evolution::{CATERPIE, EvolutionData, EvolutionTriggers};
-use crate::lib::get_user_input;
+use crate::lib::{CINNABAR, get_user_input};
 use crate::MoveCat::Physical;
 use crate::StatType::{Attack, Defense, Special, Speed};
+use crate::items::StdItem;
 
 use colored::Colorize;
 use rand::Rng;
@@ -45,17 +48,50 @@ use std::io::{Read, Write};
 use std::thread::sleep;
 use std::time::Duration;
 use std::fs::{File, OpenOptions};
-
+use crossterm::style::Color::{Blue, Red};
+use crossterm::style::{Color, style, Stylize};
+use crate::color_hub::color_me;
 
 // MAIN
 fn main() {
     env::set_var("RUST_BACKTRACE", "1");
     // TODO: Impl 'Continue/New Game' menu
     //println!("Do you want to:\n1.New Game.\n2.Continue\n3.Debug");
-    let mut game_state = GameState::new();
-    let mut loaded_game = load_game().unwrap();
-    rust_red_game(loaded_game);
-    rust_red_game(game_state);
+
+    let red = style("Rust Red").with(Red);
+    println!("Welcome to Pokemon {}", red);
+    //color_me("Rust", Red);
+    //println!("{}\n********************", "POKEMON - RUST RED".red());
+    loop {
+        println!("1. Continue\n2. New Game");
+        let game_select = get_user_input(2);
+        match game_select {
+            1 => {
+                let mut loaded_game = load_game();
+                match loaded_game {
+                    Ok(_) => {
+                        rust_red_game(loaded_game.unwrap());
+                    }
+                    Err(_) => {
+                        eprint!("No saved game detected")
+                    }
+                }
+                //rust_red_game(loaded_game);
+            }
+            2 => {
+                let mut game_state = GameState::new();
+                let msg1 = "\nWhat is your name?\n";
+                type_text(msg1);
+                let player_name = read_user_input();
+                game_state.player.enter_name(player_name.clone());
+                let msg2 = format!("Welcome to the world of Pokemon {}!\n", player_name.cyan());
+                let msg2 = msg2.as_str();
+                type_text(msg2);
+                rust_red_game(game_state);
+            }
+            _ => unreachable!(),
+        }
+    }
 }
 
 pub fn save_temp(game_state: &GameState){
@@ -84,6 +120,7 @@ pub struct GameState {
     event: EventRec,
     pc: BillPC,
     last_used_pcentre: Regions,
+    bag: Vec<StdItem>
     //enemy_trainers: HashMap<u16, Bool>,
 }
 impl GameState {
@@ -118,11 +155,13 @@ impl GameState {
             },
             last_used_pcentre: Regions::PalletTown(PalletTownLocations::RedsHouse),
             //enemy_trainers: Default::default(),
+            bag: vec![],
         }
     }
     pub fn move_loc(&mut self, loc: Regions){
         self.location = loc;
     }
+
     fn load()->GameState{
         todo!()
     }
@@ -234,24 +273,28 @@ impl Party {
         let mut counter = 1;
         for poke in &self.mon{
             if *poke != None{
-                println!("{}. {} {}", counter, poke.as_ref().unwrap().name, poke.as_ref().unwrap().level);
+                println!("{}. {} - Lvl: {} ({}/{})", counter, poke.as_ref().unwrap().name, poke.as_ref().unwrap().level, poke.as_ref().unwrap().current_hp, poke.as_ref().unwrap().max_hp.value );
                 counter+=1;
             }
         }
     }
 
     pub fn pokecentre_heal(&mut self){
-        if self.mon[0] != None{
-            /*
+        let mut party_member_rank = 0;
+        for poke in &self.mon.clone() {
+            if self.mon[party_member_rank.clone()] != None {
+                /*
             println!("DEBUG - {} CURRENTLY HAS {}/{} HP",
                      self.mon[0].as_ref().unwrap().name,
                      self.mon[0].as_ref().unwrap().current_hp,
                      self.mon[0].as_ref().unwrap().max_hp.value);
              */
-            if self.mon[0].as_ref().unwrap().status != Healthy{
-                self.mon[0].as_mut().unwrap().status = Healthy
+                if self.mon[party_member_rank.clone()].as_ref().unwrap().status != Healthy {
+                    self.mon[party_member_rank.clone()].as_mut().unwrap().status = Healthy
+                }
+                self.mon[party_member_rank.clone()].as_mut().unwrap().current_hp = self.mon[party_member_rank.clone()].clone().unwrap().max_hp.value;
             }
-            self.mon[0].as_mut().unwrap().current_hp = self.mon[0].clone().unwrap().max_hp.value;
+            party_member_rank +=1;
         }
         /*
         println!("DEBUG - {} NOW HAS {}/{} HP",
@@ -610,7 +653,7 @@ impl Pokemon {
                     * matchup_multiplier;
                 let damage = dam as u16;
 
-                type_text(format!("{} was hit for {} points of damage!\n", &self.name.cyan(), damage).as_str());
+                type_text(format!("{} was hit for {} points of damage!\n", &self.name.clone().cyan(), damage).as_str());
                 if self.current_hp > damage {
                     self.current_hp -= damage;
                 } else {
@@ -921,8 +964,8 @@ impl MoveEffectCat {
             MoveEffectCat::Frozen=>{target.status = Frozen;}
             MoveEffectCat::Paralyzed=>{target.status = Paralyzed;}
 
-            MoveEffectCat::DefenseDown1=>{target.stat_mod_stages.lower_stat(Defense); println!("{} defense was {}!", target.name.cyan(), "weakened".red())},
-            MoveEffectCat::AttackDown1=>{target.stat_mod_stages.lower_stat(Attack); println!("{} attack was {}!", target.name.cyan(), "weakened".red())},
+            MoveEffectCat::DefenseDown1=>{target.stat_mod_stages.lower_stat(Defense); println!("{} defense was {}!", target.name.clone().cyan(), Stylize::red("weakened"))},
+            MoveEffectCat::AttackDown1=>{target.stat_mod_stages.lower_stat(Attack); println!("{} attack was {}!", target.name.clone().cyan(), Stylize::red("weakened"))},
             MoveEffectCat::SpeedDown1=> target.stat_mod_stages.lower_stat(Speed),
             MoveEffectCat::SpecDown1=>target.stat_mod_stages.lower_stat(Special),
 
