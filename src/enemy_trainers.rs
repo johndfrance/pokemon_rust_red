@@ -18,9 +18,10 @@ pub struct TrainerTemplate{
     reward: u16,
 }
 pub struct Trainer{
+    pub id: u16,
     pub name: &'static str,
     pub poke_team: Vec<Pokemon>,
-    reward: u16,
+    pub reward: u16,
 
 }
 impl Trainer{
@@ -41,6 +42,7 @@ impl Trainer{
             }
         }
         Trainer{
+            id,
             name: found_trainer.name.clone(),
             poke_team: trainer_party,
             reward: found_trainer.reward.clone(),
@@ -99,7 +101,7 @@ const RIVAL3_1: TrainerTemplate=TrainerTemplate{
 pub const BUGCATCHER4: TrainerTemplate = TrainerTemplate{
     id: 8,
     name: "Bug Catcher Rick",
-    party: [Some((Caterpie, 6)), Some((Weedle, 6)), None, None, None, None], // Levels should be 6 and 6
+    party: [Some((Caterpie, 6)), Some((Weedle, 6)), None, None, None, None],
     reward: 60,
 };
 pub const BUGCATCHER5: TrainerTemplate = TrainerTemplate{

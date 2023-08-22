@@ -180,6 +180,8 @@ pub fn viridian_forest(game_state: &mut GameState){
             Node5 => match choice{
                 1=> {
                     type_text("\nHey what are you Bugging me for! Anyways, let's battle!\n");
+                    game_state.trainer_battle(8);
+                    /*
                     let trainer_id = 8;
                     let mut enemy_trainer  = Trainer::get(trainer_id);
                     let result = battle2(game_state, &mut enemy_trainer);
@@ -191,6 +193,8 @@ pub fn viridian_forest(game_state: &mut GameState){
                         game_state.player.party.pokecentre_heal();
                         break
                     }
+
+                     */
                 }
                 2=> location = Node6,
                 3=> location = Node1,

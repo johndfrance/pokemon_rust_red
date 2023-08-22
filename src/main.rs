@@ -50,6 +50,7 @@ use std::time::Duration;
 use std::fs::{File, OpenOptions};
 use crossterm::style::Color::{Blue, Red};
 use crossterm::style::{Color, style, Stylize};
+use crate::battle_logic::battle2;
 
 // MAIN
 fn main() {
@@ -122,7 +123,7 @@ pub struct GameState {
     last_used_pcentre: Regions,
     bag: Vec<StdItem>,
     badge_box: BadgeBox,
-    //enemy_trainers: HashMap<u16, Bool>,
+    defeated_trainers: Vec<u16>,
 }
 impl GameState {
     // At the start of a new game a blank GameState is created.
@@ -155,7 +156,7 @@ impl GameState {
                 boxes: vec![],
             },
             last_used_pcentre: Regions::PalletTown(PalletTownLocations::RedsHouse),
-            //enemy_trainers: Default::default(),
+
             bag: vec![],
             badge_box: BadgeBox {
                 boulder: false,
@@ -167,7 +168,14 @@ impl GameState {
                 volcano: false,
                 earth: false,
             },
+            defeated_trainers: Vec::new(),
         }
+    }
+    fn set_trainer_defeated(&mut self, trainer_id: u16){
+        self.defeated_trainers.push(trainer_id);
+    }
+    fn is_trainer_defeated(&self, trainer_id:u16)->bool{
+        self.defeated_trainers.contains(&trainer_id)
     }
     pub fn move_loc(&mut self, loc: Regions){
         self.location = loc;
@@ -199,6 +207,23 @@ impl GameState {
     }
     fn save(&self){
         todo!()
+    }
+    fn trainer_battle(&mut self, trainer_id: u16){
+
+        if !self.is_trainer_defeated(trainer_id){
+            let mut trainer  = Trainer::get(trainer_id.clone());
+            let result = battle2(self, &mut trainer);
+            if result{
+                type_text(format!("\nYou win P{}!\n", trainer.reward.clone()).as_str());
+                self.player.cash += trainer.reward;
+                //self.set_trainer_defeated(trainer_id.clone());
+            }else{
+                type_text("\nYou black out and wake up at the PokeCentre!\n");
+                self.location = self.last_used_pcentre;
+            }
+
+        }
+
     }
 }
 

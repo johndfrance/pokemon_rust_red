@@ -340,7 +340,8 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
         }
     }
     if winner{
-        println!("\n{}", "You won the Battle!".green())
+        println!("\n{}", "You won the Battle!".green());
+        game_state.set_trainer_defeated(enemy.id.clone());
     }else{
         println!("\n{}", "You lost the Battle!".red())
     }
