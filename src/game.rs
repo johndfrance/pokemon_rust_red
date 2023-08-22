@@ -213,6 +213,13 @@ pub fn rust_red_game(mut game_state: GameState) {
                     game_state.last_used_pcentre = ViridianCity(PokeCentre);
                 },
                 2=>game_state.move_loc(ViridianCity(ViridianCityLocations::Outside)),
+                3=>{
+                    game_state.move_mon_party_to_pc();
+
+                }
+                4=>{
+                    game_state.move_mon_pc_to_party();
+                }
                 _=>println!("Invalid choice."),
             }
             ViridianCity(Mart) => match choice {
@@ -230,7 +237,7 @@ pub fn rust_red_game(mut game_state: GameState) {
             ViridianCity(Route2) => match choice {
                 1 => {travelling("Viridian Forest");
                     viridian_forest(&mut game_state);
-                    travelling_encounter(ViridianCity(Route2),ViridianCity(ViridianForest), &mut game_state);
+                    //travelling_encounter(ViridianCity(Route2),ViridianCity(ViridianForest), &mut game_state);
                 },
                 2 => println!("Blocked by a strange looking tree..."),
                 3 => {travelling("Viridian City");

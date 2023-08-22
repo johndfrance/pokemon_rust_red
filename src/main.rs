@@ -1,4 +1,4 @@
-#![allow(dead_code)]
+#![allow(dead_code, unused)]
 mod battle_logic;
 mod enemy_trainers;
 mod evolution;
@@ -8,7 +8,6 @@ mod mon_base_stats;
 mod mon_move_sets;
 mod move_data;
 mod npc_dialogue;
-//mod temp_code;
 mod type_matchups;
 mod items;
 mod wild_battle_logic;
@@ -121,7 +120,8 @@ pub struct GameState {
     event: EventRec,
     pc: BillPC,
     last_used_pcentre: Regions,
-    bag: Vec<StdItem>
+    bag: Vec<StdItem>,
+    badge_box: BadgeBox,
     //enemy_trainers: HashMap<u16, Bool>,
 }
 impl GameState {
@@ -157,10 +157,41 @@ impl GameState {
             last_used_pcentre: Regions::PalletTown(PalletTownLocations::RedsHouse),
             //enemy_trainers: Default::default(),
             bag: vec![],
+            badge_box: BadgeBox {
+                boulder: false,
+                cascade: false,
+                thunder: false,
+                rainbow: false,
+                soul: false,
+                marsh: false,
+                volcano: false,
+                earth: false,
+            },
         }
     }
     pub fn move_loc(&mut self, loc: Regions){
         self.location = loc;
+    }
+    fn move_mon_party_to_pc(&mut self){
+        type_text("\nWhat Pokemon Would you like to put in you Box?\n");
+        self.player.party.display_party();
+        let selection = get_user_input(self.player.party.num_in_party() as u8);
+        let selected_mon = self.player.party.mon[(selection-1)as usize].clone();
+        self.pc.add_mon(selected_mon.unwrap());
+        self.player.party.remove_party_member((selection.clone()) as usize);
+    }
+    fn move_mon_pc_to_party(&mut self){
+        type_text("\nWhat Pokemon would you like to move to your Party\n");
+        &self.pc.view_box();
+        let selection = get_user_input(self.pc.boxes.len().clone() as u8);
+        let selected_mon = self.pc.boxes[(selection-1) as usize].clone();
+        if &self.player.party.num_in_party()< &(6 as usize) {
+            self.player.party.add_party_member(selected_mon);
+            self.pc.remove_mon((selection.clone()) as usize);
+        }else{
+            println!("Error, You already have a Full Party");
+        }
+
     }
 
     fn load()->GameState{
@@ -170,6 +201,7 @@ impl GameState {
         todo!()
     }
 }
+
 #[derive(Debug, Serialize, Deserialize)]
 struct EventRec{
     starter_received: bool,
@@ -188,8 +220,33 @@ struct EventRec{
 struct BillPC{
     boxes: Vec<Pokemon>,
 }
-
-struct BadgeBox{}
+impl BillPC{
+    fn view_box(&self){
+        let mut counter = 1;
+        for mon in &self.boxes{
+            println!("{}.{} - {}", counter, mon.name, mon.level);
+            counter +=1;
+        }
+    }
+    fn add_mon(&mut self, mon: Pokemon){
+        self.boxes.push(mon);
+    }
+    fn remove_mon(&mut self, index: usize){
+        self.boxes.remove(index-1);
+        return
+    }
+}
+#[derive(Debug, Serialize, Deserialize)]
+struct BadgeBox{
+    boulder: bool,
+    cascade: bool,
+    thunder: bool,
+    rainbow: bool,
+    soul: bool,
+    marsh: bool,
+    volcano: bool,
+    earth: bool,
+}
 // Player will be nested inside GameState and contain data specific to the player (party, items etc)
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Player {
@@ -232,6 +289,7 @@ impl Party {
         } else {
             println!("\nNo room for new pokemon!");
             //TODO - Send new_mon to "BILL's PC"
+            // Maybe create a method on the main GameState struct that wraps this?
         }
     }
     pub fn party_menu(&mut self){
@@ -259,6 +317,10 @@ impl Party {
         let selected_spot = get_user_input(valid_pokemon.clone() as u8);
         let selected_spot = selected_spot - 1;
         self.mon.swap(selected_poke.clone() as usize,selected_spot as usize);
+    }
+    fn remove_party_member(&mut self, index: usize){
+        &self.mon[index-1].take();
+        return
     }
 
     fn num_in_party(&self)->usize{
