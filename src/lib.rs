@@ -26,6 +26,15 @@ pub const FUCHSIA: Color = TrueColor {r:255, g:0, b: 255};
 pub const SAFFRON: Color = TrueColor {r:244, g:196, b:48};
 pub const CINNABAR: Color = TrueColor {r:170, g:56, b:30};
 
+pub const OAK: Color = TrueColor {r:230, g: 180, b: 120};
+pub const YELLOW: Color = TrueColor {r:255, g:255, b:0};
+pub const PEACH: Color = TrueColor {r:255, g: 218, b:185};
+pub const RIVALBLUE: Color = TrueColor {r:30, g:144, b: 255};
+pub const MOM:Color=TrueColor {r:216, g:191, b:216};
+pub const GYM: Color=TrueColor {r:255, g:140, b:0};
+pub const PCENTRE: Color=TrueColor {r:220, g:20, b:60};
+pub const MART: Color= TrueColor {r:0, g:191, b:255};
+
 
 fn type_text(text: &str) {
     let delay = 60;

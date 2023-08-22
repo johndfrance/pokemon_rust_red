@@ -29,11 +29,12 @@ use crate::mon_move_sets::LEARNABLEMOVES;
 use crate::move_data::Moves::Tackle;
 use crate::enemy_trainers::Trainer;
 use crate::evolution::{CATERPIE, EvolutionData, EvolutionTriggers};
-use crate::lib::{CINNABAR, get_user_input};
+use crate::lib::{CINNABAR, get_user_input, YELLOW};
 use crate::MoveCat::Physical;
 use crate::StatType::{Attack, Defense, Special, Speed};
 use crate::items::StdItem;
 use crate::color_hub::color_me;
+use crate::battle_logic::battle2;
 
 use colored::Colorize;
 use rand::Rng;
@@ -42,15 +43,15 @@ use serde::{Serialize, Deserialize};
 use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::fmt::format;
-use std::{env, io};
+use std::{env, io, thread};
 use std::f32::consts::E;
 use std::io::{Read, Write};
 use std::thread::sleep;
 use std::time::Duration;
 use std::fs::{File, OpenOptions};
-use crossterm::style::Color::{Blue, Red};
+use crossterm::style::Color::{Blue, Red, Yellow};
 use crossterm::style::{Color, style, Stylize};
-use crate::battle_logic::battle2;
+use pokemon_simple_V2::{OAK};
 
 // MAIN
 fn main() {
@@ -58,8 +59,14 @@ fn main() {
     // TODO: Impl 'Continue/New Game' menu
     //println!("Do you want to:\n1.New Game.\n2.Continue\n3.Debug");
 
-    let red = style("Rust Red").with(Red);
-    println!("Welcome to Pokemon {}", red);
+    let red = style(r" _____      _                                _____           _     _____          _
+ |  __ \    | |                              |  __ \         | |   |  __ \        | |
+ | |__) |__ | | _____ _ __ ___   ___  _ __   | |__) |   _ ___| |_  | |__) |___  __| |
+ |  ___/ _ \| |/ / _ \ '_ ` _ \ / _ \| '_ \  |  _  / | | / __| __| |  _  // _ \/ _` |
+ | |  | (_) |   <  __/ | | | | | (_) | | | | | | \ \ |_| \__ \ |_  | | \ \  __/ (_| |
+ |_|   \___/|_|\_\___|_| |_| |_|\___/|_| |_| |_|  \_\__,_|___/\__| |_|  \_\___|\__,_|
+                                                                                     ").with(Red);
+    println!("{}", red);
     //color_me("Rust", Red);
     //println!("{}\n********************", "POKEMON - RUST RED".red());
     loop {
@@ -80,11 +87,20 @@ fn main() {
             }
             2 => {
                 let mut game_state = GameState::new();
-                let msg1 = "\nWhat is your name?\n";
+                let oak = "OAK";
+                let poke = "POKEMON";
+                let intro_msg = format!("{}: Hello there! Welcome to the world of {}! My name is {}! \
+                \nPeople call me the {} PROF! This world is inhabited by creatures called {}! \nFor \
+                some people, {} are pets. Others use them for fights. \nMyself...I study {} as a profession.",
+                                        oak.color(OAK), poke.color(YELLOW), oak.color(OAK),
+                                        poke.color(YELLOW),poke.color(YELLOW),poke.color(YELLOW),
+                                        poke.color(YELLOW),);
+                type_text(intro_msg.as_str());
+                let msg1 = "\nFirst, what is your name?\n";
                 type_text(msg1);
                 let player_name = read_user_input();
                 game_state.player.enter_name(player_name.clone());
-                let msg2 = format!("Welcome to the world of Pokemon {}!\n", player_name.cyan());
+                let msg2 = format!("Welcome to the world of {} {}!\n", poke.color(YELLOW), player_name.cyan());
                 let msg2 = msg2.as_str();
                 type_text(msg2);
                 rust_red_game(game_state);
@@ -102,7 +118,7 @@ pub fn save_temp(game_state: &GameState){
         .truncate(true)
         .open("pokemon.json");
     file.expect("Error").write_all(json_data.expect("Error").as_bytes());
-    println!("SAVE SUCCESSFUL");
+    println!("\nSAVE SUCCESSFUL");
     //Ok(())
 }
 fn load_game()->Result<GameState, Box<dyn std::error::Error>>{
@@ -208,22 +224,23 @@ impl GameState {
     fn save(&self){
         todo!()
     }
-    fn trainer_battle(&mut self, trainer_id: u16){
+    fn trainer_battle(&mut self, trainer_id: u16)->bool{
 
         if !self.is_trainer_defeated(trainer_id){
             let mut trainer  = Trainer::get(trainer_id.clone());
             let result = battle2(self, &mut trainer);
-            if result{
-                type_text(format!("\nYou win P{}!\n", trainer.reward.clone()).as_str());
+            return if result {
+                type_text(format!("\nYou win ${}!\n", trainer.reward.clone()).as_str());
                 self.player.cash += trainer.reward;
+                true
                 //self.set_trainer_defeated(trainer_id.clone());
-            }else{
+            } else {
                 type_text("\nYou black out and wake up at the PokeCentre!\n");
                 self.location = self.last_used_pcentre;
+                false
             }
-
         }
-
+        return true;
     }
 }
 
@@ -793,7 +810,7 @@ impl Pokemon {
         let enemy_level = foe.level.clone();
         let enemy_base_exp = foe.base_exp.clone();
         let exp_gain = (enemy_base_exp * enemy_level) / 7;
-        println!("Gained {} experience points!", exp_gain);
+        type_text(format!("Gained {} experience points!", exp_gain).as_str());
         self.exp += exp_gain as u32;
         self.check_level_up();
     }
@@ -802,7 +819,7 @@ impl Pokemon {
         let next_lvl_exp = get_leveling_data(&next_level);
         let current_exp = &self.exp;
         if current_exp >= &next_lvl_exp {
-            println!("{} leveled up to {}!", self.name, next_level);
+            type_text(format!("\n{} leveled up to {}!\n", self.name, next_level).as_str());
             self.evolve();
             self.level_up();
         }
@@ -858,7 +875,7 @@ impl Pokemon {
         self.spec.value = leveler(&self.level, &self.spec, &self.species, StatType::Speciall);
         self.max_hp.value = leveler(&self.level, &self.max_hp, &self.species, StatType::HPP);
         println!(
-            "{}'s new stats are:\n\
+            "\n{}'s new stats are:\n\
         HP: {}\n\
         Attack:{}\n\
         Defense: {}\n\
@@ -871,6 +888,7 @@ impl Pokemon {
             self.spd.value,
             self.spec.value
         );
+        thread::sleep(Duration::from_millis(1000));
         self.check_lvl_up_new_move();
     }
     fn check_lvl_up_new_move(&mut self) {
@@ -1125,7 +1143,7 @@ fn integer_square_root(x: &u16) -> u16 {
     root_x
 }
 fn type_text(text: &str) {
-    let delay = 10;
+    let delay = 25;
     for c in text.chars() {
         print!("{}", c);
         io::stdout().flush().unwrap();

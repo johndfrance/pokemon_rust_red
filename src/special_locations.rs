@@ -180,7 +180,10 @@ pub fn viridian_forest(game_state: &mut GameState){
             Node5 => match choice{
                 1=> {
                     type_text("\nHey what are you Bugging me for! Anyways, let's battle!\n");
-                    game_state.trainer_battle(8);
+                    let alive = game_state.trainer_battle(8);
+                    if !alive{
+                        break
+                    }
                     /*
                     let trainer_id = 8;
                     let mut enemy_trainer  = Trainer::get(trainer_id);
@@ -193,7 +196,6 @@ pub fn viridian_forest(game_state: &mut GameState){
                         game_state.player.party.pokecentre_heal();
                         break
                     }
-
                      */
                 }
                 2=> location = Node6,
@@ -214,6 +216,14 @@ pub fn viridian_forest(game_state: &mut GameState){
                 1=>{
                     type_text("\nYou've been spotted by another Trainer!\n");
                     type_text("\nBUGCATCHER: Let me show you how strong my PokeMon are getting!\n");
+                    let alive = game_state.trainer_battle(9);
+                    if alive {
+                        location = Node9;
+                    }else{
+                        break
+                    }
+
+                    /*
                     let trainer_id = 9;
                     let mut enemy_trainer  = Trainer::get(trainer_id);
                     let result = battle2(game_state, &mut enemy_trainer);
@@ -226,6 +236,7 @@ pub fn viridian_forest(game_state: &mut GameState){
                         game_state.player.party.pokecentre_heal();
                         break
                     }
+                     */
                 }
                 2=>location=Node6,
                 _=>println!("Invalid Choice")
@@ -234,6 +245,13 @@ pub fn viridian_forest(game_state: &mut GameState){
                 1=>{
                     type_text("\nYou've been spotted by another Trainer!\n");
                     type_text("\nBUGCATCHER: I've been having bad catching luck all day!\n");
+                    let alive = game_state.trainer_battle(10);
+                    if alive {
+                        location = Node9;
+                    }else{
+                        break
+                    }
+                    /*
                     let trainer_id = 10;
                     let mut enemy_trainer  = Trainer::get(trainer_id);
                     let result = battle2(game_state, &mut enemy_trainer);
@@ -246,6 +264,8 @@ pub fn viridian_forest(game_state: &mut GameState){
                         game_state.player.party.pokecentre_heal();
                         break
                     }
+
+                     */
                 }
                 2=>{
                     let alive = encounter_roll(ViridianCity(ViridianForest), game_state);
@@ -264,6 +284,12 @@ pub fn viridian_forest(game_state: &mut GameState){
                 1=>{
                     type_text("\nYou've been spotted by another Trainer!\n");
                     type_text("\nBUGCATCHER: I've been having bad catching luck all day!\n");
+                    let alive = game_state.trainer_battle(10);
+                    if alive {
+                        location = Node8;
+                    }else{
+                        break
+                    }/*
                     let trainer_id = 10;
                     let mut enemy_trainer  = Trainer::get(trainer_id);
                     let result = battle2(game_state, &mut enemy_trainer);
@@ -276,10 +302,18 @@ pub fn viridian_forest(game_state: &mut GameState){
                         game_state.player.party.pokecentre_heal();
                         break
                     }
+                    */
+
                 }
                 3=>{
                     type_text("\nYou've been spotted by another Trainer!\n");
                     type_text("\nBUGCATCHER: Let me show you how strong my PokeMon are getting!\n");
+                    let alive = game_state.trainer_battle(9);
+                    if alive{
+                        location = Node7;
+                    }else{
+                        break
+                    }/*
                     let trainer_id = 9;
                     let mut enemy_trainer  = Trainer::get(trainer_id);
                     let result = battle2(game_state, &mut enemy_trainer);
@@ -291,7 +325,7 @@ pub fn viridian_forest(game_state: &mut GameState){
                         game_state.move_loc(game_state.last_used_pcentre);
                         game_state.player.party.pokecentre_heal();
                         break
-                    }
+                    }*/
                 }
                 _=>println!("Invalid Choice")
             }

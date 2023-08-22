@@ -173,7 +173,6 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
             }
         }
 
-
         //println!("YOUVE SELECTED MOVE: {}", player_selected_move.move_stats().name);
 
         //println!("ENEMY HAS SELECTED MOVE: {}", enemy_move_selection.move_stats().name);
@@ -412,12 +411,10 @@ pub fn battle_display_menu(game_state: &GameState, poke_index: usize)->(MainMenu
             return (MainMenuOptions::Fight, Some(move_selection));
         },
         2=>{
-            println!("ITEMS NOT YET IMPLIMENTED");
+
             return (MainMenuOptions::Item, None);
         },
         3=>{
-            println!("SWAPPING NOT YET IMPLIMENTED");
-
             println!("Which pokemon would you like to swap for:");
             let mut counter = 1;
             for pokemon in &game_state.player.party.mon{

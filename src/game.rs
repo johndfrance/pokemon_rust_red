@@ -10,18 +10,20 @@ use crate::mon_base_stats::PokemonSpecies::{Bulbasaur, Caterpie, Charamander, Pi
 use crate::{read_user_input, type_text, GameState, Pokemon, Trainer, save_temp};
 use crate::game::Regions::{PewterCity, ViridianCity, PalletTown};
 use crate::game::PalletTownLocations::*;
-use crate::game::PewterCityLocations::PewterPokeCentre;
+use crate::game::PewterCityLocations::*;
 use crate::game::ViridianCityLocations::*;
-use crate::lib::{get_user_input, PEWTER, travelling, VIRIDIAN};
+use crate::lib::{get_user_input, GYM, MART, MOM, OAK, PCENTRE, PEACH, PEWTER, RIVALBLUE, travelling, VIRIDIAN, YELLOW};
 use crate::region_groups::get_wild_encounter;
 use crate::wild_battle_logic::wild_encounter;
 use crate::gym_challenges::viridian_gym;
 use crate::items::OAKPARCEL;
 use crate::special_locations::viridian_forest;
 
-use std::{io, result};
+use std::{io, result, thread};
 use std::io::Write;
 use std::cmp::Ordering;
+use std::fmt::format;
+use std::time::Duration;
 use colored::Colorize;
 use crossterm::style::Stylize;
 use serde::{Serialize, Deserialize};
@@ -33,51 +35,51 @@ pub fn rust_red_game(mut game_state: GameState) {
             PalletTown(RedsHouse) => {
                 println!("\nYou are in your house.");
                 println!("1. Go outside");
-                println!("2. Talk to MOM");
+                println!("2. Talk to {}", "MOM".color(MOM));
             }
             PalletTown(PalletTownLocations::Outside) => {
-                println!("\nYou are outside in Pallet Town.");
+                println!("\nYou are outside in {}.", "Pallet Town".color(PEACH));
                 println!("1. Go inside your house");
-                println!("2. Go in Blue's house");
-                println!("3. Go inside Oak's Lab");
+                println!("2. Go in {}'s house", "BLUE".color(RIVALBLUE));
+                println!("3. Go inside {}'s Lab", "OAK".color(OAK));
                 println!("4. Go to Route 1");
             }
             PalletTown(OaksLab) => {
-                println!("\nYou are in Oak's Lab.");
+                println!("\nYou are in {}'s Lab.", "OAK".color(OAK));
                 println!("1. Go outside");
-                println!("2. Talk to OAK");
+                println!("2. Talk to {}", "OAK".color(OAK));
             }
             PalletTown(Route1) => {
                 println!("\nYou are in Route 1.");
-                println!("1. Return to Pallet Town");
-                println!("2. Go to Viridian City");
+                println!("1. Return to {}", "Pallet Town".color(PEACH));
+                println!("2. Go to {}", "Viridian City".color(VIRIDIAN));
             }
             PalletTown(BluesHouse) => {
-                println!("\nYou are in Blue's House.");
+                println!("\nYou are in {}'s House.", "BLUE".color(RIVALBLUE));
                 println!("1. Go outside");
                 println!("2. Talk to DAISY")
             }
-            ViridianCity(Gym) => {
-                println!("\n You are inside the Viridian City Gym.");
-                println!("1. Start Gym Challenge.");
+            ViridianCity(ViridianCityLocations::Gym) => {
+                println!("\nYou are inside the {} {}.","Viridian City".color(VIRIDIAN), "Gym".color(GYM));
+                println!("1. Start {} Challenge.", "Gym".color(GYM));
                 println!("2. Go outside.");
             }
             ViridianCity(Mart) => {
-                println!("\n You are in the Viridian City Mart.");
+                println!("\nYou are in the {} Mart.","Viridian City".color(VIRIDIAN));
                 println!("1. Shop");
                 println!("2. Go outside.");
             }
             ViridianCity(PokeCentre)=>{
-                println!("\nYou are in the Viridian City PokeCentre");
+                println!("\nYou are in the {} PokeCentre", "Viridian City".color(VIRIDIAN));
                 println!("1. Heal Pokemon");
                 println!("2. Go Outside");
             }
             ViridianCity(ViridianCityLocations::Outside) => {
                 println!("\nYou are in {}.", "Viridian City".color(VIRIDIAN));
                 println!("1. Go to Route 1");
-                println!("2. Go to Gym");
-                println!("3. Go to Mart");
-                println!("4. Go to PokeCentre");
+                println!("2. Go to {}", "Gym".color(GYM));
+                println!("3. Go to {}", "Mart".color(MART));
+                println!("4. Go to {}", "PokeCentre".color(PCENTRE));
                 println!("5. Go to Route 2");
             }
             ViridianCity(Route2) => {
@@ -94,14 +96,14 @@ pub fn rust_red_game(mut game_state: GameState) {
 
             PewterCity(PewterCityLocations::Outside)=>{
                 println!("\nYou are in {}", "Pewter City".color(PEWTER));
-                println!("1. Go to Gym");
-                println!("2. Go to PokeCentre");
+                println!("1. Go to {}", "Gym".color(GYM));
+                println!("2. Go to {}", "PokeCentre".color(PCENTRE));
                 println!("3.");
                 println!("4.");
                 println!("5. Go to Viridian Forest");
             }
             PewterCity(PewterPokeCentre)=>{
-                println!("\nYou are in the Pewter City PokeCentre");
+                println!("\nYou are in the {} {}", "Pewter City".color(PEWTER), "PokeCentre".color(PCENTRE));
                 println!("1. Heal Pokemon");
                 println!("2. Go Outside");
             }
@@ -109,6 +111,12 @@ pub fn rust_red_game(mut game_state: GameState) {
                 println!("\nYou are in the Pewter City Gym");
                 println!("1. Challenge Gym");
                 println!("2. Go Outside")
+            }
+            PewterCity(Route3)=>{
+                println!("\nYou are in Route 3");
+                println!("1. Go To Mt.Moon");
+                println!("2. Go to {}", "Pewter City".color(PEWTER));
+
             }
         }
 
@@ -147,6 +155,13 @@ pub fn rust_red_game(mut game_state: GameState) {
                         game_state.move_loc(current_local);
                     }else if game_state.event.starter_received == true && game_state.event.oaks_parcel_delivered == false && game_state.bag.contains(&OAKPARCEL){
                         type_text("\nOAK: Oh! It looks you have my parcel! Thank you very much!");
+                        thread::sleep(Duration::from_millis(600));
+                        type_text("\n Inside this parcel is a set of new PokeBalls! I Ordered some to give to you\n \
+                        and my grandson to help you both with your adventure. Next time you are in battle\n \
+                        against a wild pokemon, if you select ITEM from the battle menu you will throw \n\
+                        a PokeBall and attempt to catch the wild pokemon!");
+                        thread::sleep(Duration::from_millis(600));
+                        type_text("\n You received PokeBalls!");
                         game_state.event.oaks_parcel_delivered = true;
                     }
 
@@ -273,6 +288,9 @@ pub fn rust_red_game(mut game_state: GameState) {
             PewterCity(PewterCityLocations::Outside)=> match choice {
                 1=> game_state.move_loc(PewterCity(PewterCityLocations::Gym)),
                 2=>game_state.move_loc(PewterCity(PewterPokeCentre)),
+                4=>{travelling("Route 3");
+                    game_state.move_loc(PewterCity(Route3));
+                },
                 5=>{travelling("Viridian Forest");
                     viridian_forest(&mut game_state);
                     //game_state.move_loc(ViridianCity(ViridianForest))
@@ -290,6 +308,14 @@ pub fn rust_red_game(mut game_state: GameState) {
             PewterCity(PewterCityLocations::Gym)=> match choice{
                 1=>{viridian_gym(&mut game_state)},
                 2=>game_state.move_loc(PewterCity(PewterCityLocations::Outside)),
+                _=>println!("Invalid choice"),
+            }
+            PewterCity(Route3)=>match choice{
+                1=>{todo!()},
+                2=>{
+                    travelling(format!("{}", "Pewter City".color(PEWTER)).as_str());
+                    game_state.move_loc(PewterCity(PewterCityLocations::Outside));
+                }
                 _=>println!("Invalid choice"),
             }
             _ => {}
@@ -324,6 +350,7 @@ pub enum PewterCityLocations{
     Gym,
     Outside,
     PewterPokeCentre,
+    Route3,
 
 }
 fn wild_encounter_chance()->Option<Pokemon>{
@@ -355,13 +382,13 @@ fn adventure_start_check(game_state: &GameState) -> bool {
 
 fn starter_selection(game_state: &mut GameState) -> Regions {
     type_text(format!(
-        "OAK: Welcome to my lab!\n\
-    Today is the start of a great adventure for you and my grandson Blue.\n\
-    Please pick which Pokemon you want as your companion:\n\
+        "{}: Welcome to my lab!\n\
+    Today is the start of a great adventure for you and my grandson {}.\n\
+    Please pick which {} you want as your companion:\n\
     1. {}\n\
     2. {}\n\
     3. {}\n",
-        Stylize::green("Bulbasuar"),  Stylize::red("Charmander"), Stylize::blue("Squirtle")).as_str()
+        "OAK".color(OAK),"BLUE".color(RIVALBLUE), "POKEMON".color(YELLOW),Stylize::green("Bulbasuar"),  Stylize::red("Charmander"), Stylize::blue("Squirtle")).as_str()
     );
     let mut choice = true;
     let bulbasaur = Pokemon::new(Bulbasaur, 5);
@@ -392,8 +419,8 @@ fn starter_selection(game_state: &mut GameState) -> Regions {
         }
     }
     game_state.event.starter_received = true;
-    type_text("OAK: Great Choice!\n");
-    type_text("\nBLUE: Wait a minute, Lets Battle!\n");
+    type_text(format!("{}: Great Choice!\n", "OAK".color(OAK)).as_str());
+    type_text(format!("\n{}: Wait a minute, Lets Battle!\n", "BLUE".color(RIVALBLUE)).as_str());
     let mut trainer_blue = Trainer::get(rival_id);
 
     let battle_result = battle2(game_state, &mut trainer_blue);
@@ -407,12 +434,10 @@ fn starter_selection(game_state: &mut GameState) -> Regions {
         println!("EVERYTHING GOES BLACK.");
         Regions::PalletTown(PalletTownLocations::RedsHouse)
     } else {
-        type_text("\nBLUE: Ugh, I'm going to keep training and show you how strong I am!\n");
+        type_text(format!("\n{}: Ugh, I'm going to keep training and show you how strong I am!\n", "BLUE".color(RIVALBLUE)).as_str());
         Regions::PalletTown(PalletTownLocations::OaksLab)
     };
 }
-fn pewter_gym(){}
-
 
 fn mom() {
     type_text("MOM: Goodluck today!\n");
@@ -424,7 +449,7 @@ pub fn master_menu(game_state: &mut GameState){
         println!("1. PokeDex {}", Stylize::red("TODO"));
         println!("2. Party");
         println!("3. Bag {}",Stylize::red("TODO"));
-        println!("4. Save {}", Stylize::red("TODO"));
+        println!("4. Save");
         println!("5. Exit Menu");
 
         let menu_select = get_user_input(5);

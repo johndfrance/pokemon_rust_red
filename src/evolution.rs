@@ -1,3 +1,4 @@
+use std::f32::consts::E;
 use crate::mon_base_stats::PokemonSpecies;
 use crate::PokemonSpecies::*;
 use crate::EvolutionTriggers::*;
@@ -15,7 +16,11 @@ impl PokemonSpecies {
             Wartortle=>WARTORTLE,
             Blastoise=>BLASTOISE,
             Caterpie=>CATERPIE,
+            Metapod=>METAPOD,
+            Butterfly=>BUTTERFREE,
             Weedle=>WEEDLE,
+            Kakuna=>KAKUNA,
+            Beedrill=>BEEDRILL,
             Pidgey=>PIDGEY,
             Pidgeotto=>PIDGEOTTO,
             Pidgeot=>PIDGEOT,
@@ -37,7 +42,7 @@ pub struct EvolutionData{
 
 const BULBASAUR: EvolutionData = EvolutionData{
     pokemon: Bulbasaur,
-    next_stage: Some(Venusaur),
+    next_stage: Some(Ivysaur),
     trigger: ByLevel(16),
 };
 const IVYSAUR: EvolutionData = EvolutionData{
@@ -85,15 +90,31 @@ pub const CATERPIE: EvolutionData = EvolutionData{
     next_stage: Some(Metapod),
     trigger: ByLevel(7),
 };
-
-
+const METAPOD: EvolutionData = EvolutionData{
+    pokemon: Metapod,
+    next_stage: Some(Butterfly),
+    trigger: ByLevel(10),
+};
+const BUTTERFREE: EvolutionData = EvolutionData{
+    pokemon: Butterfly,
+    next_stage: None,
+    trigger: ByLevel(100),
+};
 const WEEDLE: EvolutionData=EvolutionData{
     pokemon: Weedle,
     next_stage: Some(Kakuna),
     trigger: ByLevel(7),
 };
-
-
+const KAKUNA: EvolutionData = EvolutionData{
+    pokemon: Kakuna,
+    next_stage: Some(Beedrill),
+    trigger: ByLevel(10),
+};
+const BEEDRILL: EvolutionData= EvolutionData{
+    pokemon: Beedrill,
+    next_stage: None,
+    trigger: ByLevel(100),
+};
 const PIDGEY: EvolutionData =EvolutionData{
     pokemon: Pidgey,
     next_stage: Some(Pidgeotto),
@@ -109,8 +130,6 @@ const PIDGEOT:EvolutionData=EvolutionData{
     next_stage: None,
     trigger: ByLevel(100),
 };
-
-
 const ONIX: EvolutionData=EvolutionData{
     pokemon: Onix,
     next_stage: None,
