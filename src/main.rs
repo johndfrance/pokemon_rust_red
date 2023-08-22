@@ -34,6 +34,7 @@ use crate::lib::{CINNABAR, get_user_input};
 use crate::MoveCat::Physical;
 use crate::StatType::{Attack, Defense, Special, Speed};
 use crate::items::StdItem;
+use crate::color_hub::color_me;
 
 use colored::Colorize;
 use rand::Rng;
@@ -50,7 +51,6 @@ use std::time::Duration;
 use std::fs::{File, OpenOptions};
 use crossterm::style::Color::{Blue, Red};
 use crossterm::style::{Color, style, Stylize};
-use crate::color_hub::color_me;
 
 // MAIN
 fn main() {
@@ -102,6 +102,7 @@ pub fn save_temp(game_state: &GameState){
         .truncate(true)
         .open("pokemon.json");
     file.expect("Error").write_all(json_data.expect("Error").as_bytes());
+    println!("SAVE SUCCESSFUL");
     //Ok(())
 }
 fn load_game()->Result<GameState, Box<dyn std::error::Error>>{

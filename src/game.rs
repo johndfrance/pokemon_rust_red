@@ -17,13 +17,14 @@ use crate::region_groups::get_wild_encounter;
 use crate::wild_battle_logic::wild_encounter;
 use crate::gym_challenges::viridian_gym;
 use crate::items::OAKPARCEL;
+use crate::special_locations::viridian_forest;
 
 use std::{io, result};
 use std::io::Write;
 use std::cmp::Ordering;
 use colored::Colorize;
+use crossterm::style::Stylize;
 use serde::{Serialize, Deserialize};
-use crate::special_locations::viridian_forest;
 
 pub fn rust_red_game(mut game_state: GameState) {
 
@@ -87,7 +88,7 @@ pub fn rust_red_game(mut game_state: GameState) {
             }
             ViridianCity(ViridianForest) => {
                 println!("\n You are in Viridian Forest");
-                println!("1. Go to route 2.");
+                println!("1. Go to Route 2.");
                 println!("2. Go to Pewter City.");
             }
 
@@ -346,13 +347,14 @@ fn adventure_start_check(game_state: &GameState) -> bool {
 }
 
 fn starter_selection(game_state: &mut GameState) -> Regions {
-    type_text(
+    type_text(format!(
         "OAK: Welcome to my lab!\n\
     Today is the start of a great adventure for you and my grandson Blue.\n\
     Please pick which Pokemon you want as your companion:\n\
-    1. Bulbasaur\n\
-    2. Charmander\n\
-    3. Squirtle\n",
+    1. {}\n\
+    2. {}\n\
+    3. {}\n",
+        Stylize::green("Bulbasuar"),  Stylize::red("Charmander"), Stylize::blue("Squirtle")).as_str()
     );
     let mut choice = true;
     let bulbasaur = Pokemon::new(Bulbasaur, 5);
@@ -412,10 +414,10 @@ fn mom() {
 pub fn master_menu(game_state: &mut GameState){
     loop {
         println!("MENU");
-        println!("1. PokeDex {}", "TODO".red());
+        println!("1. PokeDex {}", Stylize::red("TODO"));
         println!("2. Party");
-        println!("3. Bag {}", "TODO".red());
-        println!("4. Save {}", "TODO".red());
+        println!("3. Bag {}",Stylize::red("TODO"));
+        println!("4. Save {}", Stylize::red("TODO"));
         println!("5. Exit Menu");
 
         let menu_select = get_user_input(5);

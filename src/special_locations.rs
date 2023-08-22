@@ -2,6 +2,7 @@ use crate::game::{master_menu, PewterCityLocations, Regions};
 use crate::{GameState, type_text};
 use crate::battle_logic::battle2;
 use crate::enemy_trainers::Trainer;
+use crate::game::PewterCityLocations::Outside;
 use crate::game::Regions::{PewterCity, ViridianCity};
 use crate::game::ViridianCityLocations::{Route2, ViridianForest};
 use crate::lib::get_user_input;
@@ -30,7 +31,7 @@ enum ViridianForestNodes{
 }
 pub fn viridian_forest(game_state: &mut GameState){
     let mut location = Node1;
-    if game_state.location == PewterCity(PewterCityLocations::Outside){
+    if game_state.location == PewterCity(Outside){
         location = Node15;
     }
 
@@ -64,7 +65,7 @@ pub fn viridian_forest(game_state: &mut GameState){
                 println!("You've reach a corner. There is a boy who looks hard a work catching bugs.\
                 \n1. Talk to BUGCATCHER.\
                 \n2. Take the North Path\
-                \n3. Take the East Path")
+                \n3. Take the West Path")
             }
             Node6 => {
                 println!("...\
@@ -135,7 +136,7 @@ pub fn viridian_forest(game_state: &mut GameState){
                 2=>location = Node3,
                 3=>{
                     let alive = encounter_roll(ViridianCity(ViridianForest), game_state);
-                    if alive {location = Node4}
+                    if alive {location = Node5}
                     else{break}
                 },
                 4=>{game_state.move_loc(ViridianCity(Route2));
@@ -213,7 +214,8 @@ pub fn viridian_forest(game_state: &mut GameState){
                     let mut enemy_trainer  = Trainer::get(trainer_id);
                     let result = battle2(game_state, &mut enemy_trainer);
                     if result{
-                        type_text("\nStop Bothering me!\n")
+                        type_text("\nStop Bothering me!\n");
+                        location = Node9;
                     }
                     else{
                         game_state.move_loc(game_state.last_used_pcentre);
@@ -224,25 +226,140 @@ pub fn viridian_forest(game_state: &mut GameState){
                 2=>location=Node6,
                 _=>println!("Invalid Choice")
             }
-            Node8 => {}
-            Node9 => {}
-            Node10 => {}
-            Node11 => {}
-            Node12 => {}
-            Node13 => {}
-            Node14 => {}
-            Node15 => {}
+            Node8 => match choice{
+                1=>{
+                    type_text("\nYou've been spotted by another Trainer!\n");
+                    type_text("\nBUGCATCHER: I've been having bad catching luck all day!\n");
+                    let trainer_id = 10;
+                    let mut enemy_trainer  = Trainer::get(trainer_id);
+                    let result = battle2(game_state, &mut enemy_trainer);
+                    if result{
+                        type_text("\nThe bad luck continues!\n");
+                        location = Node9;
+                    }
+                    else{
+                        game_state.move_loc(game_state.last_used_pcentre);
+                        game_state.player.party.pokecentre_heal();
+                        break
+                    }
+                }
+                2=>{
+                    let alive = encounter_roll(ViridianCity(ViridianForest), game_state);
+                    if alive {location = Node12}
+                    else{break}
+                }
+                3=>{
+                    let alive = encounter_roll(ViridianCity(ViridianForest), game_state);
+                    if alive {location = Node6}
+                    else{break}
+                }
+                _=>println!("Invalid Choice")
+            }
+            Node9 => match choice{
+                2=>location = Node10,
+                1=>{
+                    type_text("\nYou've been spotted by another Trainer!\n");
+                    type_text("\nBUGCATCHER: I've been having bad catching luck all day!\n");
+                    let trainer_id = 10;
+                    let mut enemy_trainer  = Trainer::get(trainer_id);
+                    let result = battle2(game_state, &mut enemy_trainer);
+                    if result{
+                        type_text("\nThe bad luck continues!\n");
+                        location = Node8;
+                    }
+                    else{
+                        game_state.move_loc(game_state.last_used_pcentre);
+                        game_state.player.party.pokecentre_heal();
+                        break
+                    }
+                }
+                3=>{
+                    type_text("\nYou've been spotted by another Trainer!\n");
+                    type_text("\nBUGCATCHER: Let me show you how strong my PokeMon are getting!\n");
+                    let trainer_id = 9;
+                    let mut enemy_trainer  = Trainer::get(trainer_id);
+                    let result = battle2(game_state, &mut enemy_trainer);
+                    if result{
+                        type_text("\nStop Bothering me!\n");
+                        location = Node7;
+                    }
+                    else{
+                        game_state.move_loc(game_state.last_used_pcentre);
+                        game_state.player.party.pokecentre_heal();
+                        break
+                    }
+                }
+                _=>println!("Invalid Choice")
+            }
+            Node10 => match choice{
+                1=>{
+                    location = Node11; //TODO Make trainer to go here
+                },
+                2=>location=Node9,
+                _=>println!("Invalid Choice")
+            }
+            Node11 => match choice{
+                1=>{
+                    let alive = encounter_roll(ViridianCity(ViridianForest), game_state);
+                    if alive {location = Node12}
+                    else{break}
+                }
+                2=>{
+                    location = Node10;
+                }
+                _=>println!("Invalid Choice")
+            }
+            Node12 => match choice{
+                1=>location = Node13,
+                2=>{
+                    let alive = encounter_roll(ViridianCity(ViridianForest), game_state);
+                    if alive {location = Node11}
+                    else{break}
+                }
+                3=>{
+                    let alive = encounter_roll(ViridianCity(ViridianForest), game_state);
+                    if alive {location = Node8}
+                    else{break}
+                }
+                _=>println!("Invalid Choice")
+            }
+            Node13 => match choice{
+                1=>{todo!()}
+                2=>{
+                    location = Node14
+                }
+                3=>{
+                    location = Node12
+                }
+                _=>println!("Invalid Choice")
+
+            }
+            Node14 => match choice {
+                1=>{
+                    let alive = encounter_roll(ViridianCity(ViridianForest), game_state);
+                    if alive {location = Node15}
+                    else{break}
+                }
+                2=>{
+                    location = Node13
+                }
+                _=>println!("Invalid Choice")
+            }
+            Node15 => match choice{
+                1=>{
+                    game_state.move_loc(PewterCity(Outside));
+                    break
+                }
+                2=>{
+                    let alive = encounter_roll(ViridianCity(ViridianForest), game_state);
+                    if alive {location = Node14}
+                    else{break}
+                }
+                _=>println!("Invalid Choice")
+            }
         }
-
-
-
-
     }
-
-
-
 }
-
 
 pub fn diglett_cave(){}
 
