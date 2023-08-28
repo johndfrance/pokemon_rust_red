@@ -24,6 +24,8 @@ impl PokemonSpecies {
             Pidgey=>PIDGEY,
             Pidgeotto=>PIDGEOTTO,
             Pidgeot=>PIDGEOT,
+            Rattata=>RATTATA,
+            Raticate=>RATICATE,
             Onix=>ONIX,
             _=>todo!()
         }
@@ -129,6 +131,16 @@ const PIDGEOT:EvolutionData=EvolutionData{
     pokemon: Pidgeot,
     next_stage: None,
     trigger: ByLevel(100),
+};
+const RATTATA: EvolutionData=EvolutionData{
+    pokemon: Rattata,
+    next_stage: Some(Raticate),
+    trigger: ByLevel(20),
+};
+const RATICATE: EvolutionData=EvolutionData{
+    pokemon: Raticate,
+    next_stage: None,
+    trigger:ByLevel(100),
 };
 const ONIX: EvolutionData=EvolutionData{
     pokemon: Onix,
