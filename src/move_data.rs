@@ -46,6 +46,7 @@ pub enum Moves {
     Harden,
     HydroPump,
     HyperFang,
+    LeechLife,
     LeechSeed,
     Leer,
     MirrorMove,
@@ -120,6 +121,7 @@ impl Moves {
             Moves::Harden=>HARDEN,
             Moves::HydroPump => HYDROPUMP,
             Moves::HyperFang => HYPERFANG,
+            Moves::LeechLife=>LEECHLIFE,
             Moves::LeechSeed => LEECHSEED,
             Moves::Leer => LEER,
             Moves::MirrorMove => MIRRORMOVE,
@@ -427,6 +429,16 @@ pub const HYPERFANG: MoveData = MoveData {
     effect_type: MoveEffectCat::None, //TODO
     pp: 15,
 };
+const LEECHLIFE: MoveData = MoveData{
+    name: "Leech Life",
+    base_power: 20,
+    accuracy: 100,
+    move_type: PokeTypes::Bug,
+    move_cat: MoveCat::Physical,
+    effect_type: MoveEffectCat::None, //TODO
+    pp: 15,
+};
+
 pub const LEECHSEED: MoveData = MoveData {
     name: "Leech Seed",
     base_power: 0,

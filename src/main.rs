@@ -29,7 +29,7 @@ use crate::mon_move_sets::LEARNABLEMOVES;
 use crate::move_data::Moves::Tackle;
 use crate::enemy_trainers::Trainer;
 use crate::evolution::{CATERPIE, EvolutionData, EvolutionTriggers};
-use crate::lib::{CINNABAR, get_user_input, YELLOW};
+use crate::lib::{CINNABAR, get_user_input, YELLOW, OAK};
 use crate::MoveCat::Physical;
 use crate::StatType::{Attack, Defense, Special, Speed};
 use crate::items::StdItem;
@@ -51,7 +51,7 @@ use std::time::Duration;
 use std::fs::{File, OpenOptions};
 use crossterm::style::Color::{Blue, Red, Yellow};
 use crossterm::style::{Color, style, Stylize};
-use pokemon_simple_V2::{OAK};
+
 
 // MAIN
 fn main() {
