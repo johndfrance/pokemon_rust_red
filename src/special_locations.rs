@@ -1,3 +1,4 @@
+use colored::Colorize;
 use crate::game::{master_menu, PewterCityLocations, Regions};
 use crate::{GameState, type_text};
 use crate::battle_logic::battle2;
@@ -5,7 +6,7 @@ use crate::enemy_trainers::Trainer;
 use crate::game::PewterCityLocations::Outside;
 use crate::game::Regions::{PewterCity, ViridianCity};
 use crate::game::ViridianCityLocations::{Route2, ViridianForest};
-use crate::lib::get_user_input;
+use crate::lib::{CINNABAR, get_user_input};
 use crate::region_groups::get_wild_encounter;
 use crate::special_locations::ViridianForestNodes::*;
 use crate::wild_battle_logic::wild_encounter;
@@ -52,9 +53,9 @@ pub fn viridian_forest(game_state: &mut GameState){
             }
             Node3 => {
                 println!("You are standing in front of a large tree. There is a path to your south and Long Grass to your East\
-                \n1. Investigate the Large Tree\
+                \n1. Investigate the Large Tree {}\
                 \n2. Go South along the path\
-                \n3. Go East into the Tall Grass")
+                \n3. Go East into the Tall Grass", "TODO".color(CINNABAR))
             }
             Node4 => {
                 println!("You've reached a corner. There is long grass to your South and long grass to your West:\
@@ -108,9 +109,9 @@ pub fn viridian_forest(game_state: &mut GameState){
             }
             Node13 => {
                 println!("You have come to a corner with a calm pond\
-                \n1. Investigate the pond\
+                \n1. Investigate the pond {}\
                 \n2. Go West along the path\
-                \n3. Go North along the path")
+                \n3. Go North along the path", "TODO".color(CINNABAR))
             }
             Node14 => {
                 println!("Your reach a corner, North you can see a break in the trees.\

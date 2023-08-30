@@ -29,7 +29,7 @@ use crate::mon_move_sets::LEARNABLEMOVES;
 use crate::move_data::Moves::Tackle;
 use crate::enemy_trainers::Trainer;
 use crate::evolution::{CATERPIE, EvolutionData, EvolutionTriggers};
-use crate::lib::{CINNABAR, get_user_input, YELLOW, OAK};
+use crate::lib::{CINNABAR, get_user_input, YELLOW, OAK, VERMILION, SAFFRON};
 use crate::MoveCat::Physical;
 use crate::StatType::{Attack, Defense, Special, Speed};
 use crate::items::StdItem;
@@ -71,6 +71,7 @@ fn main() {
     //println!("{}\n********************", "POKEMON - RUST RED".red());
     loop {
         println!("1. Continue\n2. New Game");
+        println!("\n{}", "WARNING: Options marked with a red TODO will likely crash the game.\nAvoid loss of data by saving frequently. - John".color(VERMILION));
         let game_select = get_user_input(2);
         match game_select {
             1 => {
@@ -118,7 +119,7 @@ pub fn save_temp(game_state: &GameState){
         .truncate(true)
         .open("pokemon.json");
     file.expect("Error").write_all(json_data.expect("Error").as_bytes());
-    println!("\nSAVE SUCCESSFUL");
+    println!("{}", "\nSAVE SUCCESSFUL".color(SAFFRON));
     //Ok(())
 }
 fn load_game()->Result<GameState, Box<dyn std::error::Error>>{
@@ -340,10 +341,12 @@ impl Party {
             self.display_party();
             println!("\nWhat would you like to do?");
             println!("1. Swap Pokemon");
+            println!("2. Pokemon Stats");
             println!("9. Exit Menu");
             let selection = get_user_input(9);
             match selection {
                 1 => self.swap_party_members(),
+                2 => self.display_stats(),
                 _ => {break}
             }
         }
@@ -359,6 +362,20 @@ impl Party {
         let selected_spot = get_user_input(valid_pokemon.clone() as u8);
         let selected_spot = selected_spot - 1;
         self.mon.swap(selected_poke.clone() as usize,selected_spot as usize);
+    }
+    fn display_stats(&self){
+        println!("What Pokemon do you want to see stats for?");
+        self.display_party();
+        let valid_pokemon = self.num_in_party();
+        let selected_poke =get_user_input(valid_pokemon as u8);
+        let selected_poke = selected_poke - 1;
+        println!("\nName: {} - Level: {}",self.mon[selected_poke as usize].as_ref().unwrap().name,self.mon[selected_poke as usize].as_ref().unwrap().level);
+        println!("********************");
+        println!("HP: {}", self.mon[selected_poke as usize].as_ref().unwrap().max_hp.value,);
+        println!("Attack: {}", self.mon[selected_poke as usize].as_ref().unwrap().attk.value,);
+        println!("Defense: {}", self.mon[selected_poke as usize].as_ref().unwrap().def.value,);
+        println!("Special: {}", self.mon[selected_poke as usize].as_ref().unwrap().spec.value,);
+        println!("Speed: {}", self.mon[selected_poke as usize].as_ref().unwrap().spd.value,);
     }
     fn remove_party_member(&mut self, index: usize){
         &self.mon[index-1].take();
@@ -753,7 +770,7 @@ impl Pokemon {
 
                 let ad_ratio = attack / defense;
 
-                let dam = ((((2.0 * attacker_level + 2.0) * base_power * ad_ratio) / 50.0) + 2.0)
+                let dam = (((((2.0 * attacker_level)/5.0 + 2.0) * base_power * ad_ratio) / 50.0) + 2.0)
                     * stab
                     * matchup_multiplier;
                 let damage = dam as u16;
@@ -765,6 +782,7 @@ impl Pokemon {
                     self.current_hp = 0;
                     self.status = Fainted;
                 }
+                thread::sleep(Duration::from_millis(600));
 
             },
             MoveCat::Status=>{
@@ -772,6 +790,14 @@ impl Pokemon {
 
             },
         }
+    }
+    fn battle_stats_reset(&mut self){
+        self.stat_mod_stages.attack = 0;
+        self.stat_mod_stages.defense = 0;
+        self.stat_mod_stages.special = 0;
+        self.stat_mod_stages.speed = 0;
+        self.stat_mod_stages.evasion = 0;
+        self.stat_mod_stages.accuracy = 0;
     }
     // I don't think this is used currently?
     fn move_names(&self) -> Vec<&str> {
@@ -810,7 +836,8 @@ impl Pokemon {
         let enemy_level = foe.level.clone();
         let enemy_base_exp = foe.base_exp.clone();
         let exp_gain = (enemy_base_exp * enemy_level) / 7;
-        type_text(format!("Gained {} experience points!", exp_gain).as_str());
+        type_text(format!("\nGained {} experience points!\n", exp_gain).as_str());
+        thread::sleep(Duration::from_millis(600));
         self.exp += exp_gain as u32;
         self.check_level_up();
     }
@@ -823,6 +850,7 @@ impl Pokemon {
             self.evolve();
             self.level_up();
         }
+        thread::sleep(Duration::from_millis(600));
     }
     fn level_up(&mut self) {
         // There is likely a cleaner way to do this with closures. Will return to this in future.
@@ -948,7 +976,8 @@ impl Pokemon {
                 self.species = evo_data.next_stage.unwrap();
                 let new_name = self.species.return_base_stats().name;
                 self.name = new_name.to_string();
-                println!("You {:?} evolved into an {}!", current_species, self.name);
+                println!("\nYour {:?} evolved into an {}!\n", current_species, self.name);
+                thread::sleep(Duration::from_millis(1500));
             }
         }
     }
@@ -956,15 +985,18 @@ impl Pokemon {
     pub fn leech_seed_effect(&mut self, benefactor: &mut Pokemon){
         let seeding_damage = (self.max_hp.value.clone())/8;
         println!("{} leeched for {} HP", self.name, seeding_damage);
+        thread::sleep(Duration::from_millis(500));
         if seeding_damage <= self.current_hp {
             self.current_hp -= seeding_damage;
 
         }else {
             println!("{} Fainted!", self.name);
+            thread::sleep(Duration::from_millis(500));
             self.current_hp = 0;
             self.status = Fainted;
         }
         println!("{} healed!", benefactor.name);
+        thread::sleep(Duration::from_millis(500));
         if (&benefactor.current_hp + seeding_damage.clone()) >= benefactor.max_hp.value{
             benefactor.current_hp = benefactor.max_hp.value.clone()
         }else {

@@ -7,7 +7,6 @@ use crate::Status::Fainted;
 use crate::{
     enemy_move_select, read_user_input, type_text, GameState, PartyOperations, Pokemon, Trainer,
 };
-
 use colored::Colorize;
 use std::cmp::Ordering;
 use std::{io, thread};
@@ -34,14 +33,14 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
 
     type_text(
         format!(
-            "{} sends out {}\n",
+            "\n{} sends out {}\n",
             enemy_name, enemy.poke_team[enemy_starting_mon_index].name
         )
         .as_str(),
     );
     type_text(
         format!(
-            "{} sends out {}\n",
+            "\n{} sends out {}\n",
             player_name,
             game_state.player.party.mon[player_starting_mon_index]
                 .clone()
@@ -50,6 +49,7 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
         )
         .as_str(),
     );
+    game_state.player.party.mon[player_starting_mon_index.clone()].as_mut().unwrap().battle_stats_reset();
     let mut player_mon_index = player_starting_mon_index.clone();
     let mut enemy_mon_index = enemy_starting_mon_index.clone();
 
@@ -75,7 +75,7 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
                 enemy_mon_index = next_healthy_index;
                 type_text(
                     format!(
-                        "{} sends out {}\n",
+                        "\n{} sends out {}\n",
                         enemy_name, enemy.poke_team[enemy_mon_index].name
                     )
                     .as_str(),
@@ -114,6 +114,7 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
                     )
                     .as_str(),
                 );
+                game_state.player.party.mon[player_mon_index.clone()].as_mut().unwrap().battle_stats_reset();
             } else {
                 winner = false;
                 break;
@@ -205,7 +206,7 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
 
                  */
                     if enemy.poke_team[enemy_mon_index.clone()].current_hp == 0 {
-                        type_text("Enemy Fainted!");
+                        type_text("Enemy Fainted!\n");
                     } else {
                         thread::sleep(Duration::from_millis(500));
                         enemy_attacks(game_state.player.party.mon[player_mon_index.clone()].as_mut().unwrap(), &mut enemy.poke_team[enemy_mon_index.clone()], enemy_move_selection);
@@ -230,7 +231,7 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
                             .current_hp
                             == 0
                         {
-                            type_text("You Fainted!");
+                            type_text("You Fainted!\n");
                         }
                     }
                 }
@@ -256,7 +257,7 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
                         .current_hp
                         == 0
                     {
-                        type_text("You Fainted!");
+                        type_text("You Fainted!\n");
                     } else {
                         thread::sleep(Duration::from_millis(500));
                         player_attacks(game_state.player.party.mon[player_mon_index.clone()].as_mut().unwrap(), &mut enemy.poke_team[enemy_mon_index.clone()], player_selected_move);
@@ -274,7 +275,7 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
 
                          */
                         if enemy.poke_team[enemy_mon_index.clone()].current_hp == 0 {
-                            type_text("Enemy Fainted!");
+                            type_text("Enemy Fainted!\n");
                         }
                     }
                 }
@@ -295,7 +296,7 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
 
                      */
                     if enemy.poke_team[enemy_mon_index.clone()].current_hp == 0 {
-                        type_text("Enemy Fainted!");
+                        type_text("Enemy Fainted!\n");
                     } else {
                         thread::sleep(Duration::from_millis(500));
                         enemy_attacks(game_state.player.party.mon[player_mon_index.clone()].as_mut().unwrap(), &mut enemy.poke_team[enemy_mon_index.clone()], enemy_move_selection);
@@ -318,7 +319,7 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
                             .current_hp
                             == 0
                         {
-                            type_text("You Fainted!");
+                            type_text("You Fainted!\n");
                         }
                     }
                 }
@@ -392,7 +393,7 @@ pub enum MainMenuOptions{
 }
 pub fn battle_display_menu(game_state: &GameState, poke_index: usize)->(MainMenuOptions, Option<u8>){
     println!("\nYour Turn! What will you do?");
-    println!("1.Fight 2.Items\n3.Swap{} 4.Run", "TODO".red(),);
+    println!("1.Fight 2.Items\n3.Swap 4.Run");
     //println!("{}", "Items, Swap, and Run and not yet built for Trainer Battles\nSwap is not built for Wild Battles".red());
     let menu_selection = get_user_input(4);
     match menu_selection{
@@ -442,46 +443,3 @@ pub fn battle_display_menu(game_state: &GameState, poke_index: usize)->(MainMenu
         _=>unreachable!(),
     }
 }
-
-/*
-Output: IF Trainer battle EITHER {get money, game continues}
-OR {lose money, change location to last (nearest?) PokeCentre, Restore all pokemon to  full health}
-IF Wild battle EITHER {game continues}, {game continues, new pokemon added},
-OR  {... All fainted condition}
-
-Input: GameState, Enemy(EITHER Trainer or Wild Pokemon)
-
-Process:
-    Initial Considerations:
-
-    -Battle will need to initialize some sort of temporary stats set to track modifications
-    that are the result of moves, so this can be factored into the damage. Maybe this just needs to
-    be part of the stats of the pokemon? Otherwise the DAMAGE function will need to intake this number as well.
-
-    -Ideally there will be one function that can deal with both Trainer and Wild Battles. I hope to
-    accomplish this with the use of Generics and Traits.
-
-    -The first not fainted pokemon will be sent out first.
-        -fn is_fainted(){}
-    -When Pokemon's HP = 0 there status will turn to Fainted.
-        -In impl Pokemon fn check_is_fainted(){} that will check if a Pokemon's HP is 0
-        and if it is will turn status to Fainted.
-        -That will be run within the Damage fn to ensure it's not missed.
-
-     - fn battle () should probably not return anything, just call another function
-     to deal with the fainting case, reviece_money(), or catch(). It could still return a bool
-     but I just don't need to catch it if I'm not using it.
-
-     -I'll probably need a fn wild_encounter() in which I make calls that deal with what wild mon
-     are in what regions of the map, and then this function calls battle() once it picks which
-     pokemon the trainer is battling.
-        -This means I will need a way to store what pokemon are in what region.
-        -fuck, more data handling.
-
-    Should deal better with the Trainer::new()
-
-        -Pokemon should be able to swap mid fight
-        -items.
-        -running.
-
- */

@@ -1,4 +1,10 @@
 use std::cmp::Ordering;
+use std::thread;
+use std::time::Duration;
+use colored::Colorize;
+use crossterm::style::Color::{Blue, Green, Red};
+use crossterm::style::Stylize;
+use rand::Rng;
 use crate::{enemy_move_select, GameState, PartyOperations, Pokemon, type_text};
 use crate::battle_logic::{battle_display_menu, battle_display_names, MainMenuOptions};
 use crate::battle_logic::MainMenuOptions::Fight;
@@ -19,7 +25,7 @@ pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
     type_text(format!("\n{} sends out {}\n",
             player_name,
             game_state.player.party.mon[player_starting_mon_index].clone().unwrap().name).as_str(),);
-
+    game_state.player.party.mon[player_starting_mon_index.clone()].as_mut().unwrap().battle_stats_reset();
     let mut player_mon_index = player_starting_mon_index.clone();
 
     loop{
@@ -40,7 +46,7 @@ pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
                 player_mon_index = next_healthy_index;
                 type_text(
                     format!(
-                        "{} sends out {}\n",
+                        "\n{} sends out {}\n",
                         player_name,
                         game_state.player.party.mon[player_mon_index]
                             .clone()
@@ -49,16 +55,31 @@ pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
                     )
                         .as_str(),
                 );
+                game_state.player.party.mon[player_mon_index.clone()].as_mut().unwrap().battle_stats_reset();
             } else {
                 winner = false;
                 break;
             }
         }
+        println!("*******************************");
+        print!("\n{}  ", "Player".stylize().blue());
         battle_display_names(&game_state.player.party.mon[player_mon_index.clone()].as_ref().unwrap(),);
+        print!("\n{}  ", "Wild".stylize().red());
         battle_display_names(wild_mon);
-        let mut player_selected_move: Moves;
-        let (menu_choice, sub_menu_choice) = battle_display_menu(&game_state, player_mon_index.clone());
 
+        let (menu_choice, sub_menu_choice) = battle_display_menu(&game_state, player_mon_index.clone());
+        let wild_mon_move_select = enemy_move_select(wild_mon);
+        let wild_mon_move_select = wild_mon_move_select.to_string();
+        let wild_mon_move_select = wild_mon_move_select.as_str();
+        let wild_mon_move_select = match wild_mon_move_select {
+            "1"=>wild_mon.moves[0],
+            "2"=>wild_mon.moves[1],
+            "3"=>wild_mon.moves[2],
+            "4"=>wild_mon.moves[3],
+            _=>unreachable!(),
+        };
+
+        let mut player_selected_move: Moves = Moves::Agility;
 
         match menu_choice{
             MainMenuOptions::Fight =>{
@@ -72,15 +93,33 @@ pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
             },
             MainMenuOptions::Item=>{
                 println!("Threw a pokeball!");
-                game_state.player.party.add_party_member(wild_mon.clone());
-                winner = true;
-                println!("You caught wild {}", wild_mon.name);
-                break
+                let random_number = rand::thread_rng().gen_range(0..=1);
+                if random_number == 0 {
+                    game_state.player.party.add_party_member(wild_mon.clone());
+                    winner = true;
+                    type_text(format!("You caught wild {}\n", wild_mon.name.clone().stylize().green()).as_str());
+                    thread::sleep(Duration::from_millis(600));
+                    break
+                }else{
+                    type_text("Shoot! The wild pokemon broke free!\n");
+                    thread::sleep(Duration::from_millis(600));
+                }
 
             }
             MainMenuOptions::Change=>{
-                todo!()
+                player_mon_index = sub_menu_choice.unwrap() as usize;
+                type_text(format!("\nPlayer sends out {}\n", game_state.player.party.mon[player_mon_index.clone()].as_ref().unwrap().name).as_str());
+                type_text(format!("\n{} used {}\n",
+                         wild_mon.name,
+                         wild_mon_move_select.move_stats().name).as_str());
 
+                game_state.player.party.mon[player_mon_index.clone()]
+                    .as_mut()
+                    .unwrap()
+                    .damage(
+                        &wild_mon,
+                        &wild_mon_move_select,
+                    );
             }
             MainMenuOptions::Run=>{
                 println!("You ran!");
@@ -90,16 +129,7 @@ pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
         if menu_choice == Fight{
         //println!("YOUVE SELECTED MOVE: {}", player_selected_move.move_stats().name);
 
-        let wild_mon_move_select = enemy_move_select(wild_mon);
-        let wild_mon_move_select = wild_mon_move_select.to_string();
-        let wild_mon_move_select = wild_mon_move_select.as_str();
-        let wild_mon_move_select = match wild_mon_move_select {
-            "1"=>wild_mon.moves[0],
-            "2"=>wild_mon.moves[1],
-            "3"=>wild_mon.moves[2],
-            "4"=>wild_mon.moves[3],
-            _=>unreachable!(),
-        };
+
         //println!("WILD HAS SELECTED: {}", wild_mon_move_select.move_stats().name);
         let speed_order = game_state.player.party.mon[player_mon_index.clone()]
             .clone()
@@ -113,7 +143,7 @@ pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
         match speed_order{
             Ordering::Greater=>{
 
-                println!("{} used {}!",
+                println!("\n{} used {}!",
                          &game_state.player.party.mon[player_mon_index].as_ref().unwrap().name,
                          player_selected_move.move_stats().name);
 
@@ -131,7 +161,7 @@ pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
                     break
                 }
                 else{
-                    println!("{} used {}",
+                    println!("\n{} used {}",
                         wild_mon.name,
                         wild_mon_move_select.move_stats().name);
 
@@ -154,7 +184,7 @@ pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
                 }
             }
             Ordering::Less=>{
-                println!("{} used {}",
+                println!("\n{} used {}",
                          wild_mon.name,
                          wild_mon_move_select.move_stats().name);
 
@@ -175,7 +205,7 @@ pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
                     type_text("You Fainted!");
                 }
                 else{
-                    println!("{} used {}!",
+                    println!("\n{} used {}!",
                              &game_state.player.party.mon[player_mon_index].as_ref().unwrap().name,
                              player_selected_move.move_stats().name);
 
@@ -195,7 +225,7 @@ pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
                 }
             }
             Ordering::Equal=>{
-                println!("{} used {}!",
+                println!("\n{} used {}!",
                          &game_state.player.party.mon[player_mon_index].as_ref().unwrap().name,
                          player_selected_move.move_stats().name);
 
@@ -213,7 +243,7 @@ pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
                     break
                 }
                 else {
-                    println!("{} used {}",
+                    println!("\n{} used {}",
                              wild_mon.name,
                              wild_mon_move_select.move_stats().name);
 
@@ -234,6 +264,18 @@ pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
                         type_text("You Fainted!");
                     }
                 }
+                }
+            }
+            if wild_mon.current_hp !=0{
+                //Leech Seed
+                if wild_mon.special_conditions.leech_seeded{
+                    wild_mon.leech_seed_effect(game_state.player.party.mon[player_mon_index.clone()].as_mut().unwrap());
+                }
+            }
+            if game_state.player.party.mon[player_mon_index.clone()].as_ref().unwrap().current_hp != 0 {
+                //Leech Seed
+                if game_state.player.party.mon[player_mon_index.clone()].as_ref().unwrap().special_conditions.leech_seeded == true {
+                    game_state.player.party.mon[player_mon_index.clone()].as_mut().unwrap().leech_seed_effect(wild_mon);
                 }
             }
         }
