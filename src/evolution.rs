@@ -1,4 +1,3 @@
-use std::f32::consts::E;
 use crate::mon_base_stats::PokemonSpecies;
 use crate::PokemonSpecies::*;
 use crate::EvolutionTriggers::*;
@@ -26,7 +25,10 @@ impl PokemonSpecies {
             Pidgeot=>PIDGEOT,
             Rattata=>RATTATA,
             Raticate=>RATICATE,
+            Spearow=>SPEAROW,
+            Fearow=>FEAROW,
             Pikachu=>PIKACHU,
+            Jigglypuff=>JIGGLYPUFF,
             Onix=>ONIX,
             _=>todo!()
         }
@@ -143,10 +145,25 @@ const RATICATE: EvolutionData=EvolutionData{
     next_stage: None,
     trigger:ByLevel(100),
 };
+const SPEAROW: EvolutionData = EvolutionData{
+  pokemon:Spearow,
+    next_stage: Some(Fearow),
+    trigger:ByLevel(20),
+};
+const FEAROW: EvolutionData = EvolutionData{
+    pokemon: Fearow,
+    next_stage: None,
+    trigger: ByLevel(100),
+};
 const PIKACHU: EvolutionData=EvolutionData{
     pokemon: Pikachu,
     next_stage: Some(Richu),
     trigger: EvolutionTriggers::ByItem,
+};
+const JIGGLYPUFF: EvolutionData=EvolutionData{
+    pokemon: Jigglypuff,
+    next_stage:Some(Wigglytuff),
+    trigger:ByItem
 };
 const ONIX: EvolutionData=EvolutionData{
     pokemon: Onix,

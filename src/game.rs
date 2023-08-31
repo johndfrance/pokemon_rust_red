@@ -12,7 +12,7 @@ use crate::game::Regions::{PewterCity, ViridianCity, PalletTown};
 use crate::game::PalletTownLocations::*;
 use crate::game::PewterCityLocations::*;
 use crate::game::ViridianCityLocations::*;
-use crate::lib::{get_user_input, GYM, MART, MOM, OAK, PCENTRE, PEACH, PEWTER, RIVALBLUE, travelling, VIRIDIAN, YELLOW};
+use crate::lib::{DIGLETT, get_user_input, GYM, MART, MOM, NORTH, OAK, PCENTRE, PEACH, PEWTER, RIVALBLUE, SOUTH, travelling, VIRIDIAN, YELLOW};
 use crate::region_groups::get_wild_encounter;
 use crate::wild_battle_logic::wild_encounter;
 use crate::gym_challenges::viridian_gym;
@@ -38,7 +38,7 @@ pub fn rust_red_game(mut game_state: GameState) {
                 println!("2. Talk to {}", "MOM".color(MOM));
             }
             PalletTown(PalletTownLocations::Outside) => {
-                println!("\nYou are outside in {}.", "Pallet Town".color(PEACH));
+                println!("\nYou are outside in {}.", "Pallet Town".color(YELLOW));
                 println!("1. Go inside your house");
                 println!("2. Go in {}'s house", "BLUE".color(RIVALBLUE));
                 println!("3. Go inside {}'s Lab", "OAK".color(OAK));
@@ -50,9 +50,20 @@ pub fn rust_red_game(mut game_state: GameState) {
                 println!("2. Talk to {}", "OAK".color(OAK));
             }
             PalletTown(Route1) => {
-                println!("\nYou are in Route 1.");
-                println!("1. Return to {}", "Pallet Town".color(PEACH));
-                println!("2. Go to {}", "Viridian City".color(VIRIDIAN));
+                println!("\nYou are at the South end of Route 1.");
+                println!("1. Return to {}", "Pallet Town".color(YELLOW));
+                println!("2. Go {} along Route 1", "North".color(NORTH));
+                println!("3. Talk to MAN.");
+            }
+            PalletTown(Route1pt2)=>{
+                println!("\nYou are in the middle of Route 1.");
+                println!("1. Head {} along Route 1 towards {}", "South".color(SOUTH), "Pallet Town".color(YELLOW));
+                println!("2. Head {} along Route 1 towards {}", "North".color(NORTH), "Viridian City".color(VIRIDIAN));
+            }
+            PalletTown(Route1pt3)=>{
+                println!("\nYou are at the North end of Route 1.");
+                println!("1. Go to {}", "Viridian City".color(VIRIDIAN));
+                println!("2. Head {} along Route 1", "South".color(SOUTH));
             }
             PalletTown(BluesHouse) => {
                 println!("\nYou are in {}'s House.", "BLUE".color(RIVALBLUE));
@@ -84,10 +95,15 @@ pub fn rust_red_game(mut game_state: GameState) {
                 println!("5. Go to Route 2");
             }
             ViridianCity(Route2) => {
-                println!("\nYou are in Route 2.");
-                println!("1. Go into Viridian Forest");
-                println!("2. Go into Diglett's Cave");
-                println!("3. Go to Viridian City");
+                println!("\nYou are at the {} end of Route 2.", "South".color(SOUTH));
+                println!("1. Go {} along Route 2", "North".color(NORTH));
+                println!("2. Go into {}", "Diglett's Cave".color(DIGLETT));
+                println!("3. Go to {}", "Viridian City".color(VIRIDIAN));
+            }
+            ViridianCity(Route2pt2)=>{
+                println!("\nYou are at the {} end of Route 2.", "North".color(NORTH));
+                println!("1. Go into {}", "Viridian Forest".color(VIRIDIAN));
+                println!("2. Go {} along Route 2", "South".color(SOUTH));
             }
             ViridianCity(ViridianForest) => {
                 println!("\n You are in Viridian Forest");
@@ -101,7 +117,7 @@ pub fn rust_red_game(mut game_state: GameState) {
                 println!("2. Go to {}", "PokeCentre".color(PCENTRE));
                 println!("3. Go to {}", "Mart".color(MART));
                 println!("4. Go to Route 3");
-                println!("5. Go to Viridian Forest");
+                println!("5. Go to {}", "Viridian Forest".color(VIRIDIAN));
             }
             PewterCity(PewterPokeCentre)=>{
                 println!("\nYou are in the {} {}", "Pewter City".color(PEWTER), "PokeCentre".color(PCENTRE));
@@ -115,16 +131,20 @@ pub fn rust_red_game(mut game_state: GameState) {
                 println!("2. Go Outside");
             }
             PewterCity(PewterCityLocations::Gym)=>{
-                println!("\nYou are in the Pewter City Gym");
-                println!("1. Challenge Gym");
+                println!("\nYou are in the {} {}", "Pewter City".color(PEWTER), "Gym".color(GYM));
+                println!("1. Challenge {}", "Gym".color(GYM));
                 println!("2. Go Outside")
             }
             PewterCity(Route3)=>{
                 println!("\nYou are in Route 3");
                 println!("1. Go To Mt.Moon");
                 println!("2. Go to {}", "Pewter City".color(PEWTER));
-
             }
+            /*
+            PewterCity(Route3pt2)=>{
+                println!("");
+            }
+             */
         }
 
         // Read player input
@@ -151,7 +171,7 @@ pub fn rust_red_game(mut game_state: GameState) {
 
             PalletTown(RedsHouse) => match choice {
                 1 => game_state.move_loc(PalletTown(PalletTownLocations::Outside)),
-                2 => mom(),
+                2 => mom(&game_state),
                 _ => println!("Invalid choice."),
             },
             PalletTown(OaksLab) => match choice {
@@ -167,12 +187,12 @@ pub fn rust_red_game(mut game_state: GameState) {
                         and my grandson to help you both with your adventure. Next time you are in battle\n \
                         against a wild pokemon, if you select ITEM from the battle menu you will throw \n\
                         a PokeBall and attempt to catch the wild pokemon!");
-                        thread::sleep(Duration::from_millis(600));
+                        thread::sleep(Duration::from_millis(1000));
                         type_text("\n You received PokeBalls!");
-                        thread::sleep(Duration::from_millis(600));
+                        thread::sleep(Duration::from_millis(1000));
                         type_text("\n One last thing, don't forgot that you can enter '9' in order to access the MENU \n\
                         from which you can do things like look ar your team and SAVE your game.");
-
+                        game_state.bag.pop();
                         game_state.event.oaks_parcel_delivered = true;
                     }
 
@@ -187,14 +207,43 @@ pub fn rust_red_game(mut game_state: GameState) {
                     travelling_encounter(PalletTown(Route1), PalletTown(PalletTownLocations::Outside), &mut game_state);
                     },
                 2 => {
-                    travelling("Viridian City");
-                    travelling_encounter(PalletTown(Route1), ViridianCity(ViridianCityLocations::Outside), &mut game_state);
+                    travelling_encounter(PalletTown(Route1), PalletTown(Route1pt2), &mut game_state);
                     },
+                3=>{
+                    type_text("\nMAN: Wild pokemon can attack you on the Routes between cities, make sure you have a Pokemon \nstrong enough to protect you!\n");
+                    thread::sleep(Duration::from_millis(1000));
+                }
                 _ => println!("Invalid choice."),
             },
+            PalletTown(Route1pt2)=>match choice {
+                1=>{
+                    travelling_encounter(PalletTown(Route1), PalletTown(Route1), &mut game_state);
+                },
+                2=>{
+                    travelling_encounter(PalletTown(Route1), PalletTown(Route1pt3), &mut game_state);
+                }
+                _=>println!("Invalid choice."),
+
+            }
+            PalletTown(Route1pt3)=>match choice {
+                1=>{
+                    travelling("Viridian City");
+                    travelling_encounter(PalletTown(Route1), ViridianCity(ViridianCityLocations::Outside), &mut game_state);
+                }
+                2=>{
+                    travelling_encounter(PalletTown(Route1), PalletTown(Route1pt2), &mut game_state);
+                }
+                _=>println!("Invalid choice."),
+            }
             PalletTown(BluesHouse) => match choice {
                 1 => game_state.move_loc(PalletTown(PalletTownLocations::Outside)),
-                2 => type_text("DAISY: Thanks for visiting me! My Brother is at Professor Oak's Lab right now...\n"),
+                2 => {
+                    if game_state.event.starter_received == false {
+                        type_text("DAISY: Thanks for visiting me! My Brother is at Professor Oak's Lab right now...\n");
+                    }else{
+                        type_text("DAISY: Don't forget you can save your game! Enter '9' to open the MENU and then select '4' to SAVE. Good Luck!")
+                    }
+                },
                 _ => println!("Invalid choice."),
             },
             PalletTown(PalletTownLocations::Outside) => match choice {
@@ -215,9 +264,9 @@ pub fn rust_red_game(mut game_state: GameState) {
             ViridianCity(ViridianCityLocations::Outside) => match choice {
                 1 => {
                     travelling("Route 1");
-                    game_state.move_loc(PalletTown(Route1))
+                    game_state.move_loc(PalletTown(Route1pt3))
                 },
-                2 => { println!("Closed! Come back later!"); } //TODO: Make this a conditional based on number of gym badges.
+                2 => { println!("\nThere's a sign that says: 'Closed! Come back later!'\n"); thread::sleep(Duration::from_millis(1000)); } //TODO: Make this a conditional based on number of gym badges.
                 3 => game_state.move_loc(ViridianCity(Mart)),
                 4 => game_state.move_loc(ViridianCity(PokeCentre)),
                 5 => {
@@ -260,20 +309,34 @@ pub fn rust_red_game(mut game_state: GameState) {
                 _ => println!("Invalid choice"),
             }
             ViridianCity(Route2) => match choice {
-                1 => {travelling("Viridian Forest");
-                    viridian_forest(&mut game_state);
-                    //travelling_encounter(ViridianCity(Route2),ViridianCity(ViridianForest), &mut game_state);
+                1 => {
+                    thread::sleep(Duration::from_millis(600));
+                    travelling_encounter(ViridianCity(Route2),ViridianCity(Route2pt2), &mut game_state);
+                    thread::sleep(Duration::from_millis(600));
                 },
-                2 => println!("Blocked by a strange looking tree..."),
+                2 => {type_text("\nBlocked by a strange looking tree... \n");
+                    thread::sleep(Duration::from_millis(400));
+                    type_text("\nA pokemon might be able to learn how to cut this...\n");
+                    thread::sleep(Duration::from_millis(800));}
                 3 => {travelling("Viridian City");
                     travelling_encounter(ViridianCity(Route2),ViridianCity(ViridianCityLocations::Outside), &mut game_state);
 
                 },
                 _ => println!("Invalid choice"),
             }
+            ViridianCity(Route2pt2)=>match choice{
+                1=>{ travelling("Viridian Forest");
+                    viridian_forest(&mut game_state);
+                }
+                2=>{thread::sleep(Duration::from_millis(600));
+                    travelling_encounter(ViridianCity(Route2), ViridianCity(Route2), &mut game_state);
+                    thread::sleep(Duration::from_millis(800));
+                }
+                _ => println!("Invalid choice"),
+            }
             ViridianCity(ViridianForest) => match choice {
                 1 => {travelling("Route 2");
-                    game_state.move_loc(ViridianCity(Route2))
+                    game_state.move_loc(ViridianCity(Route2pt2))
                 },
                 2 =>{
                     travelling("Pewter City");
@@ -299,8 +362,14 @@ pub fn rust_red_game(mut game_state: GameState) {
                 1=> game_state.move_loc(PewterCity(PewterCityLocations::Gym)),
                 2=>game_state.move_loc(PewterCity(PewterPokeCentre)),
                 3=>game_state.move_loc(PewterCity(PewterMart)),
-                4=>{travelling("Route 3");
-                    game_state.move_loc(PewterCity(Route3));
+                4=>{
+                    if game_state.badge_box.boulder==true {
+                        travelling("Route 3");
+                        game_state.move_loc(PewterCity(Route3));
+                    }else{
+                        type_text("MAN: Hey, wait! BROCK is looking for strong trainers to \
+                        challenge him. \n You should try to face him before heading off to MT. MOON");
+                    }
                 },
                 5=>{travelling("Viridian Forest");
                     viridian_forest(&mut game_state);
@@ -351,6 +420,8 @@ pub enum PalletTownLocations {
     BluesHouse,
     OaksLab,
     Route1,
+    Route1pt2,
+    Route1pt3,
     Outside,
 }
 #[derive(Clone, Copy, PartialEq, Debug, Serialize, Deserialize)]
@@ -360,6 +431,7 @@ pub enum ViridianCityLocations {
     PokeCentre,
     Outside,
     Route2,
+    Route2pt2,
     ViridianForest,
 }
 #[derive(Clone, Copy, PartialEq, Debug, Serialize, Deserialize)]
@@ -423,7 +495,10 @@ fn starter_selection(game_state: &mut GameState) -> Regions {
     1. {}\n\
     2. {}\n\
     3. {}\n",
-        "OAK".color(OAK),"BLUE".color(RIVALBLUE), "POKEMON".color(YELLOW),Stylize::green("Bulbasaur"),  Stylize::red("Charmander"), Stylize::blue("Squirtle")).as_str()
+        "OAK".color(OAK),"BLUE".color(RIVALBLUE), "POKEMON".color(YELLOW),
+        Stylize::green("Bulbasaur"),
+        Stylize::red("Charmander"),
+        Stylize::blue("Squirtle")).as_str()
     );
     let mut choice = true;
     let bulbasaur = Pokemon::new(Bulbasaur, 5);
@@ -474,8 +549,12 @@ fn starter_selection(game_state: &mut GameState) -> Regions {
     };
 }
 
-fn mom() {
-    type_text("MOM: Goodluck today!\n");
+fn mom(game_state: &GameState) {
+    if game_state.event.starter_received == false {
+        type_text("MOM: Goodluck today!\n");
+    }else{
+        type_text("MOM: Please remember to come visit!\n");
+    }
 }
 
 pub fn master_menu(game_state: &mut GameState){

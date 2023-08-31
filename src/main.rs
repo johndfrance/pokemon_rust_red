@@ -31,7 +31,7 @@ use crate::enemy_trainers::Trainer;
 use crate::evolution::{CATERPIE, EvolutionData, EvolutionTriggers};
 use crate::lib::{CINNABAR, get_user_input, YELLOW, OAK, VERMILION, SAFFRON};
 use crate::MoveCat::Physical;
-use crate::StatType::{Attack, Defense, Special, Speed};
+use crate::StatType::{Accuracy, Attack, Defense, Evasion, Special, Speed};
 use crate::items::StdItem;
 use crate::color_hub::color_me;
 use crate::battle_logic::battle2;
@@ -49,16 +49,13 @@ use std::io::{Read, Write};
 use std::thread::sleep;
 use std::time::Duration;
 use std::fs::{File, OpenOptions};
-use crossterm::style::Color::{Blue, Red, Yellow};
+use crossterm::style::Color::{Blue, Cyan, Red, Yellow};
 use crossterm::style::{Color, style, Stylize};
 
 
 // MAIN
 fn main() {
     env::set_var("RUST_BACKTRACE", "1");
-    // TODO: Impl 'Continue/New Game' menu
-    //println!("Do you want to:\n1.New Game.\n2.Continue\n3.Debug");
-
     let red = style(r" _____      _                                _____           _     _____          _
  |  __ \    | |                              |  __ \         | |   |  __ \        | |
  | |__) |__ | | _____ _ __ ___   ___  _ __   | |__) |   _ ___| |_  | |__) |___  __| |
@@ -67,8 +64,6 @@ fn main() {
  |_|   \___/|_|\_\___|_| |_| |_|\___/|_| |_| |_|  \_\__,_|___/\__| |_|  \_\___|\__,_|
                                                                                      ").with(Red);
     println!("{}", red);
-    //color_me("Rust", Red);
-    //println!("{}\n********************", "POKEMON - RUST RED".red());
     loop {
         println!("1. Continue\n2. New Game");
         println!("\n{}", "WARNING: Options marked with a red TODO will likely crash the game.\nAvoid loss of data by saving frequently. - John".color(VERMILION));
@@ -84,7 +79,6 @@ fn main() {
                         eprint!("No saved game detected")
                     }
                 }
-                //rust_red_game(loaded_game);
             }
             2 => {
                 let mut game_state = GameState::new();
@@ -218,7 +212,6 @@ impl GameState {
         }
 
     }
-
     fn load()->GameState{
         todo!()
     }
@@ -308,6 +301,10 @@ impl Player {
 #[derive(Debug, Serialize, Deserialize)]
 struct PokeDex {}
 
+impl PokeDex{
+
+}
+
 // For now having an array of 6 Pokemon Options seems like the right balance. For now I have the player
 // using this and the enemy Trainers using a Vec<Pokemon> and I will see if one is clearly better.
 #[derive(Debug, Serialize, Deserialize)]
@@ -357,7 +354,7 @@ impl Party {
         self.display_party();
         let valid_pokemon = self.num_in_party();
         let selected_poke = get_user_input(valid_pokemon as u8);
-        let selected_poke = selected_poke - 1;
+        //let selected_poke = selected_poke - 1;
         println!("What spot do you want to put {}", self.mon[selected_poke as usize].as_ref().unwrap().name);
         let selected_spot = get_user_input(valid_pokemon.clone() as u8);
         let selected_spot = selected_spot - 1;
@@ -550,7 +547,17 @@ impl BattleStats{
             StatType::Evasion=>self.evasion,
         };
         if stat_in_question > -6{
-            stat_in_question -= 1;
+            match stat_type{
+                Attack=>{self.attack -=1},
+                Defense=>{self.defense-=1},
+                Speed=>{self.speed-=1},
+                Special=>{self.special-=1},
+                StatType::Accuracy=>{self.accuracy-=1},
+                StatType::Evasion=>{self.evasion-=1},
+            }
+            //self.stat_type -= 1;
+            //println!("STAT LOWERED, STAT NOW {}", stat_in_question)
+
         }else {
             println!("{:?} can't lowered any more!",stat_type);
         }
@@ -712,83 +719,102 @@ impl Pokemon {
 
         let move_cat = move_data.move_cat;
 
-        match move_cat{
-            MoveCat::Physical|MoveCat::Special=>{
+        let move_accuracy = move_data.accuracy;
+        let defender_evasion = self.stat_mod_stages.evasion.clone();
+        let attacker_accuracy = attking_poke.stat_mod_stages.accuracy.clone();
+        /*
+        println!("Move Accuracy: {}", move_accuracy);
+        println!("Defender Evasion: {}", defender_evasion);
+        println!("Attack Accuracy: {}", attacker_accuracy);
+         */
+        let mut hit = true;
+        if !(move_accuracy == 100 && defender_evasion >=0 && attacker_accuracy >=0){
+            //println!("IF VALIDATED");
+            let accuracy_target = move_accuracy as f32 * self.stat_mod_stages.get_stat_mod(Evasion).clone() * attking_poke.stat_mod_stages.get_stat_mod(Accuracy).clone();
+            //println!("{}", accuracy_target);
+            let random_number = rand::thread_rng().gen_range(0..=100);
+            if accuracy_target < random_number as f32 {
+                hit = false;
+            }
+        }
+        if hit {
+            match move_cat {
+                MoveCat::Physical | MoveCat::Special => {
+                    let base_power = move_data.base_power as f32;
+                    let move_type = move_data.move_type;
+                    let attacker_level = attking_poke.level.clone() as f32;
 
-                let base_power = move_data.base_power as f32;
-                let move_type = move_data.move_type;
-                let attacker_level = attking_poke.level.clone() as f32;
+                    let attacking_poke_type = &attcking_move.move_stats().move_type;
+                    let defending_poke_type1 = &self.primary_type;
+                    let defending_poke_type2 = &self.secondary_type;
+                    let matchup_multiplier = attcking_move
+                        .move_stats()
+                        .move_type
+                        .type_match_board(defending_poke_type1)
+                        .effectivness_modifier();
 
-                let attacking_poke_type = &attcking_move.move_stats().move_type;
-                let defending_poke_type1 = &self.primary_type;
-                let defending_poke_type2 = &self.secondary_type;
-                let matchup_multiplier = attcking_move
-                    .move_stats()
-                    .move_type
-                    .type_match_board(defending_poke_type1)
-                    .effectivness_modifier();
-
-                let mut seconary_matchup_multi = 1;
-                /*
+                    let mut seconary_matchup_multi = 1;
+                    /*
                 if defending_poke_type2 != None{} todo!
                  */
 
-                attacking_poke_type
-                    .type_match_board(defending_poke_type1)
-                    .flavour_text();
+                    attacking_poke_type
+                        .type_match_board(defending_poke_type1)
+                        .flavour_text();
 
 
-                let mut stab: f32 = 1.0;
-                if move_type == *attacking_poke_type {
-                    stab = 1.5;
-                }
-                let mut defense;
-                let mut def_mod;
-                let mut attack;
-                let mut atk_mod;
-                if move_cat == Physical{
-                    defense = self.def.value.clone() as f32;
-                    def_mod = self.stat_mod_stages.get_stat_mod(Defense);
-                    //if def_mod != 1.0 { println!("DEF MOD = {}", def_mod) }
-                    defense = defense*def_mod;
+                    let mut stab: f32 = 1.0;
+                    if move_type == *attacking_poke_type {
+                        stab = 1.5;
+                    }
+                    let mut defense;
+                    let mut def_mod;
+                    let mut attack;
+                    let mut atk_mod;
+                    if move_cat == Physical {
+                        defense = self.def.value.clone() as f32;
+                        def_mod = self.stat_mod_stages.get_stat_mod(Defense);
+                        //if def_mod != 1.0 { println!("DEF MOD = {}", def_mod) }
+                        defense = defense * def_mod;
 
-                    attack = attking_poke.attk.value.clone() as f32;
-                    atk_mod = attking_poke.stat_mod_stages.get_stat_mod(Attack);
-                    //if atk_mod != 1.0 {println!("ATK MOD = {}", atk_mod)}
-                    attack = attack*atk_mod;
+                        attack = attking_poke.attk.value.clone() as f32;
+                        atk_mod = attking_poke.stat_mod_stages.get_stat_mod(Attack);
+                        //if atk_mod != 1.0 {println!("ATK MOD = {}", atk_mod)}
+                        attack = attack * atk_mod;
+                    } else {
+                        defense = self.spec.value.clone() as f32;
+                        def_mod = self.stat_mod_stages.get_stat_mod(Special);
+                        //if def_mod != 1.0 { println!("DEF MOD = {}", def_mod) }
+                        defense = defense * def_mod;
+                        attack = attking_poke.spec.value.clone() as f32;
+                        atk_mod = attking_poke.stat_mod_stages.get_stat_mod(Special);
+                        //if atk_mod != 1.0 {println!("ATK MOD = {}", atk_mod)}
+                        attack = attack * atk_mod;
+                    }
 
-                }else{
-                    defense = self.spec.value.clone() as f32;
-                    def_mod = self.stat_mod_stages.get_stat_mod(Special);
-                    //if def_mod != 1.0 { println!("DEF MOD = {}", def_mod) }
-                    defense = defense*def_mod;
-                    attack = attking_poke.spec.value.clone() as f32;
-                    atk_mod = attking_poke.stat_mod_stages.get_stat_mod(Special);
-                    //if atk_mod != 1.0 {println!("ATK MOD = {}", atk_mod)}
-                    attack = attack*atk_mod;
-                }
+                    let ad_ratio = attack / defense;
 
-                let ad_ratio = attack / defense;
+                    let dam = (((((2.0 * attacker_level) / 5.0 + 2.0) * base_power * ad_ratio) / 50.0) + 2.0)
+                        * stab
+                        * matchup_multiplier;
+                    let damage = dam as u16;
 
-                let dam = (((((2.0 * attacker_level)/5.0 + 2.0) * base_power * ad_ratio) / 50.0) + 2.0)
-                    * stab
-                    * matchup_multiplier;
-                let damage = dam as u16;
-
-                type_text(format!("{} was hit for {} points of damage!\n", &self.name.clone().cyan(), damage).as_str());
-                if self.current_hp > damage {
-                    self.current_hp -= damage;
-                } else {
-                    self.current_hp = 0;
-                    self.status = Fainted;
-                }
-                thread::sleep(Duration::from_millis(600));
-
-            },
-            MoveCat::Status=>{
-                attcking_move.move_stats().effect_type.apply_effect(self)
-
-            },
+                    type_text(format!("{} was hit for {} points of damage!\n", &self.name.clone().cyan(), damage).as_str());
+                    if self.current_hp > damage {
+                        self.current_hp -= damage;
+                    } else {
+                        self.current_hp = 0;
+                        self.status = Fainted;
+                    }
+                    thread::sleep(Duration::from_millis(700));
+                },
+                MoveCat::Status => {
+                    attcking_move.move_stats().effect_type.apply_effect(self);
+                    thread::sleep(Duration::from_millis(700));
+                },
+            }
+        }else{
+            type_text(format!("{}'s move missed!\n\n", attking_poke.name.clone().cyan()).as_str())
         }
     }
     fn battle_stats_reset(&mut self){
@@ -982,9 +1008,27 @@ impl Pokemon {
         }
     }
 
+    fn burn_poison_effect(&mut self){
+        let damage = (self.max_hp.value.clone())/8;
+        let current_health = &self.current_hp;
+        if self.status == Burned{
+            type_text(format!("\n{} is hurt by its Burn!", self.name).as_str())
+        }
+        if self.status == Poisoned{
+            type_text(format!("\n{} is hurt by Poison!", self.name).as_str());
+        }
+        type_text(format!("\n{} suffered {} points of damage!\n", self.name, damage).as_str());
+        if current_health >= &damage {
+            self.current_hp -= damage;
+        } else {
+            self.current_hp = 0;
+        }
+        thread::sleep(Duration::from_millis(600));
+    }
+
     pub fn leech_seed_effect(&mut self, benefactor: &mut Pokemon){
         let seeding_damage = (self.max_hp.value.clone())/8;
-        println!("{} leeched for {} HP", self.name, seeding_damage);
+        println!("{} leeched for {} HP", self.name.clone().cyan(), seeding_damage.to_string().red());
         thread::sleep(Duration::from_millis(500));
         if seeding_damage <= self.current_hp {
             self.current_hp -= seeding_damage;
@@ -1102,16 +1146,23 @@ impl MoveEffectCat {
             MoveEffectCat::Frozen=>{target.status = Frozen;}
             MoveEffectCat::Paralyzed=>{target.status = Paralyzed;}
 
-            MoveEffectCat::DefenseDown1=>{target.stat_mod_stages.lower_stat(Defense); println!("{} defense was {}!", target.name.clone().cyan(), Stylize::red("weakened"))},
-            MoveEffectCat::AttackDown1=>{target.stat_mod_stages.lower_stat(Attack); println!("{} attack was {}!", target.name.clone().cyan(), Stylize::red("weakened"))},
-            MoveEffectCat::SpeedDown1=> target.stat_mod_stages.lower_stat(Speed),
-            MoveEffectCat::SpecDown1=>target.stat_mod_stages.lower_stat(Special),
+            MoveEffectCat::DefenseDown1=>{target.stat_mod_stages.lower_stat(Defense);
+                println!("{} defense was {}!", target.name.clone().cyan(), Stylize::red("weakened"))},
+            MoveEffectCat::AttackDown1=>{target.stat_mod_stages.lower_stat(Attack);
+                println!("{} attack was {}!", target.name.clone().cyan(), Stylize::red("weakened"))},
+            MoveEffectCat::SpeedDown1=> {target.stat_mod_stages.lower_stat(Speed);
+                println!("{} speed was {}!", target.name.clone().cyan(), Stylize::red("weakened"))},
+            MoveEffectCat::SpecDown1=>{target.stat_mod_stages.lower_stat(Special);
+                println!("{} special was {}!", target.name.clone().cyan(), Stylize::red("weakened"))},
+            MoveEffectCat::AccuracyDown1=>{target.stat_mod_stages.lower_stat(Accuracy);
+                println!("{} accuracy was {}!", target.name.clone().cyan(), Stylize::red("weakened"))},
+            MoveEffectCat::EvasionDown1=>{target.stat_mod_stages.lower_stat(Evasion);
+                println!("{} evasion was {}!", target.name.clone().cyan(), Stylize::red("weakened"))},
 
             MoveEffectCat::AttackUp1=>target.stat_mod_stages.raise_stat(Attack),
             MoveEffectCat::DefenseUp1=>target.stat_mod_stages.raise_stat(Defense),
             MoveEffectCat::SpeedDown1=>target.stat_mod_stages.raise_stat(Speed),
             MoveEffectCat::SpecUp1=>target.stat_mod_stages.raise_stat(Special),
-
 
             MoveEffectCat::LeechSeed=>target.special_conditions.leech_seeded = true,
 

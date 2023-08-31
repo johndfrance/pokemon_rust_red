@@ -131,6 +131,9 @@ pub const BROCK: TrainerTemplate = TrainerTemplate{
     party: [Some((Geodude, 12)),Some((Onix, 14)), None, None, None, None ],
     reward: 1386,
 };
+//CERULEAN CITY GYM TRAINERS
+
+
 // ROUTE 3 TRAINERS
 pub const LASS1: TrainerTemplate = TrainerTemplate{
     id: 1,

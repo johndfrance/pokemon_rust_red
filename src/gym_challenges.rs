@@ -8,13 +8,10 @@ use crate::lib::get_user_input;
 
 pub fn viridian_gym(game_state: &mut GameState){
     println!();
-    //let mut first_trainer = Trainer::get(11);
-    //let result = battle2(game_state, &mut first_trainer);
-
     if game_state.badge_box.boulder == false {
         let result = game_state.trainer_battle(11);
         if result {
-            type_text("TRAINER: You may have been able to beat me, but you'll never be able to be beat BROCK!");
+            type_text("\nTRAINER: You may have been able to beat me, but you'll never be able to be beat BROCK!\n");
             loop {
                 println!("\nWhat will you do:");
                 println!("1. Fight on");
@@ -22,8 +19,6 @@ pub fn viridian_gym(game_state: &mut GameState){
                 let choice = get_user_input(9);
                 match choice {
                     1 => {
-                        //let mut gym_leader = Trainer::get(501);
-                        //let result = battle2(game_state, &mut gym_leader);
                         type_text("\nBROCK: Let me show you how a real Rock Star fights!\n");
                         let result = game_state.trainer_battle(501);
                         if result {
@@ -56,6 +51,10 @@ pub fn viridian_gym(game_state: &mut GameState){
     }else{
         type_text("BROCK: You've already beat me, you should head east and challenge MISTY in Cerulean City")
     }
+}
 
+fn cerulean_gym(mut game_state: &mut GameState){
+    if game_state.badge_box.cascade == false{
 
+    }
 }

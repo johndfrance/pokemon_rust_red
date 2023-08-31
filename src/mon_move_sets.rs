@@ -218,7 +218,16 @@ pub const LEARNABLEMOVES: &[LearnableMoves] = &[
             (36, Agility),
         ],
     },
-
+    LearnableMoves{
+        species: Fearow,
+        level_up_moves: &[
+            (9, Leer),
+            (15, FuryAttack),
+            (25, MirrorMove),
+            (34, DrillPeck),
+            (43, Agility),
+        ],
+    },
     LearnableMoves{
         species: Ekans,
         level_up_moves: &[
@@ -229,7 +238,16 @@ pub const LEARNABLEMOVES: &[LearnableMoves] = &[
             (38, Acid),
         ],
     },
-
+    LearnableMoves{
+        species: Arbok,
+        level_up_moves: &[
+            (10, PoisonSting),
+            (17, Bite),
+            (27, Glare),
+            (36, Screech),
+            (47, Acid),
+        ],
+    },
     LearnableMoves {
         species: Pikachu,
         level_up_moves: &[
@@ -240,7 +258,10 @@ pub const LEARNABLEMOVES: &[LearnableMoves] = &[
             (43, Thunder),
         ],
     },
-
+    LearnableMoves {
+        species: Richu,
+        level_up_moves: &[],
+    },
     LearnableMoves{
         species: Sandshrew,
         level_up_moves: &[
@@ -251,7 +272,16 @@ pub const LEARNABLEMOVES: &[LearnableMoves] = &[
             (38, FurySwipes),
         ],
     },
-
+    LearnableMoves{
+        species: Sandslash,
+        level_up_moves: &[
+            (10, SandAttack),
+            (17, Slash),
+            (27, PoisonSting),
+            (36, Swift),
+            (47, FurySwipes),
+        ],
+    },
     LearnableMoves{
         species: NidoranF,
         level_up_moves: &[
@@ -263,7 +293,21 @@ pub const LEARNABLEMOVES: &[LearnableMoves] = &[
             (43, DoubleKick),
         ],
     },
-
+    LearnableMoves{
+        species: Nidorina,
+        level_up_moves: &[
+            (8, Scratch),
+            (14, PoisonSting),
+            (23, TailWhip),
+            (32, Bite),
+            (41, FurySwipes),
+            (50, DoubleKick),
+        ],
+    },
+    LearnableMoves{
+        species: Nidoqueen,
+        level_up_moves: &[],
+    },
     LearnableMoves{
         species: Jigglypuff,
         level_up_moves: &[
@@ -276,7 +320,10 @@ pub const LEARNABLEMOVES: &[LearnableMoves] = &[
             (39, DoubleEdge),
         ],
     },
-    
+    LearnableMoves{
+        species: Wigglytuff,
+        level_up_moves: &[],
+    },
     LearnableMoves{
         species: Diglett,
         level_up_moves: &[

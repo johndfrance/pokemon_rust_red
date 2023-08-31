@@ -34,7 +34,12 @@ pub const MOM:Color=TrueColor {r:216, g:191, b:216};
 pub const GYM: Color=TrueColor {r:255, g:140, b:0};
 pub const PCENTRE: Color=TrueColor {r:220, g:20, b:60};
 pub const MART: Color= TrueColor {r:0, g:191, b:255};
+pub const DIGLETT: Color = TrueColor {r:170, g:108, b:57};
 
+pub const NORTH: Color = TrueColor {r:165, g:210, b:255};
+pub const EAST: Color = TrueColor {r:163, g:215, b:143};
+pub const SOUTH: Color = TrueColor {r:190, g:129, b:110};
+pub const WEST: Color = TrueColor {r:210, g:182, b:107};
 
 fn type_text(text: &str) {
     let delay = 60;

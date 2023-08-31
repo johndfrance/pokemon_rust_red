@@ -372,7 +372,7 @@ const GLARE: MoveData = MoveData{
     accuracy: 75,
     move_type: PokeTypes::Normal,
     move_cat: Status,
-    effect_type: MoveEffectCat::None, //TODO
+    effect_type: MoveEffectCat::Paralyzed,
     pp: 30,
 };
 pub const GROWL: MoveData = MoveData {
@@ -408,7 +408,7 @@ const HARDEN: MoveData = MoveData{
     accuracy: 100,
     move_type: PokeTypes::Normal,
     move_cat: MoveCat::Status,
-    effect_type: MoveEffectCat::None, //TODO
+    effect_type: MoveEffectCat::DefenseUp1, //TODO
     pp: 30,
 };
 pub const HYDROPUMP: MoveData = MoveData {
@@ -454,7 +454,7 @@ pub const LEER: MoveData = MoveData {
     accuracy: 100,
     move_type: PokeTypes::Normal,
     move_cat: MoveCat::Status,
-    effect_type: MoveEffectCat::None, //TODO
+    effect_type: MoveEffectCat::DefenseDown1, //TODO
     pp: 30,
 };
 pub const MIRRORMOVE: MoveData = MoveData {
@@ -490,7 +490,7 @@ pub const POISONPOWDER: MoveData = MoveData {
     accuracy: 75,
     move_type: PokeTypes::Poison,
     move_cat: Status,
-    effect_type: MoveEffectCat::None, //TODO
+    effect_type: MoveEffectCat::Poisoned, //TODO
     pp: 35,
 };
 pub const POISONSTING: MoveData = MoveData {
@@ -571,7 +571,7 @@ pub const SANDATTACK: MoveData = MoveData {
     accuracy: 100,
     move_type: PokeTypes::Normal,
     move_cat: MoveCat::Status,
-    effect_type: MoveEffectCat::None, //TODO
+    effect_type: MoveEffectCat::AccuracyDown1,
     pp: 15,
 };
 pub const SCRATCH: MoveData = MoveData {
@@ -607,7 +607,7 @@ const SING: MoveData=MoveData{
     accuracy: 55,
     move_type: PokeTypes::Normal,
     move_cat: MoveCat::Status,
-    effect_type: MoveEffectCat::None, //TODO
+    effect_type: MoveEffectCat::Sleeped,
     pp: 15,
 };
 pub const SKULLBASH: MoveData = MoveData {
@@ -643,7 +643,7 @@ pub const SLEEPPOWDER: MoveData = MoveData {
     accuracy: 75,
     move_type: PokeTypes::Grass,
     move_cat: MoveCat::Status,
-    effect_type: MoveEffectCat::None, // TODO
+    effect_type: MoveEffectCat::Sleeped,
     pp: 15,
 };
 pub const SOLARBEAM: MoveData = MoveData {
@@ -661,7 +661,7 @@ pub const STRINGSHOT: MoveData = MoveData {
     accuracy: 95,
     move_type: PokeTypes::Bug,
     move_cat: MoveCat::Status,
-    effect_type: MoveEffectCat::None, //TODO
+    effect_type: MoveEffectCat::EvasionDown1,
     pp: 40,
 };
 pub const STUNSPORE: MoveData = MoveData{
@@ -670,7 +670,7 @@ pub const STUNSPORE: MoveData = MoveData{
     accuracy: 75,
     move_type: Grass,
     move_cat: Status,
-    effect_type: MoveEffectCat::None, //TODO
+    effect_type: MoveEffectCat::Paralyzed,
     pp: 30,
 };
 pub const SUPERFANG: MoveData = MoveData {
@@ -742,7 +742,7 @@ pub const THUNDERWAVE: MoveData = MoveData {
     accuracy: 100,
     move_type: PokeTypes::Electric,
     move_cat: MoveCat::Status,
-    effect_type: MoveEffectCat::None, //TODO
+    effect_type: MoveEffectCat::Paralyzed,
     pp: 20,
 };
 pub const TWINEEDLE: MoveData = MoveData{

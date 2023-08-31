@@ -3,7 +3,7 @@ Title: battle_logic.rs
 
 Desc: Contains the core engine for battles. Currently only for trainer to trainer battles.
  */
-use crate::Status::Fainted;
+use crate::Status::{Burned, Fainted, Poisoned};
 use crate::{
     enemy_move_select, read_user_input, type_text, GameState, PartyOperations, Pokemon, Trainer,
 };
@@ -330,11 +330,19 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
                 if enemy.poke_team[enemy_mon_index.clone()].special_conditions.leech_seeded == true {
                     enemy.poke_team[enemy_mon_index.clone()].leech_seed_effect(game_state.player.party.mon[player_mon_index.clone()].as_mut().unwrap());
                 }
+                //Burn or Poison Damage
+                if enemy.poke_team[enemy_mon_index.clone()].status == Burned ||  enemy.poke_team[enemy_mon_index.clone()].status == Poisoned{
+                    enemy.poke_team[enemy_mon_index.clone()].burn_poison_effect();
+                }
             }
             if game_state.player.party.mon[player_mon_index.clone()].as_ref().unwrap().current_hp != 0 {
                 //Leech Seed
                 if game_state.player.party.mon[player_mon_index.clone()].as_ref().unwrap().special_conditions.leech_seeded == true {
                     game_state.player.party.mon[player_mon_index.clone()].as_mut().unwrap().leech_seed_effect(&mut enemy.poke_team[enemy_mon_index.clone()]);
+                }
+                //Burn or Poison Damage
+                if game_state.player.party.mon[player_mon_index.clone()].as_ref().unwrap().status == Burned || game_state.player.party.mon[player_mon_index.clone()].as_ref().unwrap().status == Poisoned{
+                    game_state.player.party.mon[player_mon_index.clone()].as_mut().unwrap().burn_poison_effect();
                 }
             }
         }

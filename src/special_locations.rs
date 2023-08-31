@@ -1,3 +1,5 @@
+use std::thread;
+use std::time::Duration;
 use colored::Colorize;
 use crate::game::{master_menu, PewterCityLocations, Regions};
 use crate::{GameState, type_text};
@@ -6,7 +8,7 @@ use crate::enemy_trainers::Trainer;
 use crate::game::PewterCityLocations::Outside;
 use crate::game::Regions::{PewterCity, ViridianCity};
 use crate::game::ViridianCityLocations::{Route2, ViridianForest};
-use crate::lib::{CINNABAR, get_user_input};
+use crate::lib::{CINNABAR, EAST, get_user_input, NORTH, SOUTH, VIRIDIAN, WEST};
 use crate::region_groups::get_wild_encounter;
 use crate::special_locations::ViridianForestNodes::*;
 use crate::wild_battle_logic::wild_encounter;
@@ -39,89 +41,104 @@ pub fn viridian_forest(game_state: &mut GameState){
     loop{
         match location{
             Node1 => {
-                println!("You are at the entrance to the forest, there is a boy standing near-by:\
-                \n1. Go along the West path\
-                \n2. Go North, into the Tall Grass\
-                \n3. Go along the East path\
-                \n4. EXIT Viridian Forest\
-                \n5. Talk to BOY")
+                println!("\nYou are at the entrance to the forest, there is a boy standing near-by:\
+                \n1. Go along the {} path\
+                \n2. Go {}, into the Tall Grass\
+                \n3. Go along the {} path\
+                \n4. EXIT {}\
+                \n5. Talk to BOY", "West".color(WEST), "North".color(NORTH), "East".color(EAST), "Viridian Forest".color(VIRIDIAN))
             }
             Node2 => {
-                println!("You are on the Path West of the entrance:\
-                \n1. Go North along the path\
-                \n2. Go East along the path")
+                println!("\nYou are on the Path {} of the entrance:\
+                \n1. Go {} along the path\
+                \n2. Go {} along the path",
+                "West".color(WEST), "North".color(NORTH), "East".color(EAST))
             }
             Node3 => {
-                println!("You are standing in front of a large tree. There is a path to your south and Long Grass to your East\
+                println!("\nYou are standing in front of a large tree. There is a path to your {} and Long Grass to your {}\
                 \n1. Investigate the Large Tree {}\
-                \n2. Go South along the path\
-                \n3. Go East into the Tall Grass", "TODO".color(CINNABAR))
+                \n2. Go {} along the path\
+                \n3. Go {} into the Tall Grass","South".color(SOUTH), "East".color(EAST),
+                         "TODO".color(CINNABAR), "South".color(SOUTH), "East".color(EAST), )
             }
             Node4 => {
-                println!("You've reached a corner. There is long grass to your South and long grass to your West:\
-                \n1. Go West\
-                \n2. Go South")
+                println!("\nYou've reached a corner. There is long grass to your South and long grass to your West:\
+                \n1. Go {}\
+                \n2. Go {}",
+                "West".color(WEST), "South".color(SOUTH))
             }
             Node5 => {
-                println!("You've reach a corner. There is a boy who looks hard a work catching bugs.\
+                println!("\nYou've reach a corner. There is a boy who looks hard a work catching bugs.\
                 \n1. Talk to BUGCATCHER.\
-                \n2. Take the North Path\
-                \n3. Take the West Path")
+                \n2. Take the {} Path\
+                \n3. Take the {} Path",
+                "North".color(NORTH), "West".color(WEST))
             }
             Node6 => {
-                println!("...\
-                \n1. Go North into the Tall Grass\
-                \n2. Go East along the path\
-                \n3. Go South along the path")
+                println!("\n...\
+                \n1. Go {} into the Tall Grass\
+                \n2. Go {} along the path\
+                \n3. Go {} along the path",
+                "North".color(NORTH), "East".color(EAST), "South".color(SOUTH))
             }
             Node7 => {
-                println!("You reach a corner. There is a trainer north of you on the path.\
-                \n1. Go North along the path\
-                \n2. Go West along the path")
+                println!("\nYou reach a corner. There is a trainer {} of you on the path.\
+                \n1. Go {} along the path\
+                \n2. Go {} along the path",
+                "North".color(NORTH),"North".color(NORTH), "West".color(WEST))
             }
             Node8 => {
-                println!("There is a trainer to the East of you on the path.\
-                \n1. Go East along the path\
-                \n2. Go West into the tall grass\
-                \n3. Go South into the tall grass")
+                println!("\nThere is a trainer to the {} of you on the path.\
+                \n1. Go {} along the path\
+                \n2. Go {} into the tall grass\
+                \n3. Go {} into the tall grass",
+                "East".color(EAST),"East".color(EAST),"West".color(WEST), "South".color(SOUTH))
             }
             Node9 => {
-                println!("You come to a fork in the trail, there is a trainer on the West path and the South Path\
-                \n1. Go West along the path\
-                \n2. Go North along the path\
-                \n3. Go South along the path")
+                println!("\nYou come to a fork in the trail, there is a trainer on the {} path and the {} Path\
+                \n1. Go {} along the path\
+                \n2. Go {} along the path\
+                \n3. Go {} along the path",
+                         "West".color(WEST), "South".color(SOUTH), "West".color(WEST), "North".color(NORTH),
+                    "South".color(SOUTH))
             }
             Node10 => {
-                println!("You come to corner, to the west is long stretch of path with a trainer.\
-                \n1. Go West along the path\
-                \n2. Go South along the path")
+                println!("\nYou come to corner, to the {} is long stretch of path with a trainer.\
+                \n1. Go {} along the path\
+                \n2. Go {} along the path",
+                         "west".color(WEST), "West".color(WEST), "South".color(SOUTH))
             }
             Node11 => {
-                println!("You reach a corner,\
-                \n1. Go South into the tall grass\
-                \n2. Go East along the long path")
+                println!("\nYou reach a corner,\
+                \n1. Go {} into the tall grass\
+                \n2. Go {} along the long path",
+                "South".color(SOUTH), "East".color(EAST))
             }
             Node12 => {
-                println!("You can hear a gentle stream from where you are standing\
-                \n1. Go South along the path\
-                \n2. Go North into the tall grass\
-                \n3. Go East into the tall grass")
+                println!("\nYou can hear a gentle stream from where you are standing\
+                \n1. Go {} along the path\
+                \n2. Go {} into the tall grass\
+                \n3. Go {} into the tall grass",
+                "South".color(SOUTH), "North".color(NORTH), "East".color(EAST))
             }
             Node13 => {
-                println!("You have come to a corner with a calm pond\
+                println!("\nYou have come to a corner with a calm pond\
                 \n1. Investigate the pond {}\
-                \n2. Go West along the path\
-                \n3. Go North along the path", "TODO".color(CINNABAR))
+                \n2. Go {} along the path\
+                \n3. Go {} along the path",
+                         "TODO".color(CINNABAR), "West".color(WEST), "North".color(NORTH))
             }
             Node14 => {
-                println!("Your reach a corner, North you can see a break in the trees.\
-                \n1. Head North towards the exit\
-                \n2. Go East along the path")
+                println!("\nYour reach a corner, {} you can see a break in the trees.\
+                \n1. Head {} towards the exit\
+                \n2. Go {} along the path",
+                "North".color(NORTH), "North".color(NORTH), "East".color(EAST))
             }
             Node15 => {
-                println!("You are at the North Exit of the forest!\
+                println!("\nYou are at the {} Exit of the forest!\
                 \n1. Exit the forest\
-                \n2. Go South into the tall grass")
+                \n2. Go {} into the tall grass",
+                "North".color(NORTH), "South".color(SOUTH))
             }
         }
         println!("Enter Your Choice:");
@@ -131,6 +148,9 @@ pub fn viridian_forest(game_state: &mut GameState){
             master_menu(game_state);
             continue;
         }
+
+        println!();
+        thread::sleep(Duration::from_millis(250));
         match location{
             Node1 => match choice{
                 1=>location = Node2,
@@ -144,9 +164,10 @@ pub fn viridian_forest(game_state: &mut GameState){
                     break
                 },
                 5=>{
-                    type_text("BOY: This forest is like a maze! Don't be afraid to draw \
+                    type_text("\nBOY: This forest is like a maze! Don't be afraid to draw \
                     yourself a map if you start to get lost! Also, look for your my friends, we all \
-                     came here to practice battling our pokemon!")
+                     came here to practice battling our pokemon!\n\n");
+                    thread::sleep(Duration::from_millis(1000));
                 }
                 _=>println!("Invalid Choice"),
             }

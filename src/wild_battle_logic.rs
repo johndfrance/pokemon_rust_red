@@ -9,7 +9,7 @@ use crate::{enemy_move_select, GameState, PartyOperations, Pokemon, type_text};
 use crate::battle_logic::{battle_display_menu, battle_display_names, MainMenuOptions};
 use crate::battle_logic::MainMenuOptions::Fight;
 use crate::move_data::Moves;
-use crate::Status::Fainted;
+use crate::Status::{Burned, Fainted, Poisoned};
 
 pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
     let mut winner ;
@@ -107,7 +107,7 @@ pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
 
             }
             MainMenuOptions::Change=>{
-                player_mon_index = sub_menu_choice.unwrap() as usize;
+                player_mon_index = sub_menu_choice.unwrap() as usize + 1;
                 type_text(format!("\nPlayer sends out {}\n", game_state.player.party.mon[player_mon_index.clone()].as_ref().unwrap().name).as_str());
                 type_text(format!("\n{} used {}\n",
                          wild_mon.name,
@@ -271,11 +271,19 @@ pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
                 if wild_mon.special_conditions.leech_seeded{
                     wild_mon.leech_seed_effect(game_state.player.party.mon[player_mon_index.clone()].as_mut().unwrap());
                 }
+                //Burn or Poison
+                if wild_mon.status == Burned || wild_mon.status == Poisoned{
+                    wild_mon.burn_poison_effect();
+                }
             }
             if game_state.player.party.mon[player_mon_index.clone()].as_ref().unwrap().current_hp != 0 {
                 //Leech Seed
                 if game_state.player.party.mon[player_mon_index.clone()].as_ref().unwrap().special_conditions.leech_seeded == true {
                     game_state.player.party.mon[player_mon_index.clone()].as_mut().unwrap().leech_seed_effect(wild_mon);
+                }
+                //Burn or Poison
+                if game_state.player.party.mon[player_mon_index.clone()].as_ref().unwrap().status == Burned || game_state.player.party.mon[player_mon_index.clone()].as_ref().unwrap().status == Poisoned{
+                    game_state.player.party.mon[player_mon_index.clone()].as_mut().unwrap().burn_poison_effect();
                 }
             }
         }

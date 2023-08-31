@@ -5,14 +5,15 @@ Description: Each region of Kanto has different wild pokemon. This file provides
 wild pokemon are in each region.
  */
 use rand::Rng;
-use crate::game::{PalletTownLocations, Regions};
+use crate::game::{PalletTownLocations, PewterCityLocations, Regions};
 use crate::mon_base_stats::PokemonSpecies;
-use crate::mon_base_stats::PokemonSpecies::{Caterpie, Kakuna, Metapod, Pidgey, Pikachu, Rattata, Weedle};
+use crate::mon_base_stats::PokemonSpecies::{Caterpie, Jigglypuff, Kakuna, Metapod, Pidgey, Pikachu, Rattata, Spearow, Weedle};
 use crate::game::Regions::*;
 use crate::game::PalletTownLocations::*;
 use crate::game::ViridianCityLocations::*;
 use crate::Pokemon;
 use serde::{Serialize, Deserialize};
+use crate::game::PewterCityLocations::*;
 
 
 pub struct WildPokemon{
@@ -20,19 +21,16 @@ pub struct WildPokemon{
    pub level: u16,
 }
 pub fn get_wild_encounter(location: Regions)->Option<Pokemon>{
-    let random_number = rand::thread_rng().gen_range(0..=0);
+    let random_number = rand::thread_rng().gen_range(0..=1);
     if random_number == 0 {
         let encounter_data = WILD_ENCOUNTER_MAP
             .iter()
             .find(|(loc, _)| loc == &location)
             .map(|(_, encounter_possibilities)| *encounter_possibilities);
-
         let len_encounter = encounter_data.unwrap().len();
-
         let mut rng = rand::thread_rng();
         let pick = rng.gen_range(0..(len_encounter));
         let unwraped_data = encounter_data.unwrap();
-
         let chosen_mon = &unwraped_data[pick];
         let chosen_species = chosen_mon.species;
         let chosen_level = chosen_mon.level;
@@ -40,7 +38,6 @@ pub fn get_wild_encounter(location: Regions)->Option<Pokemon>{
         return Some(wild_mon);
     }
     None
-
 }
 
 const WILD_ENCOUNTER_MAP: &[(Regions, &[WildPokemon])]=&[
@@ -77,7 +74,39 @@ const WILD_ENCOUNTER_MAP: &[(Regions, &[WildPokemon])]=&[
         WildPokemon{species:Kakuna, level:6},
         WildPokemon{species:Metapod, level:5},
         WildPokemon{species:Metapod, level:6},
+        WildPokemon{ species: Weedle, level: 3},
+        WildPokemon{ species: Weedle, level: 4},
+        WildPokemon{ species: Weedle, level: 5},
+        WildPokemon{ species: Caterpie, level: 3},
+        WildPokemon{ species: Caterpie, level: 4},
+        WildPokemon{ species: Caterpie, level: 5},
+        WildPokemon{species:Kakuna, level:5},
+        WildPokemon{species:Kakuna, level:6},
+        WildPokemon{species:Metapod, level:5},
+        WildPokemon{species:Metapod, level:6},
         WildPokemon{species:Pikachu, level: 3},
         WildPokemon{species:Pikachu, level: 5},
-    ])
+    ]),
+    (PewterCity(Route3), &[
+       WildPokemon{species: Pidgey, level: 6},
+        WildPokemon{species:Pidgey, level: 7},
+        WildPokemon{species: Pidgey, level: 8},
+        WildPokemon{species: Pidgey, level: 9},
+        WildPokemon{species: Spearow, level: 5},
+        WildPokemon{species: Spearow, level: 6},
+        WildPokemon{species: Spearow, level: 7},
+        WildPokemon{species: Spearow, level: 8},
+        WildPokemon{species: Pidgey, level: 6},
+        WildPokemon{species:Pidgey, level: 7},
+        WildPokemon{species: Pidgey, level: 8},
+        WildPokemon{species: Pidgey, level: 9},
+        WildPokemon{species: Spearow, level: 5},
+        WildPokemon{species: Spearow, level: 6},
+        WildPokemon{species: Spearow, level: 7},
+        WildPokemon{species: Spearow, level: 8},
+        WildPokemon{species: Jigglypuff, level: 3},
+        WildPokemon{species: Jigglypuff, level: 5},
+        WildPokemon{species: Jigglypuff, level: 7},
+    ]),
+
 ];
