@@ -269,6 +269,7 @@ impl BillPC{
     }
     fn remove_mon(&mut self, index: usize){
         self.boxes.remove(index-1);
+
         return
     }
 }
@@ -354,7 +355,10 @@ impl Party {
         self.display_party();
         let valid_pokemon = self.num_in_party();
         let selected_poke = get_user_input(valid_pokemon as u8);
-        //let selected_poke = selected_poke - 1;
+        let selected_poke = selected_poke - 1;
+        println!("INDEX {}", selected_poke);
+        println!("INDEX 0 = {:?}", self.mon[0]);
+        println!("INDEX 1 = {:?}", self.mon[1]);
         println!("What spot do you want to put {}", self.mon[selected_poke as usize].as_ref().unwrap().name);
         let selected_spot = get_user_input(valid_pokemon.clone() as u8);
         let selected_spot = selected_spot - 1;
@@ -376,6 +380,22 @@ impl Party {
     }
     fn remove_party_member(&mut self, index: usize){
         &self.mon[index-1].take();
+
+        let mut i = 0;
+        let len = self.mon.len();
+        while i < len{
+            if self.mon[i].is_none() {
+                let next_non_none = self.mon.iter_mut().skip(i + 1).position(|x| x.is_some());
+                if let Some(index) = next_non_none {
+                    self.mon.swap(i, i + 1 + index);
+                } else {
+                    break;
+                }
+            }else{
+                i +=1;
+            }
+        }
+
         return
     }
 
@@ -395,7 +415,12 @@ impl Party {
                 println!("{}. {} - Lvl: {} ({}/{})", counter, poke.as_ref().unwrap().name, poke.as_ref().unwrap().level, poke.as_ref().unwrap().current_hp, poke.as_ref().unwrap().max_hp.value );
                 counter+=1;
             }
+            else {
+                println!("NONE");
+                counter +=1;
+            }
         }
+
     }
 
     pub fn pokecentre_heal(&mut self){
