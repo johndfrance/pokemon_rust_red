@@ -76,7 +76,7 @@ fn main() {
                         rust_red_game(loaded_game.unwrap());
                     }
                     Err(_) => {
-                        eprint!("No saved game detected")
+                        eprint!("\nNo saved game detected")
                     }
                 }
             }
@@ -356,9 +356,6 @@ impl Party {
         let valid_pokemon = self.num_in_party();
         let selected_poke = get_user_input(valid_pokemon as u8);
         let selected_poke = selected_poke - 1;
-        println!("INDEX {}", selected_poke);
-        println!("INDEX 0 = {:?}", self.mon[0]);
-        println!("INDEX 1 = {:?}", self.mon[1]);
         println!("What spot do you want to put {}", self.mon[selected_poke as usize].as_ref().unwrap().name);
         let selected_spot = get_user_input(valid_pokemon.clone() as u8);
         let selected_spot = selected_spot - 1;
@@ -996,12 +993,13 @@ impl Pokemon {
                             let move_selection = read_user_input();
                             let move_selection = move_selection.as_str();
                             match move_selection {
-                                "1" => self.replace_move(0, move_name),
-                                "2" => self.replace_move(1, move_name),
-                                "3" => self.replace_move(2, move_name),
-                                "4" => self.replace_move(3, move_name),
+                                "1" => {self.replace_move(0, move_name); choice = false}
+                                "2" => {self.replace_move(1, move_name); choice = false}
+                                "3" => {self.replace_move(2, move_name); choice = false}
+                                "4" => {self.replace_move(3, move_name); choice = false}
                                 "5" => {
-                                    println!("Did not learn {:?}!", move_name)
+                                    println!("Did not learn {:?}!", move_name);
+                                    choice = false;
                                 }
                                 _ => {
                                     println!("Sorry, invalid choice!")
@@ -1050,6 +1048,7 @@ impl Pokemon {
         }
         thread::sleep(Duration::from_millis(600));
     }
+
 
     pub fn leech_seed_effect(&mut self, benefactor: &mut Pokemon){
         let seeding_damage = (self.max_hp.value.clone())/8;
