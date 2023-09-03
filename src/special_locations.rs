@@ -154,7 +154,7 @@ pub fn viridian_forest(game_state: &mut GameState){
         match location{
             Node1 => match choice{
                 1=>location = Node2,
-                2=>location = Node3,
+                2=>location = Node4,
                 3=>{
                     let alive = encounter_roll(ViridianCity(ViridianForest), game_state);
                     if alive {location = Node5}

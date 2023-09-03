@@ -6,13 +6,14 @@ battles, wild encounters, and so on.
  */
 
 use crate::battle_logic::battle2;
-use crate::mon_base_stats::PokemonSpecies::{Bulbasaur, Caterpie, Charamander, Pidgey, Squirtle};
+use crate::mon_base_stats::PokemonSpecies::{Bulbasaur, Caterpie, Charamander, Pidgey, Squirtle, Wigglytuff};
 use crate::{read_user_input, type_text, GameState, Pokemon, Trainer, save_temp};
-use crate::game::Regions::{PewterCity, ViridianCity, PalletTown};
+use crate::game::Regions::{PewterCity, ViridianCity, PalletTown, Route3};
 use crate::game::PalletTownLocations::*;
 use crate::game::PewterCityLocations::*;
 use crate::game::ViridianCityLocations::*;
-use crate::lib::{DIGLETT, get_user_input, GYM, MART, MOM, NORTH, OAK, PCENTRE, PEACH, PEWTER, RIVALBLUE, SOUTH, travelling, VIRIDIAN, YELLOW};
+use crate::game::Route3Loc::*;
+use crate::lib::{CINNABAR, DIGLETT, EAST, FUCHSIA, get_user_input, GYM, MART, MOM, NORTH, OAK, PCENTRE, PEACH, PEWTER, RIVALBLUE, SOUTH, travelling, VIRIDIAN, WEST, YELLOW};
 use crate::region_groups::get_wild_encounter;
 use crate::wild_battle_logic::wild_encounter;
 use crate::gym_challenges::viridian_gym;
@@ -22,10 +23,12 @@ use crate::special_locations::viridian_forest;
 use std::{io, result, thread};
 use std::io::Write;
 use std::cmp::Ordering;
+use std::f32::consts::E;
 use std::fmt::format;
 use std::time::Duration;
 use colored::Colorize;
-use crossterm::style::Stylize;
+use crossterm::style::Color::Red;
+use crossterm::style::{style, Stylize};
 use serde::{Serialize, Deserialize};
 
 pub fn rust_red_game(mut game_state: GameState) {
@@ -134,12 +137,83 @@ pub fn rust_red_game(mut game_state: GameState) {
                 println!("\nYou are in the {} {}", "Pewter City".color(PEWTER), "Gym".color(GYM));
                 println!("1. Challenge {}", "Gym".color(GYM));
                 println!("2. Go Outside")
-            }
+            }/*
             PewterCity(Route3)=>{
                 println!("\nYou are in Route 3");
                 println!("1. Go To Mt.Moon");
                 println!("2. Go to {}", "Pewter City".color(PEWTER));
             }
+            */
+            Route3(PewterConnection)=>{
+                println!("\nYou are at the {} entrance of Route 3. There are two trails heading {};\n\
+                 the {} trail looks well maintained, while the {} path cuts through a lot of tall grass ", "West".color(WEST), "East".color(EAST), "North".color(NORTH), "South".color(SOUTH));
+                println!("1. Take the {} trail","North".color(NORTH));
+                println!("2. Take the {} trail", "South".color(SOUTH));
+                println!("3. Read Sign");
+                println!("4. Return to {}", "Pewter City".color(PEWTER));
+            }
+            Route3(NorthWestNode)=>{
+                println!("\nYou are at the {} end of the {} trail on Route 3", "West".color(WEST), "Northern".color(NORTH));
+                println!("1. Continue {} along the trail", "East".color(EAST));
+                println!("2. Cut through the long grass to the {} trail", "Southern".color(SOUTH));
+                println!("3. Return to the trail head");
+            }
+            Route3(NorthCentralNode)=>{
+                println!("\nYou are in the middle of the of the {} trail on Route 3",  "Northern".color(NORTH));
+                println!("1. Continue {} along the trail", "East".color(EAST));
+                println!("2. Cut through the long grass to the {} trail", "Southern".color(SOUTH));
+                println!("3. Head {} along the trail", "West".color(WEST));
+            }
+            Route3(NorthEastNode)=>{
+                println!("\nYou are at the {} of the of the {} trail on Route 3", "East".color(EAST), "Northern".color(NORTH));
+                println!("1. Continue {} to the trail end", "East".color(EAST));
+                println!("2. Cut through the long grass to the {} trail", "Southern".color(SOUTH));
+                println!("3. Head {} along the trail", "West".color(WEST));
+            }
+            Route3(SouthWestNode)=>{
+                println!("\nYou are at the {} end of the {} trail on Route 3", "West".color(WEST), "Southern".color(SOUTH));
+                println!("1. Continue {} along the trail", "East".color(EAST));
+                println!("2. Cut through the long grass to the {} trail", "Northern".color(NORTH));
+                println!("3. Return to the trail head");
+            }
+            Route3(SouthCentralNode)=>{
+                println!("\nYou are in the middle of the {} trail on Route 3", "Southern".color(SOUTH));
+                println!("1. Continue {} along the trail", "East".color(EAST));
+                println!("2. Cut through the long grass to the {} trail", "Northern".color(NORTH));
+                println!("3. Head {} along the trail", "West".color(WEST));
+            }
+            Route3(SouthEastNode)=> {
+                println!("\nYou are at the {} end of the {} trail on Route 3", "East".color(EAST), "Southern".color(SOUTH));
+                println!("1. Continue {} along the trail", "East".color(EAST));
+                println!("2. Cut through the long grass to the {} trail", "Northern".color(NORTH));
+                println!("3. Head {} along the trail", "West".color(WEST));
+            }
+            Route3(MtMoonConnection)=>{
+                println!("\nYou are at the trail merger at the {} end of Route 3. \n A little ways off you can see the towering Mt. Moon dominating the horizon", "East".color(EAST));
+                println!("1. Head up the path towards Mt. Moon");
+                println!("2. Go back along the {} trail", "North".color(NORTH));
+                println!("3. Go back along the {} trail", "South".color(SOUTH));
+            }
+            Route3(MtMoonOpening)=>{
+                println!("\nYou are at the entrance to a large cave in the side of Mt. Moon. Nearby is a small Pokemon Centre");
+                println!("1. Enter Mt. Moon");
+                println!("2. Go to {}", "PokeCentre".color(PCENTRE));
+                println!("3. Head back along the path to Route 3");
+            }
+            Route3(MtMoonPC)=>{
+                println!("\nYou are at the Mt.Moon {}.","PokeCentre".color(PCENTRE));
+                println!("1. Heal Pokemon");
+                println!("2. Go Outside");
+                println!("3. Use PC")
+            }
+            Route3(MtMoonInside)=>{
+                println!("\nYou are inside Mt.Moon. You can hear the chatter of thousands of zubat, but can see very little.\n\
+                In front of you a large rock blocks your way.");
+                println!("1. Try to push the rock");
+                println!("2. Exit the cave");
+            }
+
+
             /*
             PewterCity(Route3pt2)=>{
                 println!("");
@@ -365,7 +439,7 @@ pub fn rust_red_game(mut game_state: GameState) {
                 4=>{
                     if game_state.badge_box.boulder==true {
                         travelling("Route 3");
-                        game_state.move_loc(PewterCity(Route3));
+                        game_state.move_loc(Route3(PewterConnection));
                     }else{
                         type_text("MAN: Hey, wait! BROCK is looking for strong trainers to \
                         challenge him. \n You should try to face him before heading off to MT. MOON");
@@ -395,7 +469,7 @@ pub fn rust_red_game(mut game_state: GameState) {
                 1=>{type_text("SHOPKEEPER: Ha Ha, this is embarrassing but we don't have any stock yet!\n")}
                 2=>game_state.move_loc(PewterCity(PewterCityLocations::Outside)),
                 _=>println!("Invalid choice"),
-            }
+            }/*
             PewterCity(Route3)=>match choice{
                 1=>{todo!()},
                 2=>{
@@ -404,6 +478,185 @@ pub fn rust_red_game(mut game_state: GameState) {
                 }
                 _=>println!("Invalid choice"),
             }
+            */
+            // Route 3
+
+            Route3(PewterConnection)=>match choice {
+                1=>{
+                    type_text("\n. . .Walking...\n");
+                    thread::sleep(Duration::from_millis(400));
+                    game_state.move_loc(Route3(NorthWestNode));
+                    game_state.trainer_battle(1);
+                    thread::sleep(Duration::from_millis(400));
+                    type_text("\n...\n")
+                }
+                2=>{
+                    travelling_encounter(Route3(PewterConnection), Route3(SouthWestNode), &mut game_state);
+                }
+                3=>{
+                    type_text("\nRoute 3: The path between Pewter City and Cerulean City is difficult. Between the two cities \n\
+                     is the magnificent Mt. Moon. Route 3 connects Pewter City with the West side of Mt. Moon. Route 3 has become a \n\
+                     a popular destination for young trainers to train their pokemon and the path is usually dense with trainers \n\
+                     iching to battle.\n")
+                }
+                4=>{
+                    travelling("Pewter City");
+                    game_state.move_loc(PewterCity(PewterCityLocations::Outside));
+
+                }
+                _=>println!("Invalid choice"),
+            }
+            Route3(NorthWestNode)=>match choice{
+                1=>{
+                    type_text("\n. . .Walking...\n");
+                    thread::sleep(Duration::from_millis(400));
+                    game_state.move_loc(Route3(NorthCentralNode));
+                    game_state.trainer_battle(2);
+                    thread::sleep(Duration::from_millis(400));
+                    type_text("\n...\n")
+                }
+                2=>{
+                    travelling_encounter(Route3(PewterConnection), Route3(SouthWestNode), &mut game_state);
+                }
+                3=>{
+                    type_text("\n. . .Walking...\n");
+                    thread::sleep(Duration::from_millis(400));
+                    game_state.move_loc(Route3(PewterConnection));
+                    game_state.trainer_battle(1);
+                    thread::sleep(Duration::from_millis(400));
+                    type_text("\n...\n");
+                }
+                _=>println!("Invalid choice"),
+            }
+            Route3(NorthCentralNode)=>match choice{
+                1=>{
+                    type_text("\n. . .Walking...\n");
+                    thread::sleep(Duration::from_millis(400));
+                    game_state.move_loc(Route3(NorthEastNode));
+                    game_state.trainer_battle(3);
+                    thread::sleep(Duration::from_millis(400));
+                    type_text("\n...\n")
+                }
+                2=>{
+                    travelling_encounter(Route3(PewterConnection), Route3(SouthCentralNode), &mut game_state);
+                }
+                3=>{
+                    type_text("\n. . .Walking...\n");
+                    thread::sleep(Duration::from_millis(400));
+                    game_state.move_loc(Route3(NorthWestNode));
+                    game_state.trainer_battle(2);
+                    thread::sleep(Duration::from_millis(400));
+                    type_text("\n...\n")
+                }
+                _=>println!("Invalid choice"),
+            }
+            Route3(NorthEastNode)=>match choice{
+                1=>{
+                    type_text("\n. . .Walking...\n");
+                    thread::sleep(Duration::from_millis(400));
+                    game_state.move_loc(Route3(MtMoonConnection));
+                    game_state.trainer_battle(4);
+                    thread::sleep(Duration::from_millis(400));
+                    type_text("\n...\n")
+                }
+                2=>{
+                    travelling_encounter(Route3(PewterConnection), Route3(SouthEastNode), &mut game_state);
+                }
+                3=>{type_text("\n. . .Walking...\n");
+                    thread::sleep(Duration::from_millis(400));
+                    game_state.move_loc(Route3(NorthCentralNode));
+                    game_state.trainer_battle(3);
+                    thread::sleep(Duration::from_millis(400));
+                    type_text("\n...\n")
+                }
+                _=>println!("Invalid choice"),
+            }
+            Route3(SouthWestNode)=>match choice {
+                1=>{
+                    travelling_encounter(Route3(PewterConnection), Route3(SouthCentralNode), &mut game_state);
+                }
+                2=>{
+                    travelling_encounter(Route3(PewterConnection), Route3(NorthWestNode), &mut game_state);
+                }
+                3=>{
+                    travelling_encounter(Route3(PewterConnection), Route3(PewterConnection), &mut game_state);
+                }
+                _=>println!("Invalid choice"),
+            }
+            Route3(SouthCentralNode)=>match choice {
+                1=>{
+                    travelling_encounter(Route3(PewterConnection), Route3(SouthEastNode), &mut game_state);
+                }
+                2=>{
+                    travelling_encounter(Route3(PewterConnection), Route3(NorthCentralNode), &mut game_state);
+                }
+                3=>{
+                    travelling_encounter(Route3(PewterConnection), Route3(SouthWestNode), &mut game_state);
+                }
+                _=>println!("Invalid choice"),
+            }
+            Route3(SouthEastNode)=>match choice {
+                1=>{
+                    travelling_encounter(Route3(PewterConnection), Route3(MtMoonConnection), &mut game_state);
+                }
+                2=>{
+                    travelling_encounter(Route3(PewterConnection), Route3(NorthEastNode), &mut game_state);
+                }
+                3=>{
+                    travelling_encounter(Route3(PewterConnection), Route3(SouthCentralNode), &mut game_state);
+                }
+                _=>println!("Invalid choice"),
+            }
+            Route3(MtMoonConnection)=>match choice {
+                1 => {
+                    travelling_encounter(Route3(PewterConnection), Route3(MtMoonOpening), &mut game_state);
+                }
+                2 => {
+                    type_text("\n. . .Walking...\n");
+                    thread::sleep(Duration::from_millis(400));
+                    game_state.move_loc(Route3(NorthCentralNode));
+                    game_state.trainer_battle(4);
+                    thread::sleep(Duration::from_millis(400));
+                    type_text("\n...\n")
+                }
+                3 => {
+                    travelling_encounter(Route3(PewterConnection), Route3(SouthEastNode), &mut game_state);
+                }
+                _ => println!("Invalid choice"),
+            }
+            Route3(MtMoonOpening)=>match choice{
+                    1=>{game_state.move_loc(Route3(MtMoonInside))}
+                    2=>{game_state.move_loc(Route3(MtMoonPC))}
+                    3=>{
+                        travelling_encounter(Route3(PewterConnection), Route3(MtMoonConnection), &mut game_state);
+                    }
+                    _=>println!("Invalid choice"),
+                }
+            Route3(MtMoonPC)=>match choice{
+                    1=>{
+                        game_state.player.party.pokecentre_heal();
+                        game_state.last_used_pcentre = Route3(MtMoonPC);
+                    },
+                    2=>game_state.move_loc(Route3(MtMoonOpening)),
+                    3=> billpc(&mut game_state),
+                    _=>println!("Invalid choice"),
+                }
+            Route3(MtMoonInside)=>match choice{
+                1=>{
+                    game_over();
+                    save_temp(&game_state);
+                    println!("\n");
+                    break
+                }
+                2=>{
+                    game_state.move_loc(Route3(MtMoonOpening))
+                }
+                _=>println!("Invalid choice"),
+            }
+
+
+
+
             _ => {}
         }
     }
@@ -413,6 +666,7 @@ pub enum Regions {
     PalletTown(PalletTownLocations),
     ViridianCity(ViridianCityLocations),
     PewterCity(PewterCityLocations),
+    Route3(Route3Loc),
 }
 #[derive(Clone, Copy, PartialEq, Debug, Serialize, Deserialize)]
 pub enum PalletTownLocations {
@@ -440,7 +694,21 @@ pub enum PewterCityLocations{
     Outside,
     PewterPokeCentre,
     PewterMart,
-    Route3,
+    //Route3,
+}
+#[derive(PartialEq, Clone, Copy, Debug, Serialize, Deserialize)]
+pub enum Route3Loc{
+    PewterConnection,
+    NorthWestNode,
+    NorthEastNode,
+    NorthCentralNode,
+    SouthCentralNode,
+    SouthWestNode,
+    SouthEastNode,
+    MtMoonConnection,
+    MtMoonOpening,
+    MtMoonPC,
+    MtMoonInside,
 }
 fn billpc(mut game_state: &mut GameState){
     loop{
@@ -601,7 +869,69 @@ fn bag_display(game_state: &GameState){
         println!("No badges yet!")
     }
 }
+pub fn game_over(){
+    type_text("\nYou try to push the large rock.\n");
+    thread::sleep(Duration::from_millis(500));
+    type_text("\n.  .  .  \n");
+    thread::sleep(Duration::from_millis(500));
+    type_text("\nThe rock starts to budge!\n");
+    thread::sleep(Duration::from_millis(500));
+    type_text("\nThe rock continues to move...\n");
+    thread::sleep(Duration::from_millis(1000));
 
+
+
+    println!(r"                            _____   ____
+                       _,.,|     `'`-.._`--._
+                    _,' ,j |            `'-. `-,
+                 _,'_,-' ' |._              `.  \`.
+               ,' ,',.....L   `-._            \  . `.
+             .' ,'''`.__  |       `-.._        | |   \
+   ,.._     ,'-/     '  `.|..'''|`._   `-.___.-','-._ `.
+ ,' . _>-.._/ /     /    /   `-.' \ `-._  |   ,'     `-..
+/,..|`._'  / /     /   ,'   _ _\   `.   `-:..'          `\
+''  | .--./ /     /   / ,'''|/ .''''\`.._ |  \            |
+  /'`.   / |`...+.   /.' _.`+._ `._/ \'| `|\  `.____      |
+ /,..:.-+ _|.-''''`./__.'      `.|    j   `.\  /---._'---.|`.
+ '     _:'    ____  | |          `+---'     `\/       '-._| |
+     ,'    ,+'  |   ' '.           \`.       |            `.|
+    .     d |  /     \  \          |  \      |             ||
+    |   _/..+.'       \  \      __,^.  '._   |            j |
+   ,'_,'        ___    \  `----' ,.--`+..,.-'+`-.._       | |
+  ','     ____,'/     / +...--'_,.--''||       '._ `-..__/ /
+   `...--''|  .'   _,'| / ..-''       ||          `.    / |
+          ,'./ ,.-'   |j |          __||          .'`,'__.'
+          \__.'\     j | |        ,'    `-.     ,' ,'.' .'
+              \|     | 'j       ,'         `. ,' .',' .'
+             . `.____|/ |__    :            |`,-'.'_.'
+             '.  `._ _.'-._`-._|            +----''
+               `.   `''-.._`-._|            |
+                |          `<' `.           |
+                /            `.  `.         '
+           ,.':'_,-           |,..'          `._
+          '.__|' ,--.    __,.''> .             /`.
+              '''`---`'''  \_.' _|-':__,....--''''
+                             `-',..-'");
+
+    thread::sleep(Duration::from_millis(5000));
+
+    type_text(format!("\n{}\n", "You've been tragically eaten by an angry GOLEM!".color(CINNABAR)).as_str());
+    thread::sleep(Duration::from_millis(2000));
+    let game_over = style(r" _______  _______  _______  _______    _______           _______  _______
+(  ____ \(  ___  )(       )(  ____ \  (  ___  )|\     /|(  ____ \(  ____ )
+| (    \/| (   ) || () () || (    \/  | (   ) || )   ( || (    \/| (    )|
+| |      | (___) || || || || (__      | |   | || |   | || (__    | (____)|
+| | ____ |  ___  || |(_)| ||  __)     | |   | |( (   ) )|  __)   |     __)
+| | \_  )| (   ) || |   | || (        | |   | | \ \_/ / | (      | (\ (
+| (___) || )   ( || )   ( || (____/\  | (___) |  \   /  | (____/\| ) \ \__
+(_______)|/     \||/     \|(_______/  (_______)   \_/   (_______/|/   \__/
+                                                                          ").with(Red);
+    println!("{}", game_over);
+    println!("\n\n{}", "Thanks for playing!!".color(FUCHSIA))
+
+
+
+}
 
 /*
 enum Location {

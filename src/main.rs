@@ -55,6 +55,7 @@ use crossterm::style::{Color, style, Stylize};
 
 // MAIN
 fn main() {
+
     env::set_var("RUST_BACKTRACE", "1");
     let red = style(r" _____      _                                _____           _     _____          _
  |  __ \    | |                              |  __ \         | |   |  __ \        | |

@@ -14,6 +14,7 @@ use crate::game::ViridianCityLocations::*;
 use crate::Pokemon;
 use serde::{Serialize, Deserialize};
 use crate::game::PewterCityLocations::*;
+use crate::game::Route3Loc::PewterConnection;
 
 
 pub struct WildPokemon{
@@ -87,7 +88,7 @@ const WILD_ENCOUNTER_MAP: &[(Regions, &[WildPokemon])]=&[
         WildPokemon{species:Pikachu, level: 3},
         WildPokemon{species:Pikachu, level: 5},
     ]),
-    (PewterCity(Route3), &[
+    (Route3(PewterConnection), &[
        WildPokemon{species: Pidgey, level: 6},
         WildPokemon{species:Pidgey, level: 7},
         WildPokemon{species: Pidgey, level: 8},
