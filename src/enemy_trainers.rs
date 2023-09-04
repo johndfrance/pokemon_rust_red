@@ -1,5 +1,5 @@
 use std::string::ToString;
-use crate::mon_base_stats::PokemonSpecies::{Bulbasaur, Caterpie, Charamander, Diglett, Ekans, Geodude, Jigglypuff, Kakuna, Metapod, NidoranF, Onix, Pidgey, Rattata, Sandshrew, Spearow, Squirtle, Weedle};
+use crate::mon_base_stats::PokemonSpecies::{Bulbasaur, Caterpie, Charamander, Charmeleon, Diglett, Ekans, Geodude, Ivysaur, Jigglypuff, Kakuna, Metapod, NidoranF, Nidorina, Onix, Pidgey, Rattata, Sandshrew, Spearow, Squirtle, Wartortle, Weedle};
 use crate::{Party, PartyOperations, Pokemon};
 use crate::mon_base_stats::PokemonSpecies;
 use crate::Status::Healthy;
@@ -26,7 +26,7 @@ pub struct Trainer{
 }
 impl Trainer{
     pub fn get(id: u16)-> Trainer{
-        let trainers: Vec<TrainerTemplate> = vec![RIVAL1_1, RIVAL2_1, RIVAL3_1, BUGCATCHER1, YOUNGSTER1, BUGCATCHER4, BUGCATCHER5, BUGCATCHER6, JRTRAINER1, BROCK, LASS1, LASS2, LASS3, BUGCATCHER2, BUGCATCHER3, YOUNGSTER2];
+        let trainers: Vec<TrainerTemplate> = vec![RIVAL1_1,RIVAL1_2, RIVAL2_1,RIVAL2_2, RIVAL3_1,RIVAL3_2, BUGCATCHER1, YOUNGSTER1, BUGCATCHER4, BUGCATCHER5, BUGCATCHER6, JRTRAINER1, BROCK, LASS1, LASS2, LASS3, BUGCATCHER2, BUGCATCHER3, YOUNGSTER2];
 
         let found_trainer = trainers
             .iter()
@@ -83,17 +83,35 @@ const RIVAL1_1: TrainerTemplate=TrainerTemplate{
     party: [Some((Bulbasaur, 5)), None, None, None, None, None],
     reward: 150,
 };
+const RIVAL1_2: TrainerTemplate=TrainerTemplate{
+    id: 1002,
+    name: "Blue",
+    party: [Some((Nidorina, 15)),  Some((Spearow, 14)), Some((Ivysaur, 16)), None, None, None],
+    reward: 500,
+};
 const RIVAL2_1: TrainerTemplate=TrainerTemplate{
     id: 2001,
     name: "Blue",
     party: [Some((Charamander, 5)), None, None, None, None, None],
     reward: 150,
 };
+const RIVAL2_2: TrainerTemplate=TrainerTemplate{
+    id: 2002,
+    name: "Blue",
+    party: [Some((Nidorina, 15)),  Some((Spearow, 14)), Some((Charmeleon, 16)), None, None, None],
+    reward: 500,
+};
 const RIVAL3_1: TrainerTemplate=TrainerTemplate{
     id: 3001,
     name: "Blue",
     party: [Some((Squirtle, 5)), None, None, None, None, None],
     reward: 150,
+};
+const RIVAL3_2: TrainerTemplate=TrainerTemplate{
+    id: 3002,
+    name: "Blue",
+    party: [Some((Nidorina, 15)),  Some((Spearow, 14)), Some((Wartortle, 16)), None, None, None],
+    reward: 500,
 };
 
 

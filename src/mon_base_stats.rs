@@ -64,11 +64,14 @@ pub enum PokemonSpecies {
     Diglett,
     Dugtrio,
     Zubat,
+    Poliwag,
+    Poliwhirl,
     Golbat,
     Geodude,
     Graveler,
     Golem,
     Onix,
+    Lapras,
 }
 
 impl PokemonSpecies {
@@ -110,11 +113,14 @@ impl PokemonSpecies {
             Diglett=>DIGLETT,
             Dugtrio=>DUGTRIO,
             Zubat=>ZUBAT,
+            Poliwag=>POLIWAG,
+            Poliwhirl=>POLIWHIRL,
             Golbat=>GOLBAT,
             Geodude=>GEODUDE,
             Graveler=>GRAVELER,
             Golem=>GOLEM,
             Onix=>ONIX,
+            Lapras=>LAPRAS,
         }
     }
 }
@@ -674,6 +680,36 @@ const DUGTRIO: PokemonBaseData=PokemonBaseData{
     exp_cat:MediumFast,
     capture_rate:50,
 };
+const POLIWAG: PokemonBaseData = PokemonBaseData{
+    dex_num: 60,
+    name: "Poliwag",
+    base_hp: 40,
+    base_attack: 50,
+    base_defense: 40,
+    base_speed: 90,
+    base_special: 40,
+    primary_type: Water,
+    secondary_type: None,
+    base_exp: 75,
+    lvl1_moves: (Moves::Bubble, Moves::Bubble),
+    exp_cat: MediumSlow,
+    capture_rate: 255,
+};
+const POLIWHIRL: PokemonBaseData = PokemonBaseData{
+    dex_num: 61,
+    name: "Poliwhirl",
+    base_hp: 65,
+    base_attack: 65,
+    base_defense: 65,
+    base_speed: 90,
+    base_special: 50,
+    primary_type: Water,
+    secondary_type: None,
+    base_exp: 120,
+    lvl1_moves: (Moves::Bubble, Moves::Hypnosis),
+    exp_cat: MediumSlow,
+    capture_rate: 120,
+};
 const GEODUDE: PokemonBaseData=PokemonBaseData{
     dex_num: 74,
     name: "Geodude",
@@ -732,5 +768,20 @@ const ONIX: PokemonBaseData =PokemonBaseData{
     base_exp: 108,
     lvl1_moves: (Tackle, Screech),
     exp_cat: MediumFast,
+    capture_rate: 45,
+};
+const LAPRAS: PokemonBaseData = PokemonBaseData{
+    dex_num: 130,
+    name: "Lapras",
+    base_hp: 130,
+    base_attack: 85,
+    base_defense: 80,
+    base_speed: 60,
+    base_special: 95,
+    primary_type: Water,
+    secondary_type: Ice,
+    base_exp: 140,
+    lvl1_moves: (Moves::WaterGun, Moves::Growl),
+    exp_cat: ExpCat::Slow,
     capture_rate: 45,
 };

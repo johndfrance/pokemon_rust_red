@@ -2,7 +2,7 @@ use crate::{MoveCat, MoveEffectCat, PokeTypes};
 use std::collections::binary_heap::PeekMut;
 use serde::{Serialize, Deserialize};
 use crate::MoveCat::{Special, Status};
-use crate::type_matchups::PokeTypes::{Bug, Fighting, Flying, Grass, Ground, Poison, Psychic, Rock};
+use crate::type_matchups::PokeTypes::{Bug, Fighting, Flying, Grass, Ground, Ice, Poison, Psychic, Rock};
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct MoveData {
@@ -46,10 +46,12 @@ pub enum Moves {
     Harden,
     HydroPump,
     HyperFang,
+    Hypnosis,
     LeechLife,
     LeechSeed,
     Leer,
     MirrorMove,
+    Mist,
     Peck,
     PinMissile,
     PoisonPowder,
@@ -121,10 +123,12 @@ impl Moves {
             Moves::Harden=>HARDEN,
             Moves::HydroPump => HYDROPUMP,
             Moves::HyperFang => HYPERFANG,
+            Moves::Hypnosis => HYPNOSIS,
             Moves::LeechLife=>LEECHLIFE,
             Moves::LeechSeed => LEECHSEED,
             Moves::Leer => LEER,
             Moves::MirrorMove => MIRRORMOVE,
+            Moves::Mist=>MIST,
             Moves::Peck=>PECK,
             Moves::PinMissile=>PINMISSILE,
             Moves::PoisonPowder => POISONPOWDER,
@@ -429,6 +433,15 @@ pub const HYPERFANG: MoveData = MoveData {
     effect_type: MoveEffectCat::None, //TODO
     pp: 15,
 };
+const HYPNOSIS: MoveData = MoveData{
+    name: "Hypnosis",
+    base_power: 0,
+    accuracy: 60,
+    move_type: Psychic,
+    move_cat: Status,
+    effect_type: MoveEffectCat::Sleeped,
+    pp: 20,
+};
 const LEECHLIFE: MoveData = MoveData{
     name: "Leech Life",
     base_power: 20,
@@ -465,6 +478,15 @@ pub const MIRRORMOVE: MoveData = MoveData {
     move_cat: MoveCat::Status,
     effect_type: MoveEffectCat::None, //TODO
     pp: 20,
+};
+const MIST: MoveData = MoveData{
+    name: "Mist",
+    base_power: 30,
+    accuracy: 100,
+    move_type: Ice,
+    move_cat: Special,
+    effect_type: MoveEffectCat::None,
+    pp: 30,
 };
 const PECK: MoveData=MoveData{
     name: "Peck",

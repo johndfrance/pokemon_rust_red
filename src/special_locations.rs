@@ -10,7 +10,7 @@ use crate::game::PewterCityLocations::Outside;
 use crate::game::Regions::{PewterCity, ViridianCity};
 use crate::game::ViridianCityLocations::{Route2, ViridianForest};
 use crate::lib::{CINNABAR, EAST, get_user_input, NORTH, SOUTH, VIRIDIAN, WEST};
-use crate::mon_base_stats::PokemonSpecies::{Jigglypuff, Pidgey};
+use crate::mon_base_stats::PokemonSpecies::{Jigglypuff, Lapras, Pidgey, Poliwag};
 use crate::region_groups::get_wild_encounter;
 use crate::special_locations::ViridianForestNodes::*;
 use crate::wild_battle_logic::wild_encounter;
@@ -189,9 +189,9 @@ pub fn viridian_forest(game_state: &mut GameState){
                         let choice = get_user_input(2);
                         match choice {
                             1=>{
-                                let mon = Pokemon::new(Jigglypuff, 10);
+                                let mon = Pokemon::new(Lapras, 10);
                                 game_state.player.party.add_party_member(mon);
-                                type_text("\nJigglypuff joined your team!\n");
+                                type_text("\nLapras joined your team!\n");
                                 thread::sleep(Duration::from_millis(1000));
                                 game_state.event.lee_or_chan = true;
                             }
@@ -420,7 +420,7 @@ pub fn viridian_forest(game_state: &mut GameState){
                         1=>{
                             let random_number = rand::thread_rng().gen_range(0..=4);
                             if random_number == 0{
-                                let mut mon = Pokemon::new(Pidgey, 10);
+                                let mut mon = Pokemon::new(Poliwag, 10);
                                 wild_encounter(game_state, &mut mon);
                             }else {
                                 type_text("\nThe water is good, and all your pokemon drink some\n");
@@ -440,7 +440,6 @@ pub fn viridian_forest(game_state: &mut GameState){
                     location = Node12
                 }
                 _=>println!("Invalid Choice")
-
             }
             Node14 => match choice {
                 1=>{

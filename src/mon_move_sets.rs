@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 
 use crate::move_data::Moves;
-use crate::move_data::Moves::{Acid, Agility, Bind, Bite, BodySlam, Bubble, Confusion, DefenseCurl, Dig, Disable, DoubleEdge, DoubleKick, DoubleSlap, DrillPeck, Earthquake, Ember, Explosion, FireSpin, Flamethrower, FocusEnergy, FuryAttack, FurySwipes, Glare, Growl, Growth, Harden, HydroPump, HyperFang, LeechSeed, Leer, MirrorMove, PinMissile, PoisonPowder, PoisonSting, Pound, Psybeam, QuickAttack, Rage, RazorLeaf, RestMove, RockThrow, SandAttack, Scratch, Screech, SelfDestruct, SkullBash, Slam, Slash, SleepPowder, SolarBeam, StunSpore, SuperFang, Supersonic, Swift, TailWhip, Thunder, ThunderWave, Twineedle, VineWhip, WaterGun, Whirlwind, WingAttack, Withdraw};
+use crate::move_data::Moves::{Acid, Agility, Bind, Bite, BodySlam, Bubble, Confusion, DefenseCurl, Dig, Disable, DoubleEdge, DoubleKick, DoubleSlap, DrillPeck, Earthquake, Ember, Explosion, FireSpin, Flamethrower, FocusEnergy, FuryAttack, FurySwipes, Glare, Growl, Growth, Harden, HydroPump, HyperFang, Hypnosis, LeechSeed, Leer, MirrorMove, Mist, PinMissile, PoisonPowder, PoisonSting, Pound, Psybeam, QuickAttack, Rage, RazorLeaf, RestMove, RockThrow, SandAttack, Scratch, Screech, SelfDestruct, Sing, SkullBash, Slam, Slash, SleepPowder, SolarBeam, StunSpore, SuperFang, Supersonic, Swift, TailWhip, Thunder, ThunderWave, Twineedle, VineWhip, WaterGun, Whirlwind, WingAttack, Withdraw};
 use crate::PokemonSpecies::*;
 
 pub struct LearnableMoves {
@@ -334,7 +334,29 @@ pub const LEARNABLEMOVES: &[LearnableMoves] = &[
             (40, Earthquake),
         ],
     },
-    
+    LearnableMoves{
+        species: Poliwag,
+        level_up_moves: &[
+            (16, Hypnosis),
+            (19, WaterGun),
+            (25, DoubleSlap),
+            (31, BodySlam),
+            //AMNESIA,
+            (45, HydroPump),
+        ]
+    },
+    LearnableMoves{
+        species: Poliwhirl,
+        level_up_moves: &[
+            (16, Hypnosis),
+            (19, WaterGun),
+            (26, DoubleSlap),
+            (33, BodySlam),
+            //AMNESIA,
+            (49, HydroPump),
+        ]
+    },
+
     LearnableMoves{
         species: Geodude,
         level_up_moves: &[
@@ -378,8 +400,17 @@ pub const LEARNABLEMOVES: &[LearnableMoves] = &[
             (43, Harden),
         ],
     },
-
-
+    LearnableMoves{
+        species: Lapras,
+        level_up_moves: &[
+            (16, Sing),
+            (20, Mist),
+            (25, BodySlam),
+            (31, Confusion),
+            //(38, IceBeam),
+            (46, HydroPump),
+        ]
+    }
     /*
     tm_moves: HashMap(
         (3, SwordsDance),

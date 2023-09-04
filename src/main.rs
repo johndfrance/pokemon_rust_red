@@ -17,6 +17,7 @@ mod pokedex;
 mod gym_challenges;
 mod color_hub;
 mod special_locations;
+mod new_battle_logic;
 
 use crate::game::*;
 use crate::mon_base_stats::PokemonSpecies::{Charamander, Metapod, Pidgey, Rattata, Squirtle};
@@ -44,7 +45,6 @@ use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::fmt::format;
 use std::{env, io, thread};
-use std::f32::consts::E;
 use std::io::{Read, Write};
 use std::thread::sleep;
 use std::time::Duration;
@@ -55,7 +55,6 @@ use crossterm::style::{Color, style, Stylize};
 
 // MAIN
 fn main() {
-
     env::set_var("RUST_BACKTRACE", "1");
     let red = style(r" _____      _                                _____           _     _____          _
  |  __ \    | |                              |  __ \         | |   |  __ \        | |
@@ -97,11 +96,9 @@ fn main() {
                 let player_name = read_user_input();
                 game_state.player.enter_name(player_name.clone());
                 let msg2 = format!("Welcome to the world of {} {}!\n", poke.color(YELLOW), player_name.cyan());
-
                 let msg2 = msg2.as_str();
                 type_text(msg2);
                 type_text("\n. . . . . . .\n");
-
                 rust_red_game(game_state);
             }
             _ => unreachable!(),
@@ -139,6 +136,7 @@ pub struct GameState {
     bag: Vec<StdItem>,
     badge_box: BadgeBox,
     defeated_trainers: Vec<u16>,
+    starter: Starter
 }
 impl GameState {
     // At the start of a new game a blank GameState is created.
@@ -184,6 +182,7 @@ impl GameState {
                 earth: false,
             },
             defeated_trainers: Vec::new(),
+            starter: Starter::Bulb,
         }
     }
     fn set_trainer_defeated(&mut self, trainer_id: u16){
@@ -240,6 +239,12 @@ impl GameState {
         }
         return true;
     }
+}
+#[derive(Debug, Serialize, Deserialize)]
+enum Starter{
+    Bulb,
+    Charm,
+    Squirt,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -428,12 +433,7 @@ impl Party {
         let mut party_member_rank = 0;
         for poke in &self.mon.clone() {
             if self.mon[party_member_rank.clone()] != None {
-                /*
-            println!("DEBUG - {} CURRENTLY HAS {}/{} HP",
-                     self.mon[0].as_ref().unwrap().name,
-                     self.mon[0].as_ref().unwrap().current_hp,
-                     self.mon[0].as_ref().unwrap().max_hp.value);
-             */
+
                 if self.mon[party_member_rank.clone()].as_ref().unwrap().status != Healthy {
                     self.mon[party_member_rank.clone()].as_mut().unwrap().status = Healthy
                 }
@@ -441,13 +441,18 @@ impl Party {
             }
             party_member_rank +=1;
         }
-        /*
-        println!("DEBUG - {} NOW HAS {}/{} HP",
-                 self.mon[0].as_ref().unwrap().name,
-                 self.mon[0].as_ref().unwrap().current_hp,
-                 self.mon[0].as_ref().unwrap().max_hp.value);
-         */
         type_text("\nYour Pokemon are all Healed!\n");
+    }
+    fn status_reset(&mut self){
+        let mut party_member_rank = 0;
+        for poke in &self.mon.clone() {
+            if self.mon[party_member_rank.clone()] != None {
+                if self.mon[party_member_rank.clone()].as_ref().unwrap().status != Fainted {
+                    self.mon[party_member_rank.clone()].as_mut().unwrap().status = Healthy
+                }
+            }
+            party_member_rank +=1;
+        }
     }
 }
 // Should be moved to battle_logic.rs once that is finalized.
@@ -1168,9 +1173,18 @@ pub enum MoveEffectCat {
 impl MoveEffectCat {
     fn apply_effect(&self, target: &mut Pokemon) {
         match self {
-            MoveEffectCat::Burned => {target.status = Burned;}
-            MoveEffectCat::Poisoned=>{target.status = Poisoned;}
-            MoveEffectCat::Sleeped=>{target.status = Asleep;}
+            MoveEffectCat::Burned => {
+                target.status = Burned;
+                println!("{} suffers a burn!", target.name.clone().cyan());
+            }
+            MoveEffectCat::Poisoned=>{
+                target.status = Poisoned;
+                println!("{} was poisoned!", target.name.clone().cyan());
+            }
+            MoveEffectCat::Sleeped=>{
+                target.status = Asleep;
+                println!("{} was put to sleep!", target.name.clone().cyan());
+            }
             MoveEffectCat::Frozen=>{target.status = Frozen;}
             MoveEffectCat::Paralyzed=>{target.status = Paralyzed;}
 

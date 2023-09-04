@@ -6,7 +6,7 @@ battles, wild encounters, and so on.
  */
 use crate::battle_logic::battle2;
 use crate::mon_base_stats::PokemonSpecies::{Bulbasaur, Caterpie, Charamander, Pidgey, Squirtle, Wigglytuff};
-use crate::{read_user_input, type_text, GameState, Pokemon, Trainer, save_temp};
+use crate::{read_user_input, type_text, GameState, Pokemon, Trainer, save_temp, Starter};
 use crate::game::Regions::{PewterCity, ViridianCity, PalletTown, Route3};
 use crate::game::PalletTownLocations::*;
 use crate::game::PewterCityLocations::*;
@@ -28,6 +28,7 @@ use colored::Colorize;
 use crossterm::style::Color::Red;
 use crossterm::style::{style, Stylize};
 use serde::{Serialize, Deserialize};
+use crate::Starter::{Bulb, Charm, Squirt};
 
 pub fn rust_red_game(mut game_state: GameState) {
 
@@ -660,7 +661,44 @@ pub fn rust_red_game(mut game_state: GameState) {
                 _ => println!("Invalid choice"),
             }
             Route3(MtMoonOpening)=>match choice{
-                    1=>{game_state.move_loc(Route3(MtMoonInside))}
+                    1=>{
+                        if game_state.event.lavender_tower_ghost == false{
+                            type_text("\nBLUE: Hey! Wait! Don't go in there! People are saying there's a dangerous monster on the loose.\n\
+                            \n. . . . . . . .\n\
+                            No I'm not just saying that to stop you!\n\
+                            \n. . . . . . . .\n\
+                            Okay, fine, if you don't believe me, I'm just going to have to stop you myself!\n");
+
+                            match game_state.starter {
+                                Bulb => {
+                                    let result  = game_state.trainer_battle(2002);
+                                    if result {
+                                        type_text("\nBLUE: Okay fine, do what you want, but don't blame me if it GETS you!.\n");
+                                        game_state.event.lavender_tower_ghost = true;
+                                        thread::sleep(Duration::from_millis(1400));
+                                    }
+                                }
+                                Charm => {
+                                    let result = game_state.trainer_battle(3002);
+                                    if result {
+                                        type_text("\nBLUE: Okay fine, do what you want, but don't blame me if it GETS you!.\n");
+                                        game_state.event.lavender_tower_ghost = true;
+                                        thread::sleep(Duration::from_millis(1400));
+                                    }
+                                }
+                                Squirt => {
+                                    let result = game_state.trainer_battle(1002);
+                                    if result {
+                                        type_text("\nBLUE: Okay fine, do what you want, but don't blame me if it GETS you!.\n");
+                                        game_state.event.lavender_tower_ghost = true;
+                                        thread::sleep(Duration::from_millis(1400));
+                                    }
+                                }
+                            }
+                        }else{
+                            game_state.move_loc(Route3(MtMoonInside))
+                        }
+                    }
                     2=>{game_state.move_loc(Route3(MtMoonPC))}
                     3=>{
                         travelling_encounter(Route3(PewterConnection), Route3(MtMoonConnection), &mut game_state);
@@ -692,10 +730,6 @@ pub fn rust_red_game(mut game_state: GameState) {
                 }
                 _=>println!("Invalid choice"),
             }
-
-
-
-
             _ => {}
         }
     }
@@ -821,16 +855,19 @@ fn starter_selection(game_state: &mut GameState) -> Regions {
                 //&game_state.player.party.add_party_member(charmander.clone());
                 rival_id = 2001;
                 choice = false;
+                game_state.starter = Bulb;
             }
             "2" => {
                 &game_state.player.party.add_party_member(charmander.clone());
                 rival_id = 3001;
                 choice = false;
+                game_state.starter = Charm;
             }
             "3" => {
                 &game_state.player.party.add_party_member(squirtle.clone());
                 rival_id = 1001;
                 choice = false;
+                game_state.starter = Squirt;
             }
             _ => println!("Sorry, that wasn't a valid choice."),
         }

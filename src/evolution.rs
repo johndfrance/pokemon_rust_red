@@ -29,7 +29,10 @@ impl PokemonSpecies {
             Fearow=>FEAROW,
             Pikachu=>PIKACHU,
             Jigglypuff=>JIGGLYPUFF,
+            Poliwag=>POLIWAG,
+            Poliwhirl=>POLIWHIRL,
             Onix=>ONIX,
+            Lapras=>LAPRAS,
             _=>todo!()
         }
     }
@@ -165,8 +168,23 @@ const JIGGLYPUFF: EvolutionData=EvolutionData{
     next_stage:Some(Wigglytuff),
     trigger:ByItem
 };
+const POLIWAG: EvolutionData=EvolutionData{
+    pokemon: Poliwag,
+    next_stage: Some(Poliwhirl),
+    trigger: ByLevel(25),
+};
+const POLIWHIRL: EvolutionData = EvolutionData{
+    pokemon: Poliwhirl,
+    next_stage: None,
+    trigger: ByItem,
+};
 const ONIX: EvolutionData=EvolutionData{
     pokemon: Onix,
     next_stage: None,
     trigger: ByLevel(100),
+};
+const LAPRAS: EvolutionData = EvolutionData{
+    pokemon: Lapras,
+    next_stage: None,
+    trigger: ByItem,
 };
