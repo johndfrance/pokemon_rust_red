@@ -3,7 +3,7 @@ Title: battle_logic.rs
 
 Desc: Contains the core engine for battles. Currently only for trainer to trainer battles.
  */
-use crate::Status::{Burned, Fainted, Poisoned};
+use crate::Status::{Asleep, Burned, Fainted, Healthy, Poisoned};
 use crate::{
     enemy_move_select, read_user_input, type_text, GameState, PartyOperations, Pokemon, Trainer,
 };
@@ -11,9 +11,11 @@ use colored::Colorize;
 use std::cmp::Ordering;
 use std::{io, thread};
 use std::io::Write;
+use std::thread::sleep;
 use std::time::Duration;
+use rand::Rng;
 use crate::battle_logic::MainMenuOptions::Fight;
-use crate::lib::get_user_input;
+use crate::lib::{CERULEAN, get_user_input};
 use crate::move_data::Moves;
 
 pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
@@ -54,7 +56,6 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
     let mut enemy_mon_index = enemy_starting_mon_index.clone();
 
     loop {
-
         // At the start of each turn, check if the opponent fainted on the last turn.
         if enemy.poke_team[enemy_mon_index.clone()].status == Fainted {
             //println!("ENEMY POKEMON AT INDEX {} IS FAINTED", enemy_mon_index);
@@ -192,7 +193,7 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
 
                         player_attacks(game_state.player.party.mon[player_mon_index.clone()].as_mut().unwrap(), &mut enemy.poke_team[enemy_mon_index.clone()], player_selected_move);
 
-                    println!("WORKED");
+                    //println!("WORKED");
                     /*
                 type_text(format!("\n{} used {}!\n",
                          &game_state.player.party.mon[player_mon_index].as_ref().unwrap().name,
@@ -347,6 +348,7 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
             }
         }
     }
+    game_state.player.party.status_reset();
     if winner{
         println!("\n{}", "You won the Battle!".green());
         game_state.set_trainer_defeated(enemy.id.clone());
@@ -357,18 +359,40 @@ pub fn battle2(game_state: &mut GameState, enemy: &mut Trainer)-> bool {
 }
 
 fn enemy_attacks(player: &mut Pokemon, enemy: &mut Pokemon, selected_move: Moves){
-    type_text(
-        format!("{} used {}!\n",
-            enemy.name,
-            selected_move.move_stats().name).as_str());
-    player.damage(&enemy, &selected_move);
+    if enemy.status == Asleep{
+        let random_number = rand::thread_rng().gen_range(0..=4);
+        if random_number == 0{
+            enemy.status == Healthy;
+            type_text(format!("\n{} woke up!\n", enemy.name.clone().color(CERULEAN)).as_str());
+        }
+    }
+    if enemy.status == Asleep{
+        type_text(format!("\n{} is asleep and can't fight!\n", enemy.name.clone().color(CERULEAN)).as_str());
+    }else {
+        type_text(
+            format!("{} used {}!\n",
+                    enemy.name,
+                    selected_move.move_stats().name).as_str());
+        player.damage(&enemy, &selected_move);
+    }
 }
 fn player_attacks(player: &mut Pokemon, enemy: &mut Pokemon, selected_move: Moves){
-    type_text(
-        format!("{} used {}!\n",
-                player.name,
-                selected_move.move_stats().name).as_str());
-    enemy.damage(&player, &selected_move,);
+    if player.status == Asleep{
+        let random_number = rand::thread_rng().gen_range(0..=4);
+        if random_number == 0{
+            player.status == Healthy;
+            type_text(format!("\n{} woke up!\n", player.name.clone().color(CERULEAN)).as_str());
+        }
+    }
+    if player.status == Asleep{
+        type_text(format!("\n{} is asleep and can't fight!\n", player.name.clone().color(CERULEAN)).as_str());
+    }else {
+        type_text(
+            format!("{} used {}!\n",
+                    player.name,
+                    selected_move.move_stats().name).as_str());
+        enemy.damage(&player, &selected_move, );
+    }
 }
 pub fn battle_display_names(mon: &Pokemon) {
     let mut current_hp = mon.current_hp.clone().to_string();
