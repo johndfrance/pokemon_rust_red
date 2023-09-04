@@ -1,14 +1,16 @@
 use std::thread;
 use std::time::Duration;
 use colored::Colorize;
+use rand::Rng;
 use crate::game::{master_menu, PewterCityLocations, Regions};
-use crate::{GameState, type_text};
+use crate::{GameState, Pokemon, type_text};
 use crate::battle_logic::battle2;
 use crate::enemy_trainers::Trainer;
 use crate::game::PewterCityLocations::Outside;
 use crate::game::Regions::{PewterCity, ViridianCity};
 use crate::game::ViridianCityLocations::{Route2, ViridianForest};
 use crate::lib::{CINNABAR, EAST, get_user_input, NORTH, SOUTH, VIRIDIAN, WEST};
+use crate::mon_base_stats::PokemonSpecies::{Jigglypuff, Pidgey};
 use crate::region_groups::get_wild_encounter;
 use crate::special_locations::ViridianForestNodes::*;
 use crate::wild_battle_logic::wild_encounter;
@@ -56,10 +58,10 @@ pub fn viridian_forest(game_state: &mut GameState){
             }
             Node3 => {
                 println!("\nYou are standing in front of a large tree. There is a path to your {} and Long Grass to your {}\
-                \n1. Investigate the Large Tree {}\
+                \n1. Investigate the Large Tree\
                 \n2. Go {} along the path\
                 \n3. Go {} into the Tall Grass","South".color(SOUTH), "East".color(EAST),
-                         "TODO".color(CINNABAR), "South".color(SOUTH), "East".color(EAST), )
+                          "South".color(SOUTH), "East".color(EAST), )
             }
             Node4 => {
                 println!("\nYou've reached a corner. There is long grass to your South and long grass to your West:\
@@ -123,10 +125,10 @@ pub fn viridian_forest(game_state: &mut GameState){
             }
             Node13 => {
                 println!("\nYou have come to a corner with a calm pond\
-                \n1. Investigate the pond {}\
+                \n1. Investigate the pond\
                 \n2. Go {} along the path\
                 \n3. Go {} along the path",
-                         "TODO".color(CINNABAR), "West".color(WEST), "North".color(NORTH))
+                          "West".color(WEST), "North".color(NORTH))
             }
             Node14 => {
                 println!("\nYour reach a corner, {} you can see a break in the trees.\
@@ -177,7 +179,32 @@ pub fn viridian_forest(game_state: &mut GameState){
                     _=>println!("Invalid Choice")
                 }
             Node3 => match choice{
-                1=>{todo!()}//Finds an item
+                1=>{
+                    if game_state.event.lee_or_chan == false{
+                        type_text("\nYou found a pokeball!\n");
+                        thread::sleep(Duration::from_millis(1000));
+                        type_text("\nDo you pick it up?\n");
+                        println!("1. Yes");
+                        println!("2. No");
+                        let choice = get_user_input(2);
+                        match choice {
+                            1=>{
+                                let mon = Pokemon::new(Jigglypuff, 10);
+                                game_state.player.party.add_party_member(mon);
+                                type_text("\nJigglypuff joined your team!\n");
+                                thread::sleep(Duration::from_millis(1000));
+                                game_state.event.lee_or_chan = true;
+                            }
+                            2=>{
+                                type_text("\nYou left the pokeball alone.\n");
+                                thread::sleep(Duration::from_millis(1000));
+                            }
+                            _=>unreachable!(),
+                        }
+                    }else{
+                        type_text("\nThe tree hollow is empty!\n");
+                    }
+                }//Finds an item
                 2=>location=Node2,
                 3=>{
                     let alive = encounter_roll(ViridianCity(ViridianForest), game_state);
@@ -384,7 +411,28 @@ pub fn viridian_forest(game_state: &mut GameState){
                 _=>println!("Invalid Choice")
             }
             Node13 => match choice{
-                1=>{todo!()}
+                1=>{
+                    type_text("\nThe water looks very refreshing, take a drink?\n");
+                    println!("1. Yes");
+                    println!("2. No");
+                    let choice = get_user_input(2);
+                    match choice {
+                        1=>{
+                            let random_number = rand::thread_rng().gen_range(0..=4);
+                            if random_number == 0{
+                                let mut mon = Pokemon::new(Pidgey, 10);
+                                wild_encounter(game_state, &mut mon);
+                            }else {
+                                type_text("\nThe water is good, and all your pokemon drink some\n");
+                                game_state.player.party.pokecentre_heal();
+                            }
+                        }
+                        2=>{
+                            type_text("\nYou think decide not to take a drink.\n");
+                        }
+                        _=>unreachable!()
+                    }
+                }
                 2=>{
                     location = Node14
                 }

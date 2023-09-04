@@ -29,7 +29,7 @@ use crate::mon_move_sets::LEARNABLEMOVES;
 use crate::move_data::Moves::Tackle;
 use crate::enemy_trainers::Trainer;
 use crate::evolution::{CATERPIE, EvolutionData, EvolutionTriggers};
-use crate::lib::{CINNABAR, get_user_input, YELLOW, OAK, VERMILION, SAFFRON};
+use crate::lib::{CINNABAR, get_user_input, YELLOW, OAK, VERMILION, SAFFRON, travelling};
 use crate::MoveCat::Physical;
 use crate::StatType::{Accuracy, Attack, Defense, Evasion, Special, Speed};
 use crate::items::StdItem;
@@ -66,7 +66,7 @@ fn main() {
                                                                                      ").with(Red);
     println!("{}", red);
     loop {
-        println!("1. Continue\n2. New Game");
+        println!("\n1. Continue\n2. New Game");
         println!("\n{}", "WARNING: Options marked with a red TODO will likely crash the game.\nAvoid loss of data by saving frequently. - John".color(VERMILION));
         let game_select = get_user_input(2);
         match game_select {
@@ -86,19 +86,22 @@ fn main() {
                 let oak = "OAK";
                 let poke = "POKEMON";
                 let intro_msg = format!("{}: Hello there! Welcome to the world of {}! My name is {}! \
-                \nPeople call me the {} PROF! This world is inhabited by creatures called {}! \nFor \
+                \nPeople call me the {} PROFFESSOR! This world is inhabited by creatures called {}! \nFor \
                 some people, {} are pets. Others use them for fights. \nMyself...I study {} as a profession.",
                                         oak.color(OAK), poke.color(YELLOW), oak.color(OAK),
                                         poke.color(YELLOW),poke.color(YELLOW),poke.color(YELLOW),
                                         poke.color(YELLOW),);
                 type_text(intro_msg.as_str());
-                let msg1 = "\nFirst, what is your name?\n";
+                let msg1 = "\n\nFirst, what is your name?\n";
                 type_text(msg1);
                 let player_name = read_user_input();
                 game_state.player.enter_name(player_name.clone());
                 let msg2 = format!("Welcome to the world of {} {}!\n", poke.color(YELLOW), player_name.cyan());
+
                 let msg2 = msg2.as_str();
                 type_text(msg2);
+                type_text("\n. . . . . . .\n");
+
                 rust_red_game(game_state);
             }
             _ => unreachable!(),

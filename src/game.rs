@@ -4,7 +4,6 @@ Title: game.rs
 Desc: Contains the core structure of the 'game', the moving around from location to location, calling
 battles, wild encounters, and so on.
  */
-
 use crate::battle_logic::battle2;
 use crate::mon_base_stats::PokemonSpecies::{Bulbasaur, Caterpie, Charamander, Pidgey, Squirtle, Wigglytuff};
 use crate::{read_user_input, type_text, GameState, Pokemon, Trainer, save_temp};
@@ -23,7 +22,6 @@ use crate::special_locations::viridian_forest;
 use std::{io, result, thread};
 use std::io::Write;
 use std::cmp::Ordering;
-use std::f32::consts::E;
 use std::fmt::format;
 use std::time::Duration;
 use colored::Colorize;
@@ -39,6 +37,7 @@ pub fn rust_red_game(mut game_state: GameState) {
                 println!("\nYou are in your house.");
                 println!("1. Go outside");
                 println!("2. Talk to {}", "MOM".color(MOM));
+                println!("3. Go to bed");
             }
             PalletTown(PalletTownLocations::Outside) => {
                 println!("\nYou are outside in {}.", "Pallet Town".color(YELLOW));
@@ -46,22 +45,29 @@ pub fn rust_red_game(mut game_state: GameState) {
                 println!("2. Go in {}'s house", "BLUE".color(RIVALBLUE));
                 println!("3. Go inside {}'s Lab", "OAK".color(OAK));
                 println!("4. Go to Route 1");
+                println!("5. Read Sign");
             }
             PalletTown(OaksLab) => {
                 println!("\nYou are in {}'s Lab.", "OAK".color(OAK));
-                println!("1. Go outside");
+                if game_state.event.starter_received == false{
+                    print!("Professor Oak is standing there waiting next to a boy.");
+                }
+                println!("\n1. Go outside");
                 println!("2. Talk to {}", "OAK".color(OAK));
+                println!("3. Look around");
             }
             PalletTown(Route1) => {
                 println!("\nYou are at the South end of Route 1.");
                 println!("1. Return to {}", "Pallet Town".color(YELLOW));
                 println!("2. Go {} along Route 1", "North".color(NORTH));
                 println!("3. Talk to MAN.");
+                println!("4. Read Sign");
             }
             PalletTown(Route1pt2)=>{
                 println!("\nYou are in the middle of Route 1.");
                 println!("1. Head {} along Route 1 towards {}", "South".color(SOUTH), "Pallet Town".color(YELLOW));
                 println!("2. Head {} along Route 1 towards {}", "North".color(NORTH), "Viridian City".color(VIRIDIAN));
+                println!("3. Look around");
             }
             PalletTown(Route1pt3)=>{
                 println!("\nYou are at the North end of Route 1.");
@@ -71,7 +77,7 @@ pub fn rust_red_game(mut game_state: GameState) {
             PalletTown(BluesHouse) => {
                 println!("\nYou are in {}'s House.", "BLUE".color(RIVALBLUE));
                 println!("1. Go outside");
-                println!("2. Talk to DAISY")
+                println!("2. Talk to DAISY");
             }
             ViridianCity(ViridianCityLocations::Gym) => {
                 println!("\nYou are inside the {} {}.","Viridian City".color(VIRIDIAN), "Gym".color(GYM));
@@ -102,11 +108,13 @@ pub fn rust_red_game(mut game_state: GameState) {
                 println!("1. Go {} along Route 2", "North".color(NORTH));
                 println!("2. Go into {}", "Diglett's Cave".color(DIGLETT));
                 println!("3. Go to {}", "Viridian City".color(VIRIDIAN));
+                println!("4. Read Sign");
             }
             ViridianCity(Route2pt2)=>{
                 println!("\nYou are at the {} end of Route 2.", "North".color(NORTH));
                 println!("1. Go into {}", "Viridian Forest".color(VIRIDIAN));
                 println!("2. Go {} along Route 2", "South".color(SOUTH));
+                println!("3. Talk to OAK's AIDE");
             }
             ViridianCity(ViridianForest) => {
                 println!("\n You are in Viridian Forest");
@@ -137,13 +145,7 @@ pub fn rust_red_game(mut game_state: GameState) {
                 println!("\nYou are in the {} {}", "Pewter City".color(PEWTER), "Gym".color(GYM));
                 println!("1. Challenge {}", "Gym".color(GYM));
                 println!("2. Go Outside")
-            }/*
-            PewterCity(Route3)=>{
-                println!("\nYou are in Route 3");
-                println!("1. Go To Mt.Moon");
-                println!("2. Go to {}", "Pewter City".color(PEWTER));
             }
-            */
             Route3(PewterConnection)=>{
                 println!("\nYou are at the {} entrance of Route 3. There are two trails heading {};\n\
                  the {} trail looks well maintained, while the {} path cuts through a lot of tall grass ", "West".color(WEST), "East".color(EAST), "North".color(NORTH), "South".color(SOUTH));
@@ -204,7 +206,8 @@ pub fn rust_red_game(mut game_state: GameState) {
                 println!("\nYou are at the Mt.Moon {}.","PokeCentre".color(PCENTRE));
                 println!("1. Heal Pokemon");
                 println!("2. Go Outside");
-                println!("3. Use PC")
+                println!("3. Use PC");
+                println!("4. Talk to JR. TRAINER");
             }
             Route3(MtMoonInside)=>{
                 println!("\nYou are inside Mt.Moon. You can hear the chatter of thousands of zubat, but can see very little.\n\
@@ -212,8 +215,6 @@ pub fn rust_red_game(mut game_state: GameState) {
                 println!("1. Try to push the rock");
                 println!("2. Exit the cave");
             }
-
-
             /*
             PewterCity(Route3pt2)=>{
                 println!("");
@@ -246,6 +247,12 @@ pub fn rust_red_game(mut game_state: GameState) {
             PalletTown(RedsHouse) => match choice {
                 1 => game_state.move_loc(PalletTown(PalletTownLocations::Outside)),
                 2 => mom(&game_state),
+                3=>{
+                    thread::sleep(Duration::from_millis(600));
+                    type_text(". . . Z Z Z . . .");
+                    thread::sleep(Duration::from_millis(600));
+                    type_text("\nMOM: Time to get up and go!");
+                }
                 _ => println!("Invalid choice."),
             },
             PalletTown(OaksLab) => match choice {
@@ -260,19 +267,25 @@ pub fn rust_red_game(mut game_state: GameState) {
                         type_text("\n Inside this parcel is a set of new PokeBalls! I Ordered some to give to you\n \
                         and my grandson to help you both with your adventure. Next time you are in battle\n \
                         against a wild pokemon, if you select ITEM from the battle menu you will throw \n\
-                        a PokeBall and attempt to catch the wild pokemon!");
+                        a PokeBall and attempt to catch the wild pokemon!\n");
                         thread::sleep(Duration::from_millis(1000));
-                        type_text("\n You received PokeBalls!");
+                        type_text("\n You received PokeBalls!\n");
                         thread::sleep(Duration::from_millis(1000));
                         type_text("\n One last thing, don't forgot that you can enter '9' in order to access the MENU \n\
-                        from which you can do things like look ar your team and SAVE your game.");
+                        from which you can do things like look ar your team and SAVE your game.\n");
                         game_state.bag.pop();
                         game_state.event.oaks_parcel_delivered = true;
                     }
-
                     else {
                         type_text("OAK: Good Luck on your Adventure!")
                     }
+                }
+                3=>{
+                    type_text("\nAround you are multiple book shelves filled with thick tomes. Some titles include: \n\
+                    -Reproductive Strategies in Ghost Type Pokemon by Karloff von Geist.\n\
+                    -Proposal for Recognition of Steel as Distinct Taxonomic Category by UofJohto Dept. of Cladistics.\n\
+                    -Zubat as Intermediate Predator in Cave Ecosystems by Jess Fang.\n");
+                    thread::sleep(Duration::from_millis(1000));
                 }
                 _ => println!("Invalid choice."),
             },
@@ -287,6 +300,11 @@ pub fn rust_red_game(mut game_state: GameState) {
                     type_text("\nMAN: Wild pokemon can attack you on the Routes between cities, make sure you have a Pokemon \nstrong enough to protect you!\n");
                     thread::sleep(Duration::from_millis(1000));
                 }
+                4=>{
+                    type_text("\nRoute 1: A modest and direct walking path that connects the small settlement of Pallet Town \n\
+                    with larger crossroads centre of Viridian City. Occupied by many gentle but assertive wild pokemon.\n");
+                    thread::sleep(Duration::from_millis(1000));
+                }
                 _ => println!("Invalid choice."),
             },
             PalletTown(Route1pt2)=>match choice {
@@ -295,6 +313,14 @@ pub fn rust_red_game(mut game_state: GameState) {
                 },
                 2=>{
                     travelling_encounter(PalletTown(Route1), PalletTown(Route1pt3), &mut game_state);
+                }
+                3=>{
+                    type_text("\nYou are walking a modest dirt pathway, dense forest lines the path on either side.\n\
+                    You can hear the sounds of birds chirps and other pokemon noises in the distance \n\
+                    between the trees. To your south you can distantly see the small group of buildings\n\
+                    that make up Pallet Town. To the north Viridian City is still obscured by a gentle \n\
+                    curve in the road. The sun is bright and the day is hot.\n");
+                    thread::sleep(Duration::from_millis(1000));
                 }
                 _=>println!("Invalid choice."),
 
@@ -315,7 +341,7 @@ pub fn rust_red_game(mut game_state: GameState) {
                     if game_state.event.starter_received == false {
                         type_text("DAISY: Thanks for visiting me! My Brother is at Professor Oak's Lab right now...\n");
                     }else{
-                        type_text("DAISY: Don't forget you can save your game! Enter '9' to open the MENU and then select '4' to SAVE. Good Luck!")
+                        type_text("DAISY: Don't forget you can save your game! Enter '9' to open the MENU and then select '4' to SAVE. Good Luck!\n")
                     }
                 },
                 _ => println!("Invalid choice."),
@@ -330,6 +356,9 @@ pub fn rust_red_game(mut game_state: GameState) {
                         game_state.move_loc(PalletTown(Route1))
                     }
                 },
+                5=>{
+                    type_text("\nPallet Town: Home of the famous professor Oak's Pokemon Laboratory!\n")
+                }
                 _ => println!("Invalid choice."),
             },
 
@@ -345,9 +374,9 @@ pub fn rust_red_game(mut game_state: GameState) {
                 4 => game_state.move_loc(ViridianCity(PokeCentre)),
                 5 => {
                     if game_state.event.oaks_parcel_delivered == false{
-                        type_text("\n You see an old man laying across the road. \n \
+                        type_text("\nYou see an old man laying across the road. \n \
                         OLD MAN: I'm not moving until I'm done my nap, why don't you check out the \
-                        MART.")
+                        MART.\n")
                     }
                     else {
                         travelling("Route 2");
@@ -369,14 +398,14 @@ pub fn rust_red_game(mut game_state: GameState) {
                 1 => {
                     if game_state.event.oaks_parcel_delivered == false && game_state.bag.is_empty(){
                         type_text("\nSHOP KEEPER: Hi there! You are from Pallet Town right? \
-                        Would you might delivering this parcel to PROFESSOR OAK?");
+                        Would you might delivering this parcel to PROFESSOR OAK?\n");
                         game_state.bag.push(OAKPARCEL);
-                        type_text("\nYou Received OAK's Parcel");
+                        type_text("\nYou Received OAK's Parcel\n");
                     }else if game_state.event.oaks_parcel_delivered == false{
                         type_text("\nSHOP KEEPER: You still have that parcel I gave you right?\
-                        \n Please bring that to PROFESSOR OAK as soon as you can!");
+                        \n Please bring that to PROFESSOR OAK as soon as you can!\n");
                     }else{
-                        type_text("\nSHOP KEEPER: John hasn't yet implemented items yet! ")
+                        type_text("\nSHOP KEEPER: This is embarrassing but we don't actually have any items in stock yet...\n")
                     }
                 },
                 2 => game_state.move_loc(ViridianCity(ViridianCityLocations::Outside)),
@@ -388,7 +417,8 @@ pub fn rust_red_game(mut game_state: GameState) {
                     travelling_encounter(ViridianCity(Route2),ViridianCity(Route2pt2), &mut game_state);
                     thread::sleep(Duration::from_millis(600));
                 },
-                2 => {type_text("\nBlocked by a strange looking tree... \n");
+                2 => {
+                    type_text("\nBlocked by a strange looking tree... \n");
                     thread::sleep(Duration::from_millis(400));
                     type_text("\nA pokemon might be able to learn how to cut this...\n");
                     thread::sleep(Duration::from_millis(800));}
@@ -396,6 +426,15 @@ pub fn rust_red_game(mut game_state: GameState) {
                     travelling_encounter(ViridianCity(Route2),ViridianCity(ViridianCityLocations::Outside), &mut game_state);
 
                 },
+                4=>{
+                    type_text("\nRoute 2: Runs North/South between the cities of Viridian and Pewter, travellers should \n\
+                    be prepared for a challenging hike through the Viridian Forest which occupies the \n\
+                    North end of the Route.\n");
+                    thread::sleep(Duration::from_millis(800));
+                    type_text("\nAttached to the sign is a notice reading 'KANTO WILDLIFE DEPT: Viridian Forest is \n\
+                    currently experiencing a higher than average outbreak of Bugs, travellers be aware.\n");
+                    thread::sleep(Duration::from_millis(800));
+                }
                 _ => println!("Invalid choice"),
             }
             ViridianCity(Route2pt2)=>match choice{
@@ -405,6 +444,10 @@ pub fn rust_red_game(mut game_state: GameState) {
                 2=>{thread::sleep(Duration::from_millis(600));
                     travelling_encounter(ViridianCity(Route2), ViridianCity(Route2), &mut game_state);
                     thread::sleep(Duration::from_millis(800));
+                }
+                3=>{
+                    type_text("\nAIDE: Prof Oak sent me here because we heard reports of PIKACHU being spotted\n\
+                    in this forest. Such a rare pokemon, we just had to see if we could get one for ourselves!\n");
                 }
                 _ => println!("Invalid choice"),
             }
@@ -469,16 +512,8 @@ pub fn rust_red_game(mut game_state: GameState) {
                 1=>{type_text("SHOPKEEPER: Ha Ha, this is embarrassing but we don't have any stock yet!\n")}
                 2=>game_state.move_loc(PewterCity(PewterCityLocations::Outside)),
                 _=>println!("Invalid choice"),
-            }/*
-            PewterCity(Route3)=>match choice{
-                1=>{todo!()},
-                2=>{
-                    travelling(format!("{}", "Pewter City".color(PEWTER)).as_str());
-                    game_state.move_loc(PewterCity(PewterCityLocations::Outside));
-                }
-                _=>println!("Invalid choice"),
             }
-            */
+
             // Route 3
 
             Route3(PewterConnection)=>match choice {
@@ -639,6 +674,10 @@ pub fn rust_red_game(mut game_state: GameState) {
                     },
                     2=>game_state.move_loc(Route3(MtMoonOpening)),
                     3=> billpc(&mut game_state),
+                4=>{
+                    type_text("\nJR.TRAINER: I want to get to Cerulean City so bad to see MISTY but I heard there is a \n\
+                    terrible monster in the Mt.Moon and now I'm too scared to go!\n");
+                }
                     _=>println!("Invalid choice"),
                 }
             Route3(MtMoonInside)=>match choice{
@@ -913,7 +952,7 @@ pub fn game_over(){
               '''`---`'''  \_.' _|-':__,....--''''
                              `-',..-'");
 
-    thread::sleep(Duration::from_millis(5000));
+    thread::sleep(Duration::from_millis(4000));
 
     type_text(format!("\n{}\n", "You've been tragically eaten by an angry GOLEM!".color(CINNABAR)).as_str());
     thread::sleep(Duration::from_millis(2000));
@@ -928,9 +967,6 @@ pub fn game_over(){
                                                                           ").with(Red);
     println!("{}", game_over);
     println!("\n\n{}", "Thanks for playing!!".color(FUCHSIA))
-
-
-
 }
 
 /*
