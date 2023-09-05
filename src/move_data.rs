@@ -178,7 +178,7 @@ const ACID: MoveData = MoveData{
     accuracy: 100,
     move_type: Poison,
     move_cat: Special,
-    effect_type: MoveEffectCat::None, //TODO
+    effect_type: MoveEffectCat::Poisoned,
     pp: 30,
 };
 pub const AGILITY: MoveData = MoveData {

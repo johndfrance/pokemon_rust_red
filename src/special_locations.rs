@@ -77,7 +77,7 @@ pub fn viridian_forest(game_state: &mut GameState){
                 "North".color(NORTH), "West".color(WEST))
             }
             Node6 => {
-                println!("\n...\
+                println!("\nThe forest around you is dark from the dense tree cover. \
                 \n1. Go {} into the Tall Grass\
                 \n2. Go {} along the path\
                 \n3. Go {} along the path",
@@ -189,7 +189,7 @@ pub fn viridian_forest(game_state: &mut GameState){
                         let choice = get_user_input(2);
                         match choice {
                             1=>{
-                                let mon = Pokemon::new(Lapras, 10);
+                                let mon = Pokemon::new(Lapras, 8);
                                 game_state.player.party.add_party_member(mon);
                                 type_text("\nLapras joined your team!\n");
                                 thread::sleep(Duration::from_millis(1000));
@@ -380,7 +380,15 @@ pub fn viridian_forest(game_state: &mut GameState){
             }
             Node10 => match choice{
                 1=>{
-                    location = Node11; //TODO Make trainer to go here
+                    type_text("\nYou've been spotted by another Trainer!\n");
+                    type_text("\nBUGCATCHER: I'm on a bug catching roll!\n");
+                    let alive = game_state.trainer_battle(12);
+                    if alive{
+                        location = Node11;
+                    }else{
+                        break
+                    }
+                    //location = Node11; //TODO Make trainer to go here
                 },
                 2=>location=Node9,
                 _=>println!("Invalid Choice")

@@ -51,9 +51,9 @@ pub fn rust_red_game(mut game_state: GameState) {
             PalletTown(OaksLab) => {
                 println!("\nYou are in {}'s Lab.", "OAK".color(OAK));
                 if game_state.event.starter_received == false{
-                    print!("Professor Oak is standing there waiting next to a boy.");
+                    print!("Professor Oak is standing there waiting next to a boy.\n");
                 }
-                println!("\n1. Go outside");
+                println!("1. Go outside");
                 println!("2. Talk to {}", "OAK".color(OAK));
                 println!("3. Look around");
             }

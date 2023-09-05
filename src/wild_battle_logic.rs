@@ -93,7 +93,18 @@ pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
             },
             MainMenuOptions::Item=>{
                 println!("Threw a pokeball!");
-                let random_number = rand::thread_rng().gen_range(0..=1);
+                let mut random_number;
+
+                if wild_mon.current_hp == wild_mon.max_hp.value{
+                    random_number = rand::thread_rng().gen_range(0..=9);
+                }else if wild_mon.current_hp>=(wild_mon.max_hp.value.clone()/2) {
+                    random_number = rand::thread_rng().gen_range(0..=4);
+                }else if wild_mon.current_hp<(wild_mon.max_hp.value.clone()/2) {
+                    random_number = rand::thread_rng().gen_range(0..=1);
+                }else{
+                    random_number = 1;
+                }
+
                 if random_number == 0 {
                     game_state.player.party.add_party_member(wild_mon.clone());
                     winner = true;
@@ -103,6 +114,27 @@ pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
                 }else{
                     type_text("Shoot! The wild pokemon broke free!\n");
                     thread::sleep(Duration::from_millis(600));
+                    println!("\n{} used {}",
+                             wild_mon.name,
+                             wild_mon_move_select.move_stats().name);
+
+                    game_state.player.party.mon[player_mon_index.clone()]
+                        .as_mut()
+                        .unwrap()
+                        .damage(
+                            &wild_mon,
+                            &wild_mon_move_select,
+                        );
+
+                    if game_state.player.party.mon[player_mon_index.clone()]
+                        .clone()
+                        .unwrap()
+                        .current_hp
+                        == 0
+                    {
+                        type_text("You Fainted!");
+                    }
+
                 }
 
             }

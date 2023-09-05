@@ -401,7 +401,6 @@ impl Party {
                 i +=1;
             }
         }
-
         return
     }
 

@@ -26,7 +26,7 @@ pub struct Trainer{
 }
 impl Trainer{
     pub fn get(id: u16)-> Trainer{
-        let trainers: Vec<TrainerTemplate> = vec![RIVAL1_1,RIVAL1_2, RIVAL2_1,RIVAL2_2, RIVAL3_1,RIVAL3_2, BUGCATCHER1, YOUNGSTER1, BUGCATCHER4, BUGCATCHER5, BUGCATCHER6, JRTRAINER1, BROCK, LASS1, LASS2, LASS3, BUGCATCHER2, BUGCATCHER3, YOUNGSTER2];
+        let trainers: Vec<TrainerTemplate> = vec![RIVAL1_1,RIVAL1_2, RIVAL2_1,RIVAL2_2, RIVAL3_1,RIVAL3_2, BUGCATCHER1, YOUNGSTER1, BUGCATCHER4, BUGCATCHER5, BUGCATCHER6, BUGCATCHER7,JRTRAINER1, BROCK, LASS1, LASS2, LASS3, BUGCATCHER2, BUGCATCHER3, YOUNGSTER2];
 
         let found_trainer = trainers
             .iter()
@@ -86,7 +86,7 @@ const RIVAL1_1: TrainerTemplate=TrainerTemplate{
 const RIVAL1_2: TrainerTemplate=TrainerTemplate{
     id: 1002,
     name: "Blue",
-    party: [Some((Nidorina, 15)),  Some((Spearow, 14)), Some((Ivysaur, 16)), None, None, None],
+    party: [Some((Nidorina, 13)),  Some((Spearow, 12)), Some((Ivysaur, 16)), None, None, None],
     reward: 500,
 };
 const RIVAL2_1: TrainerTemplate=TrainerTemplate{
@@ -98,7 +98,7 @@ const RIVAL2_1: TrainerTemplate=TrainerTemplate{
 const RIVAL2_2: TrainerTemplate=TrainerTemplate{
     id: 2002,
     name: "Blue",
-    party: [Some((Nidorina, 15)),  Some((Spearow, 14)), Some((Charmeleon, 16)), None, None, None],
+    party: [Some((Nidorina, 13)),  Some((Spearow, 12)), Some((Charmeleon, 16)), None, None, None],
     reward: 500,
 };
 const RIVAL3_1: TrainerTemplate=TrainerTemplate{
@@ -110,7 +110,7 @@ const RIVAL3_1: TrainerTemplate=TrainerTemplate{
 const RIVAL3_2: TrainerTemplate=TrainerTemplate{
     id: 3002,
     name: "Blue",
-    party: [Some((Nidorina, 15)),  Some((Spearow, 14)), Some((Wartortle, 16)), None, None, None],
+    party: [Some((Nidorina, 13)),  Some((Spearow, 12)), Some((Wartortle, 16)), None, None, None],
     reward: 500,
 };
 
@@ -134,6 +134,13 @@ pub const BUGCATCHER6: TrainerTemplate = TrainerTemplate{
     party: [Some((Weedle, 9)), None, None, None, None, None],
     reward: 90,
 };
+pub const BUGCATCHER7: TrainerTemplate = TrainerTemplate{
+    id: 12,
+    name: "Bug Catcher Dan",
+    party: [Some((Caterpie, 7)), Some((Metapod, 7)), Some((Caterpie, 7)), None, None, None],
+    reward: 70,
+};
+
 
 
 //PEWTER CITY GYM TRAINERS
