@@ -1,5 +1,5 @@
 use std::string::ToString;
-use crate::mon_base_stats::PokemonSpecies::{Bulbasaur, Caterpie, Charamander, Charmeleon, Diglett, Ekans, Geodude, Ivysaur, Jigglypuff, Kakuna, Metapod, NidoranF, Nidorina, Onix, Pidgey, Rattata, Sandshrew, Spearow, Squirtle, Wartortle, Weedle};
+use crate::mon_base_stats::PokemonSpecies::{Beedrill, Bulbasaur, Butterfly, Caterpie, Charamander, Charmeleon, Diglett, Ekans, Geodude, Ivysaur, Jigglypuff, Kakuna, Metapod, NidoranF, Nidorina, Onix, Pidgey, Rattata, Sandshrew, Spearow, Squirtle, Wartortle, Weedle, Zubat};
 use crate::{Party, PartyOperations, Pokemon};
 use crate::mon_base_stats::PokemonSpecies;
 use crate::Status::Healthy;
@@ -125,7 +125,7 @@ pub const BUGCATCHER4: TrainerTemplate = TrainerTemplate{
 pub const BUGCATCHER5: TrainerTemplate = TrainerTemplate{
     id: 9,
     name: "Bug Catcher Doug",
-    party: [Some((Weedle, 7)), Some((Kakuna, 7)), Some((Weedle, 7)), None, None, None],
+    party: [Some((Weedle, 7)), Some((Kakuna, 8)), Some((Weedle, 7)), None, None, None],
     reward: 70,
 };
 pub const BUGCATCHER6: TrainerTemplate = TrainerTemplate{
@@ -137,7 +137,7 @@ pub const BUGCATCHER6: TrainerTemplate = TrainerTemplate{
 pub const BUGCATCHER7: TrainerTemplate = TrainerTemplate{
     id: 12,
     name: "Bug Catcher Dan",
-    party: [Some((Caterpie, 7)), Some((Metapod, 7)), Some((Caterpie, 7)), None, None, None],
+    party: [Some((Caterpie, 7)), Some((Metapod, 8)), Some((Caterpie, 7)), None, None, None],
     reward: 70,
 };
 
@@ -163,13 +163,13 @@ pub const BROCK: TrainerTemplate = TrainerTemplate{
 pub const LASS1: TrainerTemplate = TrainerTemplate{
     id: 1,
     name: "Lass Janice",
-    party: [Some((Pidgey, 9)), Some((Pidgey, 9)), None, None, None, None],
+    party: [Some((Pidgey, 9)), Some((Zubat, 11)), None, None, None, None],
     reward: 135,
 };
 pub const BUGCATCHER1: TrainerTemplate = TrainerTemplate{
   id: 2,
     name: "Bug Catcher Colton",
-    party: [Some((Caterpie, 10)), Some((Weedle, 10)), Some((Caterpie, 10)), None, None, None],
+    party: [Some((Caterpie, 10)), Some((Metapod, 10)), Some((Butterfly, 10)), None, None, None],
     reward: 100,
 };
 pub const YOUNGSTER1: TrainerTemplate = TrainerTemplate{
@@ -181,13 +181,13 @@ pub const YOUNGSTER1: TrainerTemplate = TrainerTemplate{
 pub const BUGCATCHER2: TrainerTemplate = TrainerTemplate{
     id: 4,
     name: "Bug Catcher Greg",
-    party: [Some((Weedle, 9)), Some((Kakuna, 9)), Some((Caterpie, 9)), Some((Metapod, 9)), None,None],
+    party: [Some((Weedle, 9)), Some((Kakuna, 10)), Some((Caterpie, 9)), Some((Metapod, 10)), None,None],
     reward: 90,
 };
 pub const YOUNGSTER2: TrainerTemplate = TrainerTemplate{
     id: 5,
     name: "Youngster Calvin",
-    party: [Some((Spearow, 14)), None, None, None, None, None],
+    party: [Some((Spearow, 15)), None, None, None, None, None],
     reward: 210,
 };
 pub const LASS2: TrainerTemplate = TrainerTemplate{
@@ -199,13 +199,13 @@ pub const LASS2: TrainerTemplate = TrainerTemplate{
 pub const BUGCATCHER3: TrainerTemplate = TrainerTemplate{
     id: 7,
     name: "Bug Catcher James",
-    party: [Some((Caterpie, 10)), Some((Metapod, 10)), None, None, None, None],
+    party: [Some((Butterfly, 12)), Some((Beedrill, 12)), None, None, None, None],
     reward: 110,
 };
 pub const LASS3: TrainerTemplate = TrainerTemplate{
     id: 8,
     name: "Lass Robin",
-    party: [Some((Jigglypuff, 14)), None, None, None, None, None],
+    party: [Some((Jigglypuff, 15)), None, None, None, None, None],
     reward: 150,
 };
 

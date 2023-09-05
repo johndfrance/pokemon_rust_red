@@ -558,7 +558,7 @@ pub fn rust_red_game(mut game_state: GameState) {
                     type_text("\n. . .Walking...\n");
                     thread::sleep(Duration::from_millis(400));
                     game_state.move_loc(Route3(PewterConnection));
-                    game_state.trainer_battle(1);
+                    game_state.trainer_battle(7);
                     thread::sleep(Duration::from_millis(400));
                     type_text("\n...\n");
                 }
@@ -580,7 +580,7 @@ pub fn rust_red_game(mut game_state: GameState) {
                     type_text("\n. . .Walking...\n");
                     thread::sleep(Duration::from_millis(400));
                     game_state.move_loc(Route3(NorthWestNode));
-                    game_state.trainer_battle(2);
+                    game_state.trainer_battle(8);
                     thread::sleep(Duration::from_millis(400));
                     type_text("\n...\n")
                 }
@@ -591,7 +591,7 @@ pub fn rust_red_game(mut game_state: GameState) {
                     type_text("\n. . .Walking...\n");
                     thread::sleep(Duration::from_millis(400));
                     game_state.move_loc(Route3(MtMoonConnection));
-                    game_state.trainer_battle(4);
+                    game_state.trainer_battle(6);
                     thread::sleep(Duration::from_millis(400));
                     type_text("\n...\n")
                 }
@@ -601,7 +601,7 @@ pub fn rust_red_game(mut game_state: GameState) {
                 3=>{type_text("\n. . .Walking...\n");
                     thread::sleep(Duration::from_millis(400));
                     game_state.move_loc(Route3(NorthCentralNode));
-                    game_state.trainer_battle(3);
+                    game_state.trainer_battle(5);
                     thread::sleep(Duration::from_millis(400));
                     type_text("\n...\n")
                 }

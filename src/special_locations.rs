@@ -189,7 +189,7 @@ pub fn viridian_forest(game_state: &mut GameState){
                         let choice = get_user_input(2);
                         match choice {
                             1=>{
-                                let mon = Pokemon::new(Lapras, 8);
+                                let mon = Pokemon::new(Lapras, 5);
                                 game_state.player.party.add_party_member(mon);
                                 type_text("\nLapras joined your team!\n");
                                 thread::sleep(Duration::from_millis(1000));
