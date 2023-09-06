@@ -163,7 +163,7 @@ pub const BROCK: TrainerTemplate = TrainerTemplate{
 pub const LASS1: TrainerTemplate = TrainerTemplate{
     id: 1,
     name: "Lass Janice",
-    party: [Some((Pidgey, 9)), Some((Zubat, 11)), None, None, None, None],
+    party: [Some((Pidgey, 9)), Some((Pidgey, 11)), None, None, None, None],
     reward: 135,
 };
 pub const BUGCATCHER1: TrainerTemplate = TrainerTemplate{
