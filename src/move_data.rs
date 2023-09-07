@@ -331,7 +331,7 @@ pub const FIRESPIN: MoveData = MoveData {
     accuracy: 70,
     move_type: PokeTypes::Fire,
     move_cat: Special,
-    effect_type: MoveEffectCat::None, //TODO
+    effect_type: MoveEffectCat::BurnSideEffect1,
     pp: 15,
 };
 pub const FLAMETHROWER: MoveData = MoveData {
@@ -340,7 +340,7 @@ pub const FLAMETHROWER: MoveData = MoveData {
     accuracy: 100,
     move_type: PokeTypes::Fire,
     move_cat: Special,
-    effect_type: MoveEffectCat::None, //TODO
+    effect_type: MoveEffectCat::BurnSideEffect1,
     pp: 100,
 };
 pub const FOCUSENERGY: MoveData = MoveData {

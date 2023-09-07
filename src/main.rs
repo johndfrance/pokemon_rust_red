@@ -837,6 +837,7 @@ impl Pokemon {
                         self.status = Fainted;
                     }
                     thread::sleep(Duration::from_millis(700));
+                    attcking_move.move_stats().effect_type.apply_effect(self);
                 },
                 MoveCat::Status => {
                     attcking_move.move_stats().effect_type.apply_effect(self);
@@ -1206,6 +1207,14 @@ impl MoveEffectCat {
             MoveEffectCat::SpecUp1=>target.stat_mod_stages.raise_stat(Special),
 
             MoveEffectCat::LeechSeed=>target.special_conditions.leech_seeded = true,
+
+            MoveEffectCat::BurnSideEffect1=>{
+                let random_number = rand::thread_rng().gen_range(0..=9);
+                if random_number == 0{
+                    target.status = Burned;
+                    type_text(format!("\n{} suffered a burn!\n", target.name).as_str());
+                }
+            }
 
             _ => {}
         }
