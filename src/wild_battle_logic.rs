@@ -139,7 +139,7 @@ pub fn wild_encounter(game_state: &mut GameState, wild_mon: &mut Pokemon)->bool{
 
             }
             MainMenuOptions::Change=>{
-                player_mon_index = sub_menu_choice.unwrap() as usize + 1;
+                player_mon_index = sub_menu_choice.unwrap() as usize;
                 type_text(format!("\nPlayer sends out {}\n", game_state.player.party.mon[player_mon_index.clone()].as_ref().unwrap().name).as_str());
                 type_text(format!("\n{} used {}\n",
                          wild_mon.name,
